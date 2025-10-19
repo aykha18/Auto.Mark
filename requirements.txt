@@ -1,0 +1,128 @@
+# AI Marketing Agents MVP - Requirements.txt
+# Install with: uv pip install -r requirements.txt
+
+# ===========================================
+# Core Framework & Async Support
+# ===========================================
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==1.10.15
+# pydantic-settings==0.2.3  # Not compatible, using python-dotenv instead
+
+# ===========================================
+# Database & ORM
+# ===========================================
+# sqlalchemy[asyncio]==2.0.23  # Requires C++ compiler for greenlet, using basic sqlalchemy
+sqlalchemy==2.0.23
+# psycopg2-binary==2.9.9  # Requires C++ compiler, using sqlite for development
+alembic==1.13.1
+
+# ===========================================
+# Caching & Message Queue
+# ===========================================
+redis[hiredis]==5.0.1
+celery==5.3.4
+
+# ===========================================
+# AI/ML Stack - LangChain Ecosystem (Stable Versions)
+# ===========================================
+# langchain==0.1.0  # Requires numpy/C++ compiler, using core components only
+langchain-core==0.1.16
+langgraph==0.0.20
+langsmith==0.0.83
+
+# ===========================================
+# Vector Database & Embeddings
+# ===========================================
+pinecone-client==2.2.4
+# sentence-transformers==2.2.2  # Requires numpy/C++ compiler
+openai==1.10.0
+
+# ===========================================
+# Advanced RAG Components
+# ===========================================
+# llama-index==0.9.48  # Requires Rust compiler, using LangChain RAG instead
+# chromadb==0.4.18  # Requires C++ compiler, using Pinecone only
+# faiss-cpu==1.8.0  # Not compatible with Python 3.13, using Pinecone instead
+cohere==4.45
+
+# ===========================================
+# Machine Learning & NLP
+# ===========================================
+# scikit-learn==1.3.2  # Requires C++ compiler
+# pandas==2.1.4
+# numpy==1.26.2
+# spacy==3.7.2  # Requires C++ compiler, using basic NLP instead
+nltk==3.8.1
+nltk==3.8.1
+
+# ===========================================
+# External API Integrations
+# ===========================================
+google-ads==22.1.0
+facebook-business==18.0.2
+linkedin-api==2.1.0
+requests==2.31.0
+httpx==0.25.2
+# aiohttp==3.9.1  # Requires C++ compiler, using httpx instead
+httpx==0.25.2
+
+# ===========================================
+# Web Scraping & Lead Generation
+# ===========================================
+beautifulsoup4==4.12.2
+selenium==4.16.0
+# playwright==1.40.0  # Requires C++ compiler, using selenium instead
+serpapi==0.1.5
+
+# ===========================================
+# Monitoring & Observability
+# ===========================================
+prometheus-client==0.19.0
+sentry-sdk[fastapi]==1.38.0
+structlog==23.2.0
+
+# ===========================================
+# Development & Testing
+# ===========================================
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+httpx==0.25.2  # For testing FastAPI
+faker==20.1.0
+
+# ===========================================
+# Code Quality & Formatting
+# ===========================================
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+mypy==1.7.1
+pre-commit==3.5.0
+
+# ===========================================
+# Documentation
+# ===========================================
+mkdocs==1.5.3
+mkdocs-material==9.4.8
+
+# ===========================================
+# Security & Utilities
+# ===========================================
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+python-dotenv==1.0.0
+
+# ===========================================
+# Data Processing & Analytics
+# ===========================================
+# matplotlib==3.8.2  # Requires numpy/C++ compiler
+# seaborn==0.13.0
+# plotly==5.17.0
+
+# ===========================================
+# File Storage (Optional)
+# ===========================================
+boto3==1.34.34
+minio==7.2.0
