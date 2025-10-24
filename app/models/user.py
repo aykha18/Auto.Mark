@@ -7,10 +7,10 @@ from typing import Optional
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
 from sqlalchemy.orm import relationship
 
-from .base import Base
+from .base import Base, TimestampMixin
 
 
-class User(Base):
+class User(Base, TimestampMixin):
     """User model for the marketing platform"""
 
     __tablename__ = "users"
@@ -37,9 +37,7 @@ class User(Base):
     monthly_request_limit = Column(Integer, default=1000)
     requests_this_month = Column(Integer, default=0)
 
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    # Timestamps (inherited from TimestampMixin)
     last_login = Column(DateTime)
 
     # Relationships

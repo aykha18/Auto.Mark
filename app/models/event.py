@@ -4,14 +4,14 @@ Event model for behavioral tracking and analytics
 
 from datetime import datetime
 from typing import Optional, Dict, Any
-from sqlalchemy import Column, Integer, String, DateTime, Text, JSON, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Text, JSON, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from .base import Base
+from .base import Base, TimestampMixin
 
 
-class Event(Base):
+class Event(Base, TimestampMixin):
     """Event model for tracking user behavior and marketing interactions"""
 
     __tablename__ = "events"
@@ -47,7 +47,6 @@ class Event(Base):
 
     # Timestamps
     timestamp = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     processed_at = Column(DateTime)  # when event was processed for analytics
 
     # Processing status

@@ -7,10 +7,10 @@ from typing import Optional, List, Dict, Any
 from sqlalchemy import Column, Integer, String, DateTime, Text, JSON, Float, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
-from .base import Base
+from .base import Base, TimestampMixin
 
 
-class Campaign(Base):
+class Campaign(Base, TimestampMixin):
     """Campaign model for marketing campaign orchestration"""
 
     __tablename__ = "campaigns"
@@ -66,9 +66,7 @@ class Campaign(Base):
     actual_start = Column(DateTime)
     actual_end = Column(DateTime)
 
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    # Timestamps (inherited from TimestampMixin)
 
     # Relationships
     user = relationship("User", back_populates="campaigns")
