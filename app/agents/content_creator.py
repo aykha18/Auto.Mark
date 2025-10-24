@@ -13,7 +13,8 @@ from langchain_openai import ChatOpenAI
 
 from app.agents.base import BaseAgent
 from app.agents.state import MarketingAgentState, update_state_timestamp
-from app.rag.simple_rag import get_rag_service
+from app.rag.lcel_chains import get_confidence_rag_chain, query_with_confidence
+from app.rag.monitoring import record_rag_query
 
 logger = structlog.get_logger(__name__)
 
@@ -23,7 +24,7 @@ class ContentCreatorAgent(BaseAgent):
 
     def __init__(self, llm: ChatOpenAI):
         super().__init__("content_creator", llm, self.get_content_tools())
-        self.rag_service = get_rag_service()
+        self.confidence_rag_chain = get_confidence_rag_chain()
 
     def get_content_tools(self) -> List[Tool]:
         """Get tools for content creation"""
@@ -111,27 +112,59 @@ class ContentCreatorAgent(BaseAgent):
     async def generate_content(self, requirements: Dict[str, Any]) -> Dict[str, Any]:
         """Generate marketing content based on requirements"""
 
-        # Query knowledge base for relevant information
-        context = await self.query_knowledge_base(
-            question=f"What are best practices for {requirements.get('content_type', 'content')}?",
-            strategy="multi_query"
-        )
+        import time
+        start_time = time.time()
 
-        # Generate content using LLM with context
-        prompt = self.build_content_prompt(requirements, context)
-        content = await self.llm.ainvoke(prompt)
+        try:
+            # Query knowledge base for relevant information using advanced RAG
+            rag_result = await query_with_confidence(
+                question=f"What are best practices for {requirements.get('content_type', 'content')}?"
+            )
 
-        # Optimize and validate
-        optimized_content = await self.optimize_content(content, requirements)
+            # Record RAG query for monitoring
+            record_rag_query({
+                'question': f"What are best practices for {requirements.get('content_type', 'content')}?",
+                'response': rag_result.get('answer', ''),
+                'response_time': time.time() - start_time,
+                'confidence_score': rag_result.get('confidence', {}).get('score', 0),
+                'sources_count': len(rag_result.get('sources', [])),
+                'strategy': 'confidence_aware'
+            })
 
-        return {
-            'content': optimized_content,
-            'type': requirements.get('content_type'),
-            'topic': requirements.get('topic'),
-            'word_count': len(optimized_content.split()),
-            'seo_score': await self.calculate_seo_score(optimized_content),
-            'generated_at': datetime.utcnow().isoformat()
-        }
+            # Generate content using LLM with context
+            prompt = self.build_content_prompt(requirements, rag_result)
+            content = await self.llm.ainvoke(prompt)
+
+            # Optimize and validate
+            optimized_content = await self.optimize_content(content, requirements)
+
+            return {
+                'content': optimized_content,
+                'type': requirements.get('content_type'),
+                'topic': requirements.get('topic'),
+                'word_count': len(optimized_content.split()),
+                'seo_score': await self.calculate_seo_score(optimized_content),
+                'rag_confidence': rag_result.get('confidence', {}).get('score', 0),
+                'sources_used': len(rag_result.get('sources', [])),
+                'generated_at': datetime.utcnow().isoformat()
+            }
+
+        except Exception as e:
+            logger.error(f"Content generation failed: {e}")
+            # Fallback to basic generation
+            prompt = self.build_content_prompt(requirements, {"answer": "Use marketing best practices."})
+            content = await self.llm.ainvoke(prompt)
+            optimized_content = await self.optimize_content(content, requirements)
+
+            return {
+                'content': optimized_content,
+                'type': requirements.get('content_type'),
+                'topic': requirements.get('topic'),
+                'word_count': len(optimized_content.split()),
+                'seo_score': await self.calculate_seo_score(optimized_content),
+                'error': str(e),
+                'generated_at': datetime.utcnow().isoformat()
+            }
 
     async def optimize_content(self, content: str, requirements: Dict[str, Any]) -> str:
         """Optimize content for better performance"""
@@ -157,12 +190,18 @@ class ContentCreatorAgent(BaseAgent):
         audience = requirements.get('audience', 'general')
         topic = requirements.get('topic', 'marketing best practices')
 
-        context_info = context.get('answer', 'Use marketing best practices and industry knowledge.')
+        # Handle both old and new context formats
+        if isinstance(context, dict) and 'answer' in context:
+            context_info = context.get('answer', 'Use marketing best practices and industry knowledge.')
+            confidence_info = f"Context confidence: {context.get('confidence', {}).get('level', 'unknown')}"
+        else:
+            context_info = str(context)
+            confidence_info = "Context from knowledge base"
 
         return f"""
         Create a {content_type} about {topic} for a {audience} audience.
 
-        Context from knowledge base:
+        {confidence_info}:
         {context_info}
 
         Requirements:
@@ -174,6 +213,7 @@ class ContentCreatorAgent(BaseAgent):
 
         Generate engaging, valuable content that follows marketing best practices.
         Include relevant examples and actionable insights.
+        Ensure the content is well-structured and conversion-focused.
         """
 
     async def calculate_seo_score(self, content: str) -> float:
@@ -254,12 +294,29 @@ class ContentCreatorAgent(BaseAgent):
 
     # Tool implementations
     async def query_knowledge_base(self, question: str, strategy: str = "basic") -> Dict[str, Any]:
-        """Query the marketing knowledge base"""
+        """Query the marketing knowledge base using advanced RAG"""
         try:
-            return self.rag_service.query_knowledge(question, strategy)
+            import time
+            start_time = time.time()
+
+            # Use confidence-aware RAG for better results
+            result = await query_with_confidence(question)
+
+            # Record for monitoring
+            record_rag_query({
+                'question': question,
+                'response': result.get('answer', ''),
+                'response_time': time.time() - start_time,
+                'confidence_score': result.get('confidence', {}).get('score', 0),
+                'sources_count': len(result.get('sources', [])),
+                'strategy': 'confidence_aware'
+            })
+
+            return result
+
         except Exception as e:
             logger.error(f"Knowledge base query failed: {e}")
-            return {"answer": "Unable to access knowledge base", "error": str(e)}
+            return {"answer": "Unable to access knowledge base", "error": str(e), "confidence": {"score": 0, "level": "low"}}
 
     async def optimize_seo(self, content: str, keywords: List[str]) -> str:
         """Optimize content for SEO"""
