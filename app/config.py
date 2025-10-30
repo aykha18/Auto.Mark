@@ -5,7 +5,12 @@ Uses Pydantic settings for type-safe configuration
 
 import os
 from typing import Optional
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class DatabaseConfig(BaseSettings):
@@ -14,6 +19,12 @@ class DatabaseConfig(BaseSettings):
     pool_size: int = Field(10, env="DB_POOL_SIZE")
     max_overflow: int = Field(20, env="DB_MAX_OVERFLOW")
     pool_timeout: int = Field(30, env="DB_POOL_TIMEOUT")
+    
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+        case_sensitive = False
+        extra = "ignore"
 
 
 class RedisConfig(BaseSettings):
@@ -30,6 +41,8 @@ class APIConfig(BaseSettings):
     debug: bool = Field(False, env="DEBUG")
     secret_key: str = Field(..., env="SECRET_KEY")
     api_key_header: str = Field("X-API-Key", env="API_KEY_HEADER")
+    cors_origins: list = Field(["http://localhost:3000", "http://localhost:3001", "https://*.railway.app"], env="CORS_ORIGINS")
+    allowed_hosts: list = Field(["*"], env="ALLOWED_HOSTS")
 
 
 class LangSmithConfig(BaseSettings):
@@ -65,6 +78,15 @@ class ExternalAPIsConfig(BaseSettings):
     google_ads_developer_token: str = Field(..., env="GOOGLE_ADS_DEVELOPER_TOKEN")
 
 
+class StripeConfig(BaseSettings):
+    """Stripe payment processing configuration"""
+    secret_key: str = Field(..., env="STRIPE_SECRET_KEY")
+    publishable_key: str = Field(..., env="STRIPE_PUBLISHABLE_KEY")
+    webhook_secret: str = Field(..., env="STRIPE_WEBHOOK_SECRET")
+    currency: str = Field("usd", env="STRIPE_CURRENCY")
+    co_creator_price: float = Field(250.0, env="CO_CREATOR_PRICE")
+
+
 class CircuitBreakerConfig(BaseSettings):
     """Circuit breaker configuration"""
     failure_threshold: int = Field(5, env="CIRCUIT_BREAKER_FAILURE_THRESHOLD")
@@ -75,15 +97,29 @@ class CircuitBreakerConfig(BaseSettings):
 class Settings(BaseSettings):
     """Main application settings"""
 
-    # Sub-configurations
-    database: DatabaseConfig = DatabaseConfig()
-    redis: RedisConfig = RedisConfig()
-    api: APIConfig = APIConfig()
-    langsmith: LangSmithConfig = LangSmithConfig()
-    pinecone: PineconeConfig = PineconeConfig()
-    llm: LLMConfig = LLMConfig()
-    external_apis: ExternalAPIsConfig = ExternalAPIsConfig()
-    circuit_breaker: CircuitBreakerConfig = CircuitBreakerConfig()
+    # Sub-configurations will be initialized after main settings
+    database: Optional[DatabaseConfig] = None
+    redis: Optional[RedisConfig] = None
+    api: Optional[APIConfig] = None
+    langsmith: Optional[LangSmithConfig] = None
+    pinecone: Optional[PineconeConfig] = None
+    llm: Optional[LLMConfig] = None
+    external_apis: Optional[ExternalAPIsConfig] = None
+    stripe: Optional[StripeConfig] = None
+    circuit_breaker: Optional[CircuitBreakerConfig] = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Initialize sub-configurations after main settings are loaded
+        self.database = DatabaseConfig()
+        self.redis = RedisConfig()
+        self.api = APIConfig()
+        self.langsmith = LangSmithConfig()
+        self.pinecone = PineconeConfig()
+        self.llm = LLMConfig()
+        self.external_apis = ExternalAPIsConfig()
+        self.stripe = StripeConfig()
+        self.circuit_breaker = CircuitBreakerConfig()
 
     # Application settings
     app_name: str = Field("AI Marketing Agents", env="APP_NAME")
@@ -102,15 +138,23 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = False
+        extra = "ignore"  # Ignore extra fields from .env
 
 
-# Global settings instance
-settings = Settings()
+# Global settings instance (lazy loaded)
+_settings = None
 
 
 def get_settings() -> Settings:
-    """Get application settings"""
-    return settings
+    """Get application settings (lazy loaded)"""
+    global _settings
+    if _settings is None:
+        _settings = Settings()
+    return _settings
+
+
+# For backward compatibility - removed to avoid circular import issues
+# Use get_settings() instead of accessing settings directly
 
 
 def is_development() -> bool:

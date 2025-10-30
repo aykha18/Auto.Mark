@@ -6,7 +6,7 @@ from .server import MCPServer, AgentMCPServer
 from .client import MCPClient, AgentMCPClient
 from .transport import MCPTransport
 from .tools import MCPTool, ToolRegistry
-from .types import MCPMessage, ToolCall, ToolResult
+from .mcp_types import MCPMessage, ToolCall, ToolResult
 
 __all__ = [
     "MCPServer",

@@ -8,6 +8,10 @@ from .event import Event
 from .lead import Lead
 from .campaign import Campaign
 from .content import Content
+from .assessment import Assessment
+from .co_creator_program import CoCreatorProgram, CoCreator
+from .payment_transaction import PaymentTransaction
+from .founder_story import FounderStory, FounderMilestone
 
 __all__ = [
     "Base",
@@ -15,5 +19,11 @@ __all__ = [
     "Event",
     "Lead",
     "Campaign",
-    "Content"
+    "Content",
+    "Assessment",
+    "CoCreatorProgram",
+    "CoCreator",
+    "PaymentTransaction",
+    "FounderStory",
+    "FounderMilestone"
 ]

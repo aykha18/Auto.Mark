@@ -1,0 +1,288 @@
+/* AI Demo Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  }
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Utility Classes */
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-typing {
+  animation: typing 2s steps(40, end);
+}
+
+.animate-blink {
+  animation: blink 1s infinite;
+}
+
+/* AI Status Indicators */
+.ai-status-active {
+  position: relative;
+}
+
+.ai-status-active::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+  background-size: 400% 400%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* AI Decision Feed */
+.ai-decision-item {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.ai-decision-item:hover {
+  border-left-color: #3b82f6;
+  background-color: #f8fafc;
+  transform: translateX(4px);
+}
+
+/* Predictive Analytics Bars */
+.prediction-bar {
+  transition: width 0.8s ease-out;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+}
+
+.prediction-bar.high-confidence {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.prediction-bar.medium-confidence {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.prediction-bar.low-confidence {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+/* Chat Bubble Animations */
+.chat-bubble {
+  animation: fadeIn 0.3s ease-out;
+  transform-origin: bottom left;
+}
+
+.chat-bubble.user {
+  transform-origin: bottom right;
+}
+
+.typing-indicator {
+  display: inline-flex;
+  align-items: center;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #9ca3af;
+  margin: 0 1px;
+  animation: typingDots 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes typingDots {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Voice Input Animation */
+.voice-recording {
+  animation: voicePulse 1s ease-in-out infinite;
+}
+
+@keyframes voicePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Performance Metrics Animation */
+.metric-counter {
+  font-variant-numeric: tabular-nums;
+  transition: all 0.3s ease;
+}
+
+.metric-increase {
+  animation: metricBump 0.5s ease-out;
+}
+
+@keyframes metricBump {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    color: #10b981;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Loading States */
+.ai-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .ai-demo-modal {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+  
+  .ai-capabilities-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

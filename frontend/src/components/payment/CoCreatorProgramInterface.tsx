@@ -1,0 +1,414 @@
+import React, { useState, useEffect } from 'react';
+import { CoCreatorProgramStatus } from '../../types';
+import LandingPageAPI from '../../services/landingPageApi';
+import Button from '../ui/Button';
+import { 
+  Crown, 
+  Users, 
+  Zap, 
+  Clock, 
+  CheckCircle, 
+  Star,
+  Shield,
+  Rocket,
+  Heart,
+  TrendingUp,
+  MessageCircle,
+  Award
+} from 'lucide-react';
+
+interface CoCreatorProgramInterfaceProps {
+  onJoinProgram: () => void;
+  className?: string;
+}
+
+const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
+  onJoinProgram,
+  className = '',
+}) => {
+  const [programStatus, setProgramStatus] = useState<CoCreatorProgramStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
+
+  useEffect(() => {
+    loadProgramStatus();
+    setupWebSocketConnection();
+    
+    return () => {
+      // Cleanup WebSocket connection
+      if ((window as any).coCreatorWebSocket) {
+        (window as any).coCreatorWebSocket.close();
+      }
+    };
+  }, []);
+
+  const loadProgramStatus = async () => {
+    try {
+      const status = await LandingPageAPI.getCoCreatorStatus();
+      setProgramStatus(status);
+    } catch (error) {
+      console.error('Failed to load co-creator status:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const setupWebSocketConnection = () => {
+    // Skip WebSocket connection if disabled
+    if (process.env.REACT_APP_DISABLE_WEBSOCKET === 'true') {
+      console.log('WebSocket disabled via environment variable');
+      return;
+    }
+    
+    try {
+      const wsUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:8000/ws/co-creator-status';
+      const ws = new WebSocket(wsUrl);
+      
+      ws.onopen = () => {
+        setIsWebSocketConnected(true);
+        console.log('Co-creator WebSocket connected');
+      };
+      
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'seat_update') {
+          setProgramStatus(prev => prev ? {
+            ...prev,
+            seatsRemaining: data.seatsRemaining,
+            urgencyLevel: data.urgencyLevel
+          } : null);
+        }
+      };
+      
+      ws.onclose = () => {
+        setIsWebSocketConnected(false);
+        console.log('Co-creator WebSocket disconnected');
+        // Attempt to reconnect after 5 seconds
+        setTimeout(setupWebSocketConnection, 5000);
+      };
+      
+      ws.onerror = (error) => {
+        console.error('Co-creator WebSocket error:', error);
+        setIsWebSocketConnected(false);
+      };
+      
+      // Store WebSocket reference for cleanup
+      (window as any).coCreatorWebSocket = ws;
+    } catch (error) {
+      console.error('Failed to setup WebSocket:', error);
+    }
+  };
+
+  const getUrgencyLevel = () => {
+    if (!programStatus) return 'medium';
+    if (programStatus.seatsRemaining <= 5) return 'high';
+    if (programStatus.seatsRemaining <= 10) return 'medium';
+    return 'low';
+  };
+
+  const getUrgencyMessage = () => {
+    if (!programStatus) return '';
+    const urgency = getUrgencyLevel();
+    
+    switch (urgency) {
+      case 'high':
+        return `🔥 URGENT: Only ${programStatus.seatsRemaining} seats left!`;
+      case 'medium':
+        return `⚡ ${programStatus.seatsRemaining} seats remaining out of ${programStatus.totalSeats}`;
+      case 'low':
+        return `✨ ${programStatus.seatsRemaining} seats available out of ${programStatus.totalSeats}`;
+      default:
+        return '';
+    }
+  };
+
+  const tieredIncentives = [
+    {
+      tier: 'Lifetime Access',
+      icon: Crown,
+      color: 'text-yellow-400',
+      benefits: [
+        'Unlimited platform access forever',
+        'All future features included',
+        'No recurring subscription fees',
+        'Grandfathered pricing protection'
+      ]
+    },
+    {
+      tier: 'Integration Support',
+      icon: Zap,
+      color: 'text-blue-400',
+      benefits: [
+        'Priority CRM integration setup',
+        'Custom field mapping assistance',
+        'Direct technical support channel',
+        'Integration troubleshooting help'
+      ]
+    },
+    {
+      tier: 'Product Influence',
+      icon: Rocket,
+      color: 'text-purple-400',
+      benefits: [
+        'Vote on new features and integrations',
+        'Direct feedback to founder',
+        'Beta access to new capabilities',
+        'Feature request priority'
+      ]
+    },
+    {
+      tier: 'Recognition',
+      icon: Award,
+      color: 'text-green-400',
+      benefits: [
+        'Co-creator badge and profile',
+        'Featured in success stories',
+        'Product credits recognition',
+        'Exclusive community access'
+      ]
+    }
+  ];
+
+  const testimonials = [
+    {
+      name: 'Sarah Chen',
+      role: 'Marketing Director',
+      company: 'TechFlow Solutions',
+      avatar: '👩‍💼',
+      quote: 'Being a co-creator gave me direct influence over the HubSpot integration. The founder actually implemented my suggestions!',
+      integration: 'HubSpot'
+    },
+    {
+      name: 'Marcus Rodriguez',
+      role: 'Sales Manager',
+      company: 'Growth Dynamics',
+      avatar: '👨‍💻',
+      quote: 'The lifetime access alone is worth 10x the investment. Plus, the Pipedrive integration works flawlessly.',
+      integration: 'Pipedrive'
+    },
+    {
+      name: 'Emily Watson',
+      role: 'Founder',
+      company: 'StartupBoost',
+      avatar: '👩‍🚀',
+      quote: 'As a co-creator, I helped shape the Zoho integration. Now my entire sales process is automated.',
+      integration: 'Zoho CRM'
+    }
+  ];
+
+  if (loading) {
+    return (
+      <div className={`bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 rounded-2xl p-8 text-white ${className}`}>
+        <div className="animate-pulse space-y-6">
+          <div className="h-12 bg-white/10 rounded-lg"></div>
+          <div className="h-6 bg-white/10 rounded w-3/4"></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-32 bg-white/10 rounded-lg"></div>
+            <div className="h-32 bg-white/10 rounded-lg"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 rounded-2xl overflow-hidden ${className}`}>
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-48 translate-x-48"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-32 -translate-x-32"></div>
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+      </div>
+
+      <div className="relative z-10 p-8 text-white">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <Crown className="w-12 h-12 text-yellow-400 mr-4" />
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+              Co-Creator Program
+            </h1>
+          </div>
+          
+          <p className="text-xl md:text-2xl opacity-90 mb-6 max-w-3xl mx-auto">
+            Join 25 founding entrepreneurs who get lifetime access to our AI marketing platform + direct product influence + priority support
+          </p>
+          
+          <div className="bg-red-500/20 border border-red-400 rounded-lg p-4 max-w-lg mx-auto mb-6">
+            <div className="text-red-200 font-semibold">⚡ FOUNDER PRICING ENDS SOON</div>
+            <div className="text-sm text-red-300">Regular price increases to $2,000+ after founding phase</div>
+          </div>
+
+          {/* Real-time Seat Counter */}
+          {programStatus && (
+            <div className="inline-flex items-center space-x-4 mb-6">
+              <div className={`flex items-center px-6 py-3 rounded-full border-2 ${
+                getUrgencyLevel() === 'high' ? 'bg-red-500/20 border-red-400 text-red-200' :
+                getUrgencyLevel() === 'medium' ? 'bg-yellow-500/20 border-yellow-400 text-yellow-200' :
+                'bg-green-500/20 border-green-400 text-green-200'
+              }`}>
+                <Users className="w-5 h-5 mr-2" />
+                <span className="font-bold text-lg">{getUrgencyMessage()}</span>
+              </div>
+              
+              {isWebSocketConnected && (
+                <div className="flex items-center text-green-400 text-sm">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
+                  Live Updates
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Tiered Incentives Display */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center">
+            <Star className="w-6 h-6 text-yellow-400 mr-2" />
+            Exclusive Co-Creator Benefits
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {tieredIncentives.map((incentive, index) => (
+              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <div className="flex items-center mb-4">
+                  <incentive.icon className={`w-8 h-8 ${incentive.color} mr-3`} />
+                  <h3 className="text-lg font-bold">{incentive.tier}</h3>
+                </div>
+                
+                <ul className="space-y-2">
+                  {incentive.benefits.map((benefit, benefitIndex) => (
+                    <li key={benefitIndex} className="flex items-start text-sm opacity-90">
+                      <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 mr-2 flex-shrink-0" />
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Program Benefits and Feature Comparison */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-center mb-8">Co-Creator vs Standard Access</h2>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/20">
+                    <th className="text-left p-4 font-semibold">Feature</th>
+                    <th className="text-center p-4 font-semibold">Standard User</th>
+                    <th className="text-center p-4 font-semibold bg-gradient-to-r from-yellow-500/20 to-orange-500/20">
+                      <div className="flex items-center justify-center">
+                        <Crown className="w-5 h-5 text-yellow-400 mr-2" />
+                        Co-Creator
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { feature: 'Platform Access', standard: 'Monthly/Annual', coCreator: 'Lifetime' },
+                    { feature: 'CRM Integrations', standard: 'Basic Setup', coCreator: 'Priority Support' },
+                    { feature: 'Feature Requests', standard: 'Submit Only', coCreator: 'Vote & Influence' },
+                    { feature: 'Support Level', standard: 'Standard', coCreator: 'Direct Channel' },
+                    { feature: 'Beta Access', standard: '❌', coCreator: '✅ Early Access' },
+                    { feature: 'Recognition', standard: '❌', coCreator: '✅ Credits & Badge' },
+                    { feature: 'Community', standard: 'General', coCreator: 'Exclusive Group' },
+                    { feature: 'Pricing Protection', standard: '❌', coCreator: '✅ Grandfathered' }
+                  ].map((row, index) => (
+                    <tr key={index} className="border-b border-white/10 hover:bg-white/5">
+                      <td className="p-4 font-medium">{row.feature}</td>
+                      <td className="p-4 text-center opacity-70">{row.standard}</td>
+                      <td className="p-4 text-center font-semibold text-yellow-400">{row.coCreator}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Testimonials and Social Proof */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center">
+            <MessageCircle className="w-6 h-6 text-blue-400 mr-2" />
+            What Co-Creators Are Saying
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="flex items-center mb-4">
+                  <div className="text-3xl mr-3">{testimonial.avatar}</div>
+                  <div>
+                    <h4 className="font-bold">{testimonial.name}</h4>
+                    <p className="text-sm opacity-70">{testimonial.role}</p>
+                    <p className="text-sm opacity-70">{testimonial.company}</p>
+                  </div>
+                </div>
+                
+                <blockquote className="text-sm opacity-90 mb-4 italic">
+                  "{testimonial.quote}"
+                </blockquote>
+                
+                <div className="flex items-center text-xs">
+                  <Zap className="w-4 h-4 text-blue-400 mr-1" />
+                  <span className="text-blue-400 font-semibold">{testimonial.integration} Integration</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Call to Action */}
+        <div className="text-center">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20 max-w-md mx-auto mb-6">
+            <div className="flex items-center justify-center mb-4">
+              <Heart className="w-6 h-6 text-red-400 mr-2" />
+              <span className="text-lg font-semibold">One-Time Investment</span>
+            </div>
+            
+            <div className="text-sm opacity-70 line-through mb-1">Regular Price: $2,000+</div>
+            <div className="text-5xl font-bold mb-2 text-yellow-400">$497</div>
+            <div className="text-lg opacity-90 mb-2">Founding Member Price</div>
+            <div className="text-sm opacity-70 bg-red-500/20 px-3 py-1 rounded-full inline-block">
+              🔥 75% Founder Discount
+            </div>
+            <div className="text-xs opacity-60 mt-2">Pays for itself in first month</div>
+          </div>
+
+          <Button
+            variant="secondary"
+            size="lg"
+            className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black hover:from-yellow-300 hover:to-orange-300 font-bold text-lg px-12 py-4 mb-4"
+            icon={Crown}
+            iconPosition="left"
+            onClick={onJoinProgram}
+          >
+            Secure Your Co-Creator Spot
+          </Button>
+
+          <div className="flex items-center justify-center space-x-6 text-sm opacity-75">
+            <div className="flex items-center">
+              <Shield className="w-4 h-4 mr-1" />
+              30-day guarantee
+            </div>
+            <div className="flex items-center">
+              <TrendingUp className="w-4 h-4 mr-1" />
+              Lifetime ROI
+            </div>
+            <div className="flex items-center">
+              <Clock className="w-4 h-4 mr-1" />
+              Limited time
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CoCreatorProgramInterface;

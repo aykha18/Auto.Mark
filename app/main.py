@@ -19,6 +19,7 @@ from app.core.database import create_tables, get_db
 from app.core.cache import setup_redis
 from app.api.v1.api import api_router
 from app.core.circuit_breaker import setup_circuit_breakers
+from app.core.security_middleware import setup_security_middleware
 
 
 # Setup structured logging
@@ -79,14 +80,13 @@ def create_application() -> FastAPI:
     )
 
     # Set up CORS
-    if settings.api.cors_origins:
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=settings.api.cors_origins,
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.api.cors_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+    )
 
     # Add trusted host middleware
     if not settings.is_development():
@@ -94,6 +94,9 @@ def create_application() -> FastAPI:
             TrustedHostMiddleware,
             allowed_hosts=settings.api.allowed_hosts,
         )
+    
+    # Setup security middleware
+    setup_security_middleware(app)
 
     # Global exception handler
     @app.exception_handler(Exception)

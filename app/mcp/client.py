@@ -8,7 +8,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 import uuid
 
-from .types import MCPMessage, MCPTool, ToolCall, ToolResult, ToolDiscoveryRequest, ToolDiscoveryResponse
+from .mcp_types import MCPMessage, MCPTool, ToolCall, ToolResult, ToolDiscoveryRequest, ToolDiscoveryResponse
 from .tools import get_tool_registry
 from .transport import get_mcp_transport
 

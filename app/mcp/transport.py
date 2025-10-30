@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional, Callable
 from datetime import datetime
 import uuid
 
-from .types import MCPMessage, ToolCall, ToolResult
+from .mcp_types import MCPMessage, ToolCall, ToolResult
 from .monitoring import monitor_tool_call_start, monitor_tool_call_end, monitor_message_routed
 
 logger = logging.getLogger(__name__)

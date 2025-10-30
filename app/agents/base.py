@@ -19,6 +19,7 @@ from langchain_openai import ChatOpenAI
 from app.agents.state import MarketingAgentState, update_state_timestamp
 from app.agents.monitoring import record_agent_execution
 from app.config import settings
+from app.mcp import AgentMCPServer, AgentMCPClient, MCPTool
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,11 @@ class BaseAgent(ABC):
         # Create agent using Runnable interface
         self.agent = self.create_agent()
 
-        logger.info(f"Initialized agent: {self.name}")
+        # Initialize MCP capabilities
+        self.mcp_server = AgentMCPServer(self.name, self)
+        self.mcp_client = AgentMCPClient(self.name)
+
+        logger.info(f"Initialized agent: {self.name} with MCP capabilities")
 
     async def execute(self, state: MarketingAgentState) -> MarketingAgentState:
         """Execute agent task with state management"""
@@ -142,3 +147,115 @@ class BaseAgent(ABC):
         """Hook called after agent execution"""
         self.log_agent_activity("post_execute", {"state_keys": list(state.keys())})
         return state
+
+    # MCP-related methods
+    async def expose_capabilities(self) -> int:
+        """Expose agent capabilities as MCP tools"""
+        capabilities = self._get_agent_capabilities()
+        registered_count = await self.mcp_server.register_tools(capabilities)
+        logger.info(f"Agent {self.name} exposed {registered_count} capabilities via MCP")
+        return registered_count
+
+    def _get_agent_capabilities(self) -> List[MCPTool]:
+        """Get agent capabilities as MCP tools"""
+        return [
+            MCPTool(
+                name=f"{self.name}_execute",
+                description=f"Execute {self.name} agent with campaign state",
+                parameters={
+                    "type": "object",
+                    "properties": {
+                        "campaign_config": {"type": "object"},
+                        "target_audience": {"type": "object"},
+                        "current_state": {"type": "object"}
+                    },
+                    "required": ["campaign_config"]
+                },
+                handler=self._mcp_execute_handler,
+                agent_name=self.name
+            ),
+            MCPTool(
+                name=f"{self.name}_status",
+                description=f"Get {self.name} agent status and capabilities",
+                parameters={
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                },
+                handler=self._mcp_status_handler,
+                agent_name=self.name
+            ),
+            MCPTool(
+                name=f"{self.name}_results",
+                description=f"Get {self.name} agent execution results",
+                parameters={
+                    "type": "object",
+                    "properties": {
+                        "campaign_id": {"type": "string"}
+                    },
+                    "required": []
+                },
+                handler=self._mcp_results_handler,
+                agent_name=self.name
+            )
+        ]
+
+    async def _mcp_execute_handler(self, **kwargs) -> Dict[str, Any]:
+        """MCP handler for agent execution"""
+        try:
+            # Create a basic state from parameters
+            campaign_config = kwargs.get("campaign_config", {})
+            target_audience = kwargs.get("target_audience", {})
+            current_state = kwargs.get("current_state", {})
+
+            # Merge into a state object
+            state = MarketingAgentState(
+                campaign_config=campaign_config,
+                target_audience=target_audience,
+                current_agent=self.name,
+                **current_state
+            )
+
+            # Execute the agent
+            result_state = await self.execute(state)
+
+            return {
+                "success": True,
+                "result": dict(result_state),
+                "agent": self.name
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "agent": self.name
+            }
+
+    async def _mcp_status_handler(self, **kwargs) -> Dict[str, Any]:
+        """MCP handler for agent status"""
+        return {
+            "agent_name": self.name,
+            "status": "active",
+            "capabilities": [tool.name for tool in self._get_agent_capabilities()],
+            "tools_count": len(self.tools),
+            "mcp_enabled": True
+        }
+
+    async def _mcp_results_handler(self, **kwargs) -> Dict[str, Any]:
+        """MCP handler for agent results"""
+        campaign_id = kwargs.get("campaign_id")
+        # In a real implementation, this would query results by campaign_id
+        return {
+            "agent_name": self.name,
+            "campaign_id": campaign_id,
+            "results_available": False,
+            "message": "Results query not implemented yet"
+        }
+
+    async def call_agent_tool(self, target_agent: str, tool_name: str, **kwargs) -> Any:
+        """Call a tool from another agent via MCP"""
+        return await self.mcp_client.call_agent_tool(target_agent, tool_name, **kwargs)
+
+    async def discover_agent_tools(self, agent_name: str) -> List[MCPTool]:
+        """Discover tools available from another agent"""
+        return await self.mcp_client.get_agent_tools(agent_name)

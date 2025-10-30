@@ -154,3 +154,109 @@ class Event(Base, TimestampMixin):
                 **kwargs
             }
         )
+
+    @classmethod
+    def create_assessment_event(
+        cls,
+        event_name: str,
+        lead_id: Optional[int] = None,
+        assessment_id: Optional[int] = None,
+        user_id: Optional[int] = None,
+        anonymous_id: Optional[str] = None,
+        session_id: Optional[str] = None,
+        **kwargs
+    ):
+        """Create an assessment-related event"""
+        return cls(
+            event_type="assessment",
+            event_name=event_name,
+            user_id=user_id,
+            anonymous_id=anonymous_id,
+            session_id=session_id,
+            properties={
+                "lead_id": lead_id,
+                "assessment_id": assessment_id,
+                **kwargs
+            }
+        )
+
+    @classmethod
+    def create_crm_integration_event(
+        cls,
+        event_name: str,
+        crm_type: Optional[str] = None,
+        integration_id: Optional[int] = None,
+        lead_id: Optional[int] = None,
+        user_id: Optional[int] = None,
+        anonymous_id: Optional[str] = None,
+        session_id: Optional[str] = None,
+        **kwargs
+    ):
+        """Create a CRM integration-related event"""
+        return cls(
+            event_type="crm_integration",
+            event_name=event_name,
+            user_id=user_id,
+            anonymous_id=anonymous_id,
+            session_id=session_id,
+            properties={
+                "crm_type": crm_type,
+                "integration_id": integration_id,
+                "lead_id": lead_id,
+                **kwargs
+            }
+        )
+
+    @classmethod
+    def create_co_creator_event(
+        cls,
+        event_name: str,
+        program_id: Optional[int] = None,
+        payment_amount: Optional[float] = None,
+        lead_id: Optional[int] = None,
+        user_id: Optional[int] = None,
+        anonymous_id: Optional[str] = None,
+        session_id: Optional[str] = None,
+        **kwargs
+    ):
+        """Create a co-creator program-related event"""
+        return cls(
+            event_type="co_creator",
+            event_name=event_name,
+            user_id=user_id,
+            anonymous_id=anonymous_id,
+            session_id=session_id,
+            properties={
+                "program_id": program_id,
+                "payment_amount": payment_amount,
+                "lead_id": lead_id,
+                **kwargs
+            }
+        )
+
+    @classmethod
+    def create_landing_page_event(
+        cls,
+        event_name: str,
+        page_section: Optional[str] = None,
+        cta_clicked: Optional[str] = None,
+        lead_id: Optional[int] = None,
+        user_id: Optional[int] = None,
+        anonymous_id: Optional[str] = None,
+        session_id: Optional[str] = None,
+        **kwargs
+    ):
+        """Create a landing page-related event"""
+        return cls(
+            event_type="landing_page",
+            event_name=event_name,
+            user_id=user_id,
+            anonymous_id=anonymous_id,
+            session_id=session_id,
+            properties={
+                "page_section": page_section,
+                "cta_clicked": cta_clicked,
+                "lead_id": lead_id,
+                **kwargs
+            }
+        )

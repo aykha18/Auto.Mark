@@ -3,7 +3,7 @@ Lead model for managing marketing leads and prospects
 """
 
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from sqlalchemy import Column, Integer, String, DateTime, Text, JSON, Float, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -62,6 +62,31 @@ class Lead(Base, TimestampMixin):
     conversion_value = Column(Float, default=0.0)
     conversion_type = Column(String(100))  # sale, demo, trial, etc.
 
+    # Assessment and CRM integration data
+    preferred_crm = Column(String(100), index=True)  # Preferred CRM system
+    crm_integration_readiness = Column(Float, default=0.0, index=True)  # 0-100 scale
+    technical_capability_score = Column(Float, default=0.0)  # Technical readiness score
+    business_maturity_score = Column(Float, default=0.0)  # Business maturity score
+    investment_capacity_score = Column(Float, default=0.0)  # Investment capacity score
+    automation_gaps_score = Column(Float, default=0.0)  # Automation opportunity score
+    data_quality_score = Column(Float, default=0.0)  # Data quality score
+    
+    # Lead segmentation
+    readiness_segment = Column(String(50), index=True)  # cold, warm, hot
+    segment_confidence = Column(Float, default=0.0)  # Confidence in segmentation
+    last_scored_at = Column(DateTime, index=True)  # When lead was last scored
+    
+    # CRM preferences and capabilities
+    current_crm_system = Column(String(100), index=True)  # Current CRM in use
+    crm_usage_level = Column(String(50))  # basic, intermediate, advanced
+    has_api_access = Column(Boolean, default=False)  # API access availability
+    integration_complexity = Column(String(50))  # easy, medium, advanced
+    
+    # Business context
+    monthly_lead_volume = Column(String(50))  # Lead volume range
+    automation_goals = Column(JSON, default=list)  # Primary automation goals
+    marketing_automation_level = Column(String(50))  # Current automation level
+    
     # Additional metadata
     tags = Column(JSON, default=list)  # custom tags for segmentation
     custom_fields = Column(JSON, default=dict)  # extensible custom data
@@ -69,6 +94,8 @@ class Lead(Base, TimestampMixin):
 
     # Relationships
     campaign = relationship("Campaign", back_populates="leads")
+    assessments = relationship("Assessment", back_populates="lead", cascade="all, delete-orphan")
+    chat_sessions = relationship("ChatSession", back_populates="lead", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Lead(id={self.id}, email='{self.email}', company='{self.company}', score={self.score:.2f})>"
@@ -147,15 +174,131 @@ class Lead(Base, TimestampMixin):
 
     def add_tag(self, tag: str):
         """Add a tag to the lead"""
+        if not self.tags:
+            self.tags = []
         if tag not in self.tags:
             self.tags.append(tag)
             self.updated_at = datetime.utcnow()
 
     def remove_tag(self, tag: str):
         """Remove a tag from the lead"""
-        if tag in self.tags:
+        if self.tags and tag in self.tags:
             self.tags.remove(tag)
             self.updated_at = datetime.utcnow()
+    
+    def update_assessment_data(self, assessment_data: Dict[str, Any], 
+                             factor_scores: Dict[str, float],
+                             segment: str, confidence: float):
+        """Update lead with assessment data and scoring results"""
+        # Update CRM information
+        self.current_crm_system = assessment_data.get("crm_system")
+        self.preferred_crm = assessment_data.get("crm_system")
+        self.crm_usage_level = assessment_data.get("crm_usage_level")
+        self.has_api_access = "Full API access" in assessment_data.get("api_access", "")
+        
+        # Update business context
+        self.monthly_lead_volume = assessment_data.get("monthly_leads")
+        self.marketing_automation_level = assessment_data.get("marketing_automation")
+        
+        # Store automation goals
+        goals = []
+        if assessment_data.get("automation_goals"):
+            goals.append(assessment_data["automation_goals"])
+        if assessment_data.get("lead_nurturing"):
+            goals.append(f"Current nurturing: {assessment_data['lead_nurturing']}")
+        self.automation_goals = goals
+        
+        # Update factor scores
+        self.crm_integration_readiness = factor_scores.get("crm_integration_readiness", 0.0)
+        self.technical_capability_score = factor_scores.get("technical_capability", 0.0)
+        self.business_maturity_score = factor_scores.get("business_maturity", 0.0)
+        self.investment_capacity_score = factor_scores.get("investment_capacity", 0.0)
+        self.automation_gaps_score = factor_scores.get("automation_gaps", 0.0)
+        self.data_quality_score = factor_scores.get("data_quality", 0.0)
+        
+        # Update segmentation
+        self.readiness_segment = segment
+        self.segment_confidence = confidence
+        self.last_scored_at = datetime.utcnow()
+        
+        # Determine integration complexity
+        complexity_map = {
+            "neuracrm": "easy",
+            "hubspot": "easy", 
+            "pipedrive": "easy",
+            "zoho": "medium",
+            "monday": "medium",
+            "salesforce": "advanced",
+            "other": "advanced",
+            "none": "easy"
+        }
+        self.integration_complexity = complexity_map.get(self.current_crm_system, "medium")
+        
+        # Add relevant tags
+        self.add_tag(f"segment_{segment}")
+        self.add_tag(f"crm_{self.current_crm_system}")
+        if self.crm_integration_readiness >= 80:
+            self.add_tag("high_crm_readiness")
+        if self.technical_capability_score >= 70:
+            self.add_tag("tech_capable")
+        if self.investment_capacity_score >= 60:
+            self.add_tag("budget_ready")
+        
+        self.updated_at = datetime.utcnow()
+    
+    def get_crm_readiness_summary(self) -> Dict[str, Any]:
+        """Get a summary of CRM integration readiness"""
+        return {
+            "overall_readiness": self.crm_integration_readiness,
+            "segment": self.readiness_segment,
+            "confidence": self.segment_confidence,
+            "current_crm": self.current_crm_system,
+            "preferred_crm": self.preferred_crm,
+            "integration_complexity": self.integration_complexity,
+            "has_api_access": self.has_api_access,
+            "factor_scores": {
+                "crm_integration": self.crm_integration_readiness,
+                "technical_capability": self.technical_capability_score,
+                "business_maturity": self.business_maturity_score,
+                "investment_capacity": self.investment_capacity_score,
+                "automation_gaps": self.automation_gaps_score,
+                "data_quality": self.data_quality_score
+            },
+            "last_scored": self.last_scored_at
+        }
+    
+    def is_co_creator_qualified(self) -> bool:
+        """Check if lead qualifies for co-creator program (warm or hot)"""
+        return self.readiness_segment in ["warm", "hot"] and self.crm_integration_readiness >= 41
+    
+    def is_priority_lead(self) -> bool:
+        """Check if this is a priority lead (hot segment)"""
+        return self.readiness_segment == "hot" and self.crm_integration_readiness >= 71
+    
+    def needs_nurturing(self) -> bool:
+        """Check if lead needs nurturing (cold segment)"""
+        return self.readiness_segment == "cold" or self.crm_integration_readiness <= 40
+    
+    def get_recommended_next_steps(self) -> List[str]:
+        """Get recommended next steps based on lead segment"""
+        if self.is_priority_lead():
+            return [
+                "Book priority demo with founder",
+                "Discuss partnership opportunities",
+                "Fast-track CRM integration setup"
+            ]
+        elif self.is_co_creator_qualified():
+            return [
+                "Invite to Co-Creator Program",
+                "Provide guided integration setup",
+                "Offer personalized implementation support"
+            ]
+        else:
+            return [
+                "Send CRM integration strategy guide",
+                "Schedule consultation call",
+                "Provide foundation building resources"
+            ]
 
     @classmethod
     def create_from_dict(cls, data: Dict[str, Any]) -> 'Lead':

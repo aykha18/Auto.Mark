@@ -2,25 +2,24 @@
 MCP Type Definitions for AI Marketing Agents
 """
 
-from typing import Dict, Any, Optional, List
-from dataclasses import dataclass
+# Rename this file to avoid conflict with built-in types module
 from datetime import datetime
 
 
-@dataclass
 class MCPMessage:
     """MCP message format for inter-agent communication"""
 
-    message_id: str
-    sender: str
-    receiver: str
-    message_type: str  # "tool_call", "tool_result", "tool_list", "error"
-    payload: Dict[str, Any]
-    timestamp: datetime
-    correlation_id: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    def __init__(self, message_id, sender, receiver, message_type, payload, timestamp, correlation_id=None, metadata=None):
+        self.message_id = message_id
+        self.sender = sender
+        self.receiver = receiver
+        self.message_type = message_type  # "tool_call", "tool_result", "tool_list", "error"
+        self.payload = payload
+        self.timestamp = timestamp
+        self.correlation_id = correlation_id
+        self.metadata = metadata
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self):
         """Convert to dictionary for serialization"""
         return {
             "message_id": self.message_id,
@@ -34,7 +33,7 @@ class MCPMessage:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'MCPMessage':
+    def from_dict(cls, data):
         """Create from dictionary"""
         return cls(
             message_id=data["message_id"],
@@ -48,16 +47,16 @@ class MCPMessage:
         )
 
 
-@dataclass
 class ToolCall:
     """Represents a tool call request"""
 
-    tool_name: str
-    parameters: Dict[str, Any]
-    call_id: str
-    timeout: Optional[int] = None  # seconds
+    def __init__(self, tool_name, parameters, call_id, timeout=None):
+        self.tool_name = tool_name
+        self.parameters = parameters
+        self.call_id = call_id
+        self.timeout = timeout  # seconds
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self):
         return {
             "tool_name": self.tool_name,
             "parameters": self.parameters,
@@ -66,18 +65,18 @@ class ToolCall:
         }
 
 
-@dataclass
 class ToolResult:
     """Represents a tool call result"""
 
-    call_id: str
-    success: bool
-    result: Any
-    error: Optional[str] = None
-    execution_time: Optional[float] = None
-    metadata: Optional[Dict[str, Any]] = None
+    def __init__(self, call_id, success, result, error=None, execution_time=None, metadata=None):
+        self.call_id = call_id
+        self.success = success
+        self.result = result
+        self.error = error
+        self.execution_time = execution_time
+        self.metadata = metadata
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self):
         return {
             "call_id": self.call_id,
             "success": self.success,
@@ -88,19 +87,19 @@ class ToolResult:
         }
 
 
-@dataclass
 class MCPTool:
     """MCP tool definition"""
 
-    name: str
-    description: str
-    parameters: Dict[str, Any]  # JSON schema for parameters
-    handler: callable
-    agent_name: str
-    version: str = "1.0.0"
-    metadata: Optional[Dict[str, Any]] = None
+    def __init__(self, name, description, parameters, handler=None, agent_name="", version="1.0.0", metadata=None):
+        self.name = name
+        self.description = description
+        self.parameters = parameters  # JSON schema for parameters
+        self.handler = handler
+        self.agent_name = agent_name
+        self.version = version
+        self.metadata = metadata
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self):
         return {
             "name": self.name,
             "description": self.description,
@@ -110,7 +109,7 @@ class MCPTool:
             "metadata": self.metadata or {}
         }
 
-    def validate_parameters(self, params: Dict[str, Any]) -> bool:
+    def validate_parameters(self, params):
         """Basic parameter validation"""
         # Simple validation - can be enhanced with JSON schema validation
         required_params = self.parameters.get("required", [])
@@ -120,26 +119,26 @@ class MCPTool:
         return True
 
 
-@dataclass
 class ToolDiscoveryRequest:
     """Request for tool discovery"""
 
-    requester: str
-    agent_filter: Optional[str] = None  # Specific agent name
-    tool_filter: Optional[str] = None   # Specific tool name
-    category_filter: Optional[str] = None  # Tool category
+    def __init__(self, requester, agent_filter=None, tool_filter=None, category_filter=None):
+        self.requester = requester
+        self.agent_filter = agent_filter  # Specific agent name
+        self.tool_filter = tool_filter   # Specific tool name
+        self.category_filter = category_filter  # Tool category
 
 
-@dataclass
 class ToolDiscoveryResponse:
     """Response to tool discovery request"""
 
-    requester: str
-    tools: List[MCPTool]
-    timestamp: datetime
-    total_count: int
+    def __init__(self, requester, tools, timestamp, total_count):
+        self.requester = requester
+        self.tools = tools
+        self.timestamp = timestamp
+        self.total_count = total_count
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self):
         return {
             "requester": self.requester,
             "tools": [tool.to_dict() for tool in self.tools],

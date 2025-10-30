@@ -27,10 +27,23 @@ class Campaign(Base, TimestampMixin):
     status = Column(String(50), default="draft")  # draft, active, paused, completed, failed
 
     # Campaign configuration
-    campaign_type = Column(String(100), nullable=False)  # lead_generation, content_creation, full_funnel
+    campaign_type = Column(String(100), nullable=False)  # lead_generation, content_creation, full_funnel, landing_page
     target_audience = Column(JSON, nullable=False, default=dict)
     content_requirements = Column(JSON, default=dict)
     ad_platforms = Column(JSON, default=list)  # ["google_ads", "linkedin", "facebook"]
+    
+    # Landing page specific fields
+    landing_page_url = Column(String(500))  # URL of the landing page
+    landing_page_variant = Column(String(100))  # A/B test variant identifier
+    crm_integration_focus = Column(String(100))  # Primary CRM integration being promoted
+    assessment_completion_target = Column(Float, default=80.0)  # Target completion rate %
+    co_creator_conversion_target = Column(Float, default=35.0)  # Target conversion rate %
+    
+    # Landing page performance metrics
+    landing_page_metrics = Column(JSON, default=dict)  # Landing page specific KPIs
+    assessment_metrics = Column(JSON, default=dict)  # Assessment completion and scoring metrics
+    crm_engagement_metrics = Column(JSON, default=dict)  # CRM integration engagement tracking
+    conversion_funnel_metrics = Column(JSON, default=dict)  # Funnel analysis data
 
     # Budget and spending
     budget = Column(Float, default=0.0)
@@ -202,3 +215,103 @@ class Campaign(Base, TimestampMixin):
         except ValueError:
             # Current agent not in sequence
             pass
+
+    def update_landing_page_metrics(self, metrics: Dict[str, Any]):
+        """Update landing page specific metrics"""
+        if not self.landing_page_metrics:
+            self.landing_page_metrics = {}
+        
+        self.landing_page_metrics.update(metrics)
+        self.updated_at = datetime.utcnow()
+
+    def update_assessment_metrics(self, metrics: Dict[str, Any]):
+        """Update assessment completion and scoring metrics"""
+        if not self.assessment_metrics:
+            self.assessment_metrics = {}
+        
+        self.assessment_metrics.update(metrics)
+        self.updated_at = datetime.utcnow()
+
+    def update_crm_engagement_metrics(self, metrics: Dict[str, Any]):
+        """Update CRM integration engagement metrics"""
+        if not self.crm_engagement_metrics:
+            self.crm_engagement_metrics = {}
+        
+        self.crm_engagement_metrics.update(metrics)
+        self.updated_at = datetime.utcnow()
+
+    def update_conversion_funnel_metrics(self, metrics: Dict[str, Any]):
+        """Update conversion funnel analysis metrics"""
+        if not self.conversion_funnel_metrics:
+            self.conversion_funnel_metrics = {}
+        
+        self.conversion_funnel_metrics.update(metrics)
+        self.updated_at = datetime.utcnow()
+
+    def get_landing_page_performance_summary(self) -> Dict[str, Any]:
+        """Get a summary of landing page performance"""
+        return {
+            "campaign_id": self.campaign_id,
+            "campaign_name": self.name,
+            "campaign_type": self.campaign_type,
+            "landing_page_url": self.landing_page_url,
+            "variant": self.landing_page_variant,
+            "crm_focus": self.crm_integration_focus,
+            "targets": {
+                "assessment_completion": self.assessment_completion_target,
+                "co_creator_conversion": self.co_creator_conversion_target
+            },
+            "metrics": {
+                "landing_page": self.landing_page_metrics or {},
+                "assessment": self.assessment_metrics or {},
+                "crm_engagement": self.crm_engagement_metrics or {},
+                "conversion_funnel": self.conversion_funnel_metrics or {}
+            },
+            "overall_performance": self.performance_metrics or {},
+            "status": self.status,
+            "duration_hours": self.duration,
+            "roi": self.roi
+        }
+
+    @property
+    def is_landing_page_campaign(self) -> bool:
+        """Check if this is a landing page campaign"""
+        return self.campaign_type == "landing_page"
+
+    def calculate_assessment_completion_rate(self) -> float:
+        """Calculate assessment completion rate"""
+        if not self.assessment_metrics:
+            return 0.0
+        
+        started = self.assessment_metrics.get("assessments_started", 0)
+        completed = self.assessment_metrics.get("assessments_completed", 0)
+        
+        if started == 0:
+            return 0.0
+        
+        return (completed / started) * 100
+
+    def calculate_co_creator_conversion_rate(self) -> float:
+        """Calculate co-creator program conversion rate"""
+        if not self.conversion_funnel_metrics:
+            return 0.0
+        
+        qualified_leads = self.conversion_funnel_metrics.get("qualified_leads", 0)
+        co_creator_conversions = self.conversion_funnel_metrics.get("co_creator_conversions", 0)
+        
+        if qualified_leads == 0:
+            return 0.0
+        
+        return (co_creator_conversions / qualified_leads) * 100
+
+    def is_meeting_targets(self) -> Dict[str, bool]:
+        """Check if campaign is meeting its targets"""
+        assessment_rate = self.calculate_assessment_completion_rate()
+        conversion_rate = self.calculate_co_creator_conversion_rate()
+        
+        return {
+            "assessment_completion": assessment_rate >= self.assessment_completion_target,
+            "co_creator_conversion": conversion_rate >= self.co_creator_conversion_target,
+            "overall": (assessment_rate >= self.assessment_completion_target and 
+                       conversion_rate >= self.co_creator_conversion_target)
+        }

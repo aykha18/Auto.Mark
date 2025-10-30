@@ -7,7 +7,7 @@ import logging
 from typing import Dict, List, Optional, Any, Callable
 from datetime import datetime
 
-from .types import MCPTool, ToolDiscoveryRequest, ToolDiscoveryResponse
+from .mcp_types import MCPTool, ToolDiscoveryRequest, ToolDiscoveryResponse
 from .monitoring import monitor_discovery_request
 
 logger = logging.getLogger(__name__)

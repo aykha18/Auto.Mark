@@ -9,6 +9,8 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 
+from app.mcp import get_mcp_transport, MCPMessage
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,14 +71,53 @@ MESSAGE_TYPES = {
 
 
 class AgentCommunicator:
-    """Handles inter-agent communication"""
+    """Handles inter-agent communication with MCP support"""
 
     def __init__(self):
         self.message_queue = asyncio.Queue()
         self.active_conversations: Dict[str, List[AgentMessage]] = {}
         self.message_handlers: Dict[str, callable] = {}
 
-        logger.info("Agent Communicator initialized")
+        # MCP integration
+        self.mcp_transport = get_mcp_transport()
+        self._setup_mcp_handlers()
+
+        logger.info("Agent Communicator initialized with MCP support")
+
+    def _setup_mcp_handlers(self):
+        """Setup MCP message handlers"""
+        # Bridge MCP messages to agent communication
+        self.mcp_transport.register_handler("tool_call", self._handle_mcp_tool_call)
+        self.mcp_transport.register_handler("tool_result", self._handle_mcp_tool_result)
+
+    async def _handle_mcp_tool_call(self, mcp_message: MCPMessage):
+        """Handle MCP tool calls and convert to agent messages"""
+        try:
+            # Convert MCP message to agent message for compatibility
+            agent_message = AgentMessage(
+                sender=mcp_message.sender,
+                receiver=mcp_message.receiver,
+                message_type="mcp_tool_call",
+                payload=mcp_message.payload,
+                correlation_id=mcp_message.correlation_id
+            )
+            await self.send_message(agent_message)
+        except Exception as e:
+            logger.error(f"Error handling MCP tool call: {e}")
+
+    async def _handle_mcp_tool_result(self, mcp_message: MCPMessage):
+        """Handle MCP tool results"""
+        try:
+            agent_message = AgentMessage(
+                sender=mcp_message.sender,
+                receiver=mcp_message.receiver,
+                message_type="mcp_tool_result",
+                payload=mcp_message.payload,
+                correlation_id=mcp_message.correlation_id
+            )
+            await self.send_message(agent_message)
+        except Exception as e:
+            logger.error(f"Error handling MCP tool result: {e}")
 
     async def send_message(self, message: AgentMessage) -> None:
         """Send message to another agent"""
@@ -290,3 +331,32 @@ async def request_campaign_data(from_agent: str, campaign_id: str) -> str:
         data_type='campaign_data',
         filters={'campaign_id': campaign_id}
     )
+
+
+# MCP-enhanced communication functions
+async def call_agent_tool_via_mcp(
+    from_agent: str,
+    to_agent: str,
+    tool_name: str,
+    **kwargs
+) -> Dict[str, Any]:
+    """Call a tool from another agent using MCP"""
+    communicator = get_communicator()
+    return await communicator.send_mcp_tool_call(
+        from_agent=from_agent,
+        to_agent=to_agent,
+        tool_name=tool_name,
+        parameters=kwargs
+    )
+
+
+async def discover_agent_tools_via_mcp(requester: str, agent_name: Optional[str] = None) -> Dict[str, Any]:
+    """Discover tools available from agents using MCP"""
+    communicator = get_communicator()
+    return await communicator.discover_agent_tools(requester, agent_name)
+
+
+async def broadcast_agent_capabilities(agent_name: str, capabilities: List[str]):
+    """Broadcast agent MCP capabilities to the network"""
+    communicator = get_communicator()
+    await communicator.broadcast_mcp_capabilities(agent_name, capabilities)
