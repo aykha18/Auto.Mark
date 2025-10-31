@@ -26,11 +26,16 @@ async def lifespan(app: FastAPI):
     print("Starting Unitasa application...")
     try:
         print("Attempting database connection...")
+        print(f"Database URL: {engine.url}")
         async with engine.begin() as conn:
+            print("Creating database tables...")
             await conn.run_sync(Base.metadata.create_all)
+            print(f"Created tables: {list(Base.metadata.tables.keys())}")
         print("Database tables initialized successfully")
     except Exception as e:
         print(f"Database connection failed during startup: {e}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         print("Application will continue without database initialization")
 
     print("Application startup complete")
