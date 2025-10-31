@@ -70,14 +70,14 @@ const FounderStorySection: React.FC = () => {
       id: '4',
       date: 'October 2023',
       title: 'Full Marketing Automation Platform',
-      description: 'Launched Auto.Mark with NeuraCRM built-in. 24/7 lead nurturing, predictive analytics, and seamless CRM connectivity.',
+      description: 'Launched Unitasa with NeuraCRM built-in. 24/7 lead nurturing, predictive analytics, and seamless CRM connectivity.',
       metrics: {
         leadsGenerated: 847,
         crmIntegrations: 8,
         automationLevel: 94,
         timesSaved: 35,
       },
-      technologies: ['Auto.Mark Platform', 'NeuraCRM', 'AI Agents', 'Real-time Analytics'],
+      technologies: ['Unitasa Platform', 'NeuraCRM', 'AI Agents', 'Real-time Analytics'],
       challenge: 'Scaling to multiple businesses, maintaining reliability',
       solution: 'Co-creator program for collaborative development',
     },
@@ -102,7 +102,7 @@ const FounderStorySection: React.FC = () => {
             From Zero to Automated Lead Generation
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            The journey of building Auto.Mark: How one founder solved the CRM integration nightmare 
+            The journey of building Unitasa: How one founder solved the CRM integration nightmare 
             and created a platform that works with any system.
           </p>
         </div>
@@ -228,7 +228,7 @@ const FounderStorySection: React.FC = () => {
                 Just intelligent automation that grows with you."
               </p>
               <div className="mt-4 text-right">
-                <span className="text-sm text-gray-600 italic">- Founder, Auto.Mark</span>
+                <span className="text-sm text-gray-600 italic">- Founder, Unitasa</span>
               </div>
             </Card>
           </div>

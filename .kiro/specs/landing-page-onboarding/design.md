@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Landing Page and Onboarding System is a conversion-focused web application that positions Auto.Mark as an AI Marketing Automation Platform with plug-and-play CRM integrations, built by a founder who automated lead generation from zero. The system showcases NeuraCRM as the default built-in CRM while highlighting seamless connectivity to major CRMs (Pipedrive, Zoho, HubSpot, Monday, Salesforce). The platform offers an exclusive co-creator program (25 seats) with lifetime access and integration support, demonstrating automation capabilities through the user experience itself.
+The Landing Page and Onboarding System is a conversion-focused web application that positions Unitasa as an AI Marketing Automation Platform with plug-and-play CRM integrations, built by a founder who automated lead generation from zero. The system showcases NeuraCRM as the default built-in CRM while highlighting seamless connectivity to major CRMs (Pipedrive, Zoho, HubSpot, Monday, Salesforce). The platform offers an exclusive co-creator program (25 seats) with lifetime access and integration support, demonstrating automation capabilities through the user experience itself.
 
 ## Architecture
 
@@ -16,7 +16,7 @@ graph TB
     A --> E[Conversational Agent]
     D --> F[Lead Scoring Engine]
     F --> G[NeuraCRM System]
-    F --> H[Auto.Mark Platform]
+    F --> H[Unitasa Platform]
     C --> I[CRM Integration Framework]
     I --> J[External CRM APIs]
     A --> K[Payment Gateway]
@@ -44,10 +44,10 @@ graph TB
 
 ### 1. Landing Page Frontend
 
-**Purpose**: Position Auto.Mark as AI Marketing Automation Platform with comprehensive CRM integration capabilities
+**Purpose**: Position Unitasa as AI Marketing Automation Platform with comprehensive CRM integration capabilities
 
 **Key Components**:
-- Hero Section positioning Auto.Mark as AI Marketing Automation Platform
+- Hero Section positioning Unitasa as AI Marketing Automation Platform
 - Integration Marketplace showcase with major CRM logos and connection status
 - NeuraCRM as default built-in option with "or connect your existing CRM"
 - Founder transformation story from zero to automated lead generation
@@ -145,7 +145,7 @@ interface CRMAssessmentResult {
 
 **Key Features**:
 - Natural language processing for visitor queries
-- Context-aware responses about NeuraCRM/Auto.Mark
+- Context-aware responses about NeuraCRM/Unitasa
 - Assessment guidance and support
 - Voice-to-text capability
 - Handoff to human support when needed
@@ -186,7 +186,7 @@ interface CRMAssessmentResult {
 5. Supporter badge and testimonial opt-in
 6. Priority support channel assignment
 
-**Integration with Auto.Mark Agents**:
+**Integration with Unitasa Agents**:
 - Exclusive Founding Users communication sequences
 - Roadmap update notifications
 - Feature voting reminders

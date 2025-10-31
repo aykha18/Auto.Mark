@@ -2,11 +2,11 @@
 
 ## Introduction
 
-This document outlines the requirements for implementing a conversion-focused landing page and onboarding system that positions Auto.Mark as an AI Marketing Automation Platform with plug-and-play CRM integrations, built by a founder who automated lead generation from zero. The system showcases NeuraCRM as the default built-in CRM while highlighting open connectivity to any CRM (Zoho, Monday, Pipedrive, HubSpot, Salesforce, etc). The platform aims to attract, qualify, and onboard 25 Founding Users through an AI Business Readiness Assessment, offering exclusive co-creator program benefits.
+This document outlines the requirements for implementing a conversion-focused landing page and onboarding system that positions Unitasa as an AI Marketing Automation Platform with plug-and-play CRM integrations, built by a founder who automated lead generation from zero. The system showcases NeuraCRM as the default built-in CRM while highlighting open connectivity to any CRM (Zoho, Monday, Pipedrive, HubSpot, Salesforce, etc). The platform aims to attract, qualify, and onboard 25 Founding Users through an AI Business Readiness Assessment, offering exclusive co-creator program benefits.
 
 ## Glossary
 
-- **Landing_Page_System**: The complete web application showcasing Auto.Mark as AI Marketing Automation Platform with CRM integration capabilities
+- **Landing_Page_System**: The complete web application showcasing Unitasa as AI Marketing Automation Platform with CRM integration capabilities
 - **Auto_Mark_Platform**: AI Marketing Automation Platform with plug-and-play integration layer for any CRM system
 - **NeuraCRM_System**: Default built-in CRM option with advanced AI capabilities for lead management
 - **Integration_Marketplace**: UI component allowing users to connect their existing CRM with 2-click setup (API Key/OAuth)
@@ -26,7 +26,7 @@ This document outlines the requirements for implementing a conversion-focused la
 
 #### Acceptance Criteria
 
-1. WHEN a visitor accesses the landing page, THE Landing_Page_System SHALL display Auto.Mark as an AI Marketing Automation Platform with plug-and-play CRM integration
+1. WHEN a visitor accesses the landing page, THE Landing_Page_System SHALL display Unitasa as an AI Marketing Automation Platform with plug-and-play CRM integration
 2. WHEN a visitor explores the platform, THE Landing_Page_System SHALL showcase NeuraCRM as the default built-in option while highlighting open connectivity to any CRM (Zoho, Monday, Pipedrive, HubSpot, Salesforce)
 3. WHEN a visitor views integrations, THE Landing_Page_System SHALL display the Integration Marketplace with 2-click CRM connection capabilities
 4. WHEN a visitor clicks the assessment CTA, THE Landing_Page_System SHALL present "Answer 10 questions to see how ready your business is for AI marketing automation with your current CRM"
@@ -75,7 +75,7 @@ This document outlines the requirements for implementing a conversion-focused la
 #### Acceptance Criteria
 
 1. WHEN a visitor accesses the landing page, THE Landing_Page_System SHALL display a conversational AI chat interface
-2. WHEN a visitor asks questions, THE Conversational_Agent SHALL provide relevant information about NeuraCRM, Auto.Mark, and the assessment process
+2. WHEN a visitor asks questions, THE Conversational_Agent SHALL provide relevant information about NeuraCRM, Unitasa, and the assessment process
 3. WHEN a visitor needs guidance, THE Conversational_Agent SHALL offer to help complete the assessment or navigate to relevant sections
 4. WHERE voice input is available, THE Conversational_Agent SHALL support voice-to-text interaction for accessibility
 5. WHEN the conversation indicates purchase intent, THE Conversational_Agent SHALL guide visitors to the early adopter program
@@ -118,7 +118,7 @@ This document outlines the requirements for implementing a conversion-focused la
 
 ### Requirement 9
 
-**User Story:** As a business owner with an existing CRM, I want to see exactly how Auto.Mark integrates with my current system, so that I can understand the connection process and automation capabilities without switching platforms.
+**User Story:** As a business owner with an existing CRM, I want to see exactly how Unitasa integrates with my current system, so that I can understand the connection process and automation capabilities without switching platforms.
 
 #### Acceptance Criteria
 
@@ -130,7 +130,7 @@ This document outlines the requirements for implementing a conversion-focused la
 
 ### Requirement 10
 
-**User Story:** As a developer or technical user, I want comprehensive integration documentation and support, so that I can successfully connect Auto.Mark with my CRM and customize the automation workflows.
+**User Story:** As a developer or technical user, I want comprehensive integration documentation and support, so that I can successfully connect Unitasa with my CRM and customize the automation workflows.
 
 #### Acceptance Criteria
 

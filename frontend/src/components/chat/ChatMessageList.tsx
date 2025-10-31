@@ -17,7 +17,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({ messages, isLoading }
               <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
             </svg>
           </div>
-          <h3 className="font-semibold text-gray-700 mb-2">Welcome to Auto.Mark!</h3>
+          <h3 className="font-semibold text-gray-700 mb-2">Welcome to Unitasa!</h3>
           <p className="text-sm text-gray-500 mb-4">
             I'm here to help you with CRM integrations and marketing automation questions.
           </p>
@@ -25,7 +25,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({ messages, isLoading }
             <div className="bg-gray-50 rounded-lg p-3 text-left">
               <p className="font-medium text-gray-700 mb-1">Try asking:</p>
               <ul className="text-gray-600 space-y-1">
-                <li>• "How does Auto.Mark integrate with Salesforce?"</li>
+                <li>• "How does Unitasa integrate with Salesforce?"</li>
                 <li>• "What CRM features do you support?"</li>
                 <li>• "Help me choose the right integration"</li>
                 <li>• "Tell me about the co-creator program"</li>

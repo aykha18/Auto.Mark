@@ -1,6 +1,6 @@
-# Auto.Mark Landing Page Frontend
+# Unitasa Landing Page Frontend
 
-React.js frontend application for the Auto.Mark AI Marketing Automation Platform landing page and onboarding system.
+React.js frontend application for the Unitasa Unified Marketing Intelligence Platform landing page and onboarding system.
 
 ## Features
 

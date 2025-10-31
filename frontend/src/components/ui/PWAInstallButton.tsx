@@ -57,7 +57,7 @@ const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ className = '' }) =
         transition-colors duration-200
         ${className}
       `}
-      aria-label="Install Auto.Mark as a Progressive Web App"
+      aria-label="Install Unitasa as a Progressive Web App"
     >
       <svg 
         className="w-4 h-4 mr-2" 

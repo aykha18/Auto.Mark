@@ -251,7 +251,7 @@ class CoCreatorProgramService:
                 "benefits": [
                     {
                         "title": "Lifetime Platform Access",
-                        "description": "Never lose access to Auto.Mark, regardless of future pricing changes",
+                        "description": "Never lose access to Unitasa, regardless of future pricing changes",
                         "icon": "infinity"
                     },
                     {

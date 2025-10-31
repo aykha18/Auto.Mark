@@ -35,7 +35,7 @@ root.render(
 // Register service worker for PWA features
 serviceWorker.register({
   onSuccess: () => {
-    console.log('Auto.Mark is now available offline!');
+    console.log('Unitasa is now available offline!');
   },
   onUpdate: () => {
     console.log('New version available! Please refresh to update.');

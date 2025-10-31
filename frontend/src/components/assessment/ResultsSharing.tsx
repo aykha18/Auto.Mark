@@ -42,7 +42,7 @@ const ResultsSharing: React.FC<ResultsSharingProps> = ({ result }) => {
 🔧 Current CRM: ${normalizedResult.currentCRM}
 💡 Key Insight: ${topRecommendation}
 
-Discover how Auto.Mark can automate your marketing with any CRM: ${generateShareableUrl()}
+Discover how Unitasa can automate your marketing with any CRM: ${generateShareableUrl()}
 
 #AIAutomation #CRMIntegration #MarketingTech`;
   };

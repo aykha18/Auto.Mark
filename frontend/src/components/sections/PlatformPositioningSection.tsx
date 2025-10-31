@@ -49,13 +49,13 @@ const PlatformPositioningSection: React.FC = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
             <Zap className="w-4 h-4 mr-2" />
-            Auto.Mark Platform
+            Unitasa Platform
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             AI Marketing Automation That Actually Works
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Stop juggling disconnected tools. Auto.Mark unifies your marketing stack with intelligent automation 
+            Stop juggling disconnected tools. Unitasa unifies your marketing stack with intelligent automation 
             that works with any CRM, scales with your business, and delivers measurable results.
           </p>
         </div>
@@ -87,7 +87,7 @@ const PlatformPositioningSection: React.FC = () => {
         {/* Platform Comparison */}
         <div className="bg-gray-50 rounded-2xl p-8">
           <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
-            Why Choose Auto.Mark Over Traditional Solutions?
+            Why Choose Unitasa Over Traditional Solutions?
           </h3>
           
           <div className="overflow-x-auto">
@@ -95,7 +95,7 @@ const PlatformPositioningSection: React.FC = () => {
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-4 px-4 font-semibold text-gray-900">Feature</th>
-                  <th className="text-center py-4 px-4 font-semibold text-primary-600">Auto.Mark</th>
+                  <th className="text-center py-4 px-4 font-semibold text-primary-600">Unitasa</th>
                   <th className="text-center py-4 px-4 font-semibold text-gray-500">Traditional Tools</th>
                   <th className="text-center py-4 px-4 font-semibold text-gray-500">Custom Development</th>
                 </tr>
@@ -157,7 +157,7 @@ const PlatformPositioningSection: React.FC = () => {
             Ready to Transform Your Marketing?
           </h3>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses that have automated their lead generation and scaled their growth with Auto.Mark.
+            Join thousands of businesses that have automated their lead generation and scaled their growth with Unitasa.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors">

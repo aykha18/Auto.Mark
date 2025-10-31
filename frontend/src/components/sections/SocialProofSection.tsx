@@ -10,7 +10,7 @@ const SocialProofSection: React.FC = () => {
       company: 'TechFlow Solutions',
       avatar: 'SC',
       rating: 5,
-      quote: 'Auto.Mark connected our HubSpot to AI automation in literally 2 clicks. We\'ve seen 340% increase in qualified leads and saved 25 hours per week on manual tasks.',
+      quote: 'Unitasa connected our HubSpot to AI automation in literally 2 clicks. We\'ve seen 340% increase in qualified leads and saved 25 hours per week on manual tasks.',
       metrics: {
         leadIncrease: '340%',
         timeSaved: '25h/week',
@@ -36,7 +36,7 @@ const SocialProofSection: React.FC = () => {
       company: 'ScaleUp Ventures',
       avatar: 'EW',
       rating: 5,
-      quote: 'We tried 5 different automation tools before Auto.Mark. This is the first one that actually works with our Zoho CRM without breaking our existing workflows.',
+      quote: 'We tried 5 different automation tools before Unitasa. This is the first one that actually works with our Zoho CRM without breaking our existing workflows.',
       metrics: {
         toolsReplaced: '5',
         setupTime: '15 min',
@@ -50,7 +50,7 @@ const SocialProofSection: React.FC = () => {
       icon: Users,
       value: '2,500+',
       label: 'Businesses Automated',
-      description: 'Growing companies trust Auto.Mark'
+      description: 'Growing companies trust Unitasa'
     },
     {
       icon: TrendingUp,
@@ -89,7 +89,7 @@ const SocialProofSection: React.FC = () => {
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Join thousands of companies that have transformed their marketing automation 
-            and achieved measurable growth with Auto.Mark.
+            and achieved measurable growth with Unitasa.
           </p>
         </div>
 
@@ -200,7 +200,7 @@ const SocialProofSection: React.FC = () => {
             Join 2,500+ Businesses Already Automating Their Growth
           </h3>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Don't take our word for it. See how Auto.Mark can transform your marketing automation 
+            Don't take our word for it. See how Unitasa can transform your marketing automation 
             with a personalized assessment of your current setup.
           </p>
           <button className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors">

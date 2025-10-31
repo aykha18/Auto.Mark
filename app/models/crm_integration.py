@@ -297,7 +297,7 @@ class CRMFieldMapping(Base, TimestampMixin):
     
     # Mapping details
     object_type = Column(String(100), nullable=False)  # contacts, companies, deals, activities
-    automark_field = Column(String(255), nullable=False)  # Auto.Mark field name
+    unitasa_field = Column(String(255), nullable=False)  # Unitasa field name
     crm_field = Column(String(255), nullable=False)  # CRM field name
     
     # Field configuration

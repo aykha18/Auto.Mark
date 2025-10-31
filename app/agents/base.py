@@ -18,7 +18,8 @@ from langchain_openai import ChatOpenAI
 
 from app.agents.state import MarketingAgentState, update_state_timestamp
 from app.agents.monitoring import record_agent_execution
-from app.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 from app.mcp import AgentMCPServer, AgentMCPClient, MCPTool
 
 logger = logging.getLogger(__name__)

@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.core.analytics_service import AnalyticsService
 from app.core.dashboard_service import DashboardService
 from app.core.crm_integration_monitoring import get_integration_health_summary
-from app.core.metrics import track_metric
+# from app.core.metrics import track_metric  # Function not available
 from app.models.campaign import Campaign
 from app.models.lead import Lead
 

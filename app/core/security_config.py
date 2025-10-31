@@ -5,7 +5,7 @@ Centralized security settings and configurations
 
 from typing import Dict, List, Any
 from dataclasses import dataclass
-from app.config import get_settings
+from app.core.config import get_settings
 
 settings = get_settings()
 

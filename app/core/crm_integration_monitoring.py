@@ -14,7 +14,7 @@ from app.models.crm_integration import (
     CRMConnection, CRMSyncLog, CRMConnector,
     ConnectionStatus, SyncStatus
 )
-from app.core.metrics import track_metric
+# from app.core.metrics import track_metric  # Function not available
 from app.core.database import get_db
 
 logger = logging.getLogger(__name__)

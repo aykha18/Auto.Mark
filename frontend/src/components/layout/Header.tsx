@@ -44,10 +44,27 @@ const Header: React.FC = () => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
             <PWAInstallButton className="text-xs" />
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('openAssessment'));
+              }}
+            >
               Take Assessment
             </Button>
-            <Button variant="primary" size="sm">
+            <Button 
+              variant="primary" 
+              size="sm"
+              onClick={() => {
+                const coCreatorSection = document.querySelector('#co-creator');
+                if (coCreatorSection) {
+                  coCreatorSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.dispatchEvent(new CustomEvent('openAssessment'));
+                }
+              }}
+            >
               Join Co-Creators
             </Button>
           </div>
@@ -97,10 +114,31 @@ const Header: React.FC = () => {
               </a>
               <div className="pt-4 border-t border-gray-200 space-y-2">
                 <PWAInstallButton className="w-full text-sm" />
-                <Button variant="outline" size="sm" className="w-full">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full"
+                  onClick={() => {
+                    toggleMenu();
+                    window.dispatchEvent(new CustomEvent('openAssessment'));
+                  }}
+                >
                   Take Assessment
                 </Button>
-                <Button variant="primary" size="sm" className="w-full">
+                <Button 
+                  variant="primary" 
+                  size="sm" 
+                  className="w-full"
+                  onClick={() => {
+                    toggleMenu();
+                    const coCreatorSection = document.querySelector('#co-creator');
+                    if (coCreatorSection) {
+                      coCreatorSection.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                      window.dispatchEvent(new CustomEvent('openAssessment'));
+                    }
+                  }}
+                >
                   Join Co-Creators
                 </Button>
               </div>

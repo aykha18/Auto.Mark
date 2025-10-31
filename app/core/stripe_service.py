@@ -16,7 +16,7 @@ from app.models.lead import Lead
 from app.core.co_creator_service import CoCreatorProgramService
 from app.core.email_service import EmailService
 from app.core.webhook_security import WebhookSecurityManager, PaymentFraudDetector
-from app.config import get_settings
+from app.core.config import get_settings
 
 settings = get_settings()
 

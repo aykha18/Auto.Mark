@@ -14,8 +14,8 @@ const mockTechnicalDemoSteps = [
     id: '1',
     title: 'CRM Connection',
     description: 'Establish secure connection to your existing CRM system',
-    code: `// Auto.Mark CRM Integration
-const crmConnection = await autoMark.connect({
+    code: `// Unitasa CRM Integration
+const crmConnection = await unitasa.connect({
   provider: 'salesforce',
   credentials: { apiKey, instanceUrl },
   syncInterval: '5min'
@@ -92,7 +92,7 @@ const mockCaseStudies = [
     company: 'TechFlow Solutions',
     industry: 'SaaS',
     challenge: 'Manual lead qualification was taking 40+ hours per week, causing delays in follow-up and lost opportunities.',
-    solution: 'Implemented Auto.Mark with Salesforce integration for automated lead scoring and nurturing workflows.',
+    solution: 'Implemented Unitasa with Salesforce integration for automated lead scoring and nurturing workflows.',
     implementation: [
       'Connected Salesforce CRM with OAuth2 authentication',
       'Set up AI-powered lead scoring based on company size, industry, and behavior',
@@ -107,7 +107,7 @@ const mockCaseStudies = [
       { label: 'Time Saved', before: '40 hrs/week', after: '6 hrs/week', improvement: '85% reduction', icon: '⏰' }
     ],
     testimonial: {
-      quote: 'Auto.Mark transformed our entire sales process. We went from drowning in leads to having a systematic, automated approach that actually works.',
+      quote: 'Unitasa transformed our entire sales process. We went from drowning in leads to having a systematic, automated approach that actually works.',
       author: 'Sarah Chen',
       role: 'VP of Sales'
     },
@@ -293,8 +293,8 @@ const ThoughtLeadershipSection: React.FC<ThoughtLeadershipSectionProps> = ({
         <div className="max-w-6xl mx-auto">
           {activeDemo === 'technical' && (
             <TechnicalDemo
-              title="Auto.Mark Integration Demo"
-              description="See how Auto.Mark connects to your CRM and automates your marketing in under 5 minutes"
+              title="Unitasa Integration Demo"
+              description="See how Unitasa connects to your CRM and automates your marketing in under 5 minutes"
               steps={mockTechnicalDemoSteps}
             />
           )}
@@ -338,7 +338,7 @@ const ThoughtLeadershipSection: React.FC<ThoughtLeadershipSectionProps> = ({
               Join the Journey
             </h3>
             <p className="text-gray-600 mb-6">
-              Become a co-creator and directly influence the development of Auto.Mark. 
+              Become a co-creator and directly influence the development of Unitasa. 
               Your feedback shapes our roadmap and helps build the future of marketing automation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowRight, Play, CheckCircle } from 'lucide-react';
 import { Button } from '../ui';
+import AIDemoModal from '../ai-demos/AIDemoModal';
 
 interface HeroSectionProps {
   onStartAssessment?: () => void;
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+
   return (
     <section className="bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-20 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,6 +68,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
                 icon={Play} 
                 iconPosition="left"
                 className="text-lg px-8 py-4"
+                onClick={() => setIsDemoModalOpen(true)}
               >
                 Watch AI Demo
               </Button>
@@ -135,6 +139,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
             </div>
           </div>
         </div>
+
+        {/* AI Demo Modal */}
+        <AIDemoModal
+          isOpen={isDemoModalOpen}
+          onClose={() => setIsDemoModalOpen(false)}
+          initialDemo="agent"
+        />
       </div>
     </section>
   );

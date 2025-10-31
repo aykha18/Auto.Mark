@@ -9,7 +9,8 @@ from typing import Any, Dict
 import structlog
 from pythonjsonlogger import jsonlogger
 
-from app.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 
 
 def setup_logging():

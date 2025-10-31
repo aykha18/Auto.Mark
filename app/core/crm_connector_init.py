@@ -20,7 +20,7 @@ def initialize_crm_connectors(db: Session) -> None:
             "crm_type": CRMType.NEURACRM,
             "name": "neuracrm",
             "display_name": "NeuraLead CRM",
-            "description": "Native CRM integration with full Auto.Mark compatibility",
+            "description": "Native CRM integration with full Unitasa compatibility",
             "logo_url": "/static/logos/neuracrm.png",
             "auth_method": AuthMethod.API_KEY,
             "api_type": "REST",

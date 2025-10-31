@@ -445,7 +445,7 @@ def setup_security_middleware(app):
     """
     Setup security middleware for the application
     """
-    from app.config import get_settings
+    from app.core.config import get_settings
     settings = get_settings()
     
     # Security configuration

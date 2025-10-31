@@ -6,7 +6,7 @@ Provides voice message processing and transcription capabilities
 import base64
 import io
 import tempfile
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional, Tuple, List
 from datetime import datetime
 
 # Placeholder for voice processing libraries
@@ -98,7 +98,7 @@ class VoiceService:
         if audio_size_kb < 10:
             mock_text = "Hello, I'm interested in learning more about CRM integration."
         elif audio_size_kb < 50:
-            mock_text = "Hi there, I'm currently using Salesforce and I'm wondering how Auto.Mark can integrate with our existing setup. We have about 50 employees and we're looking to automate our marketing processes."
+            mock_text = "Hi there, I'm currently using Salesforce and I'm wondering how Unitasa can integrate with our existing setup. We have about 50 employees and we're looking to automate our marketing processes."
         else:
             mock_text = "Good morning, I'm the CTO at a growing tech company and we're evaluating marketing automation solutions. We currently use HubSpot for our CRM and we have a complex sales process with multiple touchpoints. I'm particularly interested in understanding how your AI-powered lead scoring works and what kind of integration timeline we're looking at. We're also curious about the co-creator program and whether it would be a good fit for our organization."
         

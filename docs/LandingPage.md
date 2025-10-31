@@ -1,12 +1,12 @@
 # AI Growth Agent – Landing Page Implementation Plan
 
-This playbook guides an AI agent or developer in creating a **conversion-focused landing page and onboarding system** for NeuraCRM and Auto.Mark, with actionable steps to attract, qualify, and onboard 25 early customers. The structure follows Daniel Priestley’s Scorecard Marketing and Millionaire Playbook, tailored for founder-led SaaS launches.
+This playbook guides an AI agent or developer in creating a **conversion-focused landing page and onboarding system** for NeuraCRM and Unitasa, with actionable steps to attract, qualify, and onboard 25 early customers. The structure follows Daniel Priestley’s Scorecard Marketing and Millionaire Playbook, tailored for founder-led SaaS launches.
 
 ---
 
 ## 1. Strategy Overview
 
-- **Objective:** Onboard 25 early adopters at $175/seat, generating initial $4,375 runway and validating market traction for NeuraCRM and Auto.Mark.
+- **Objective:** Onboard 25 early adopters at $175/seat, generating initial $4,375 runway and validating market traction for NeuraCRM and Unitasa.
 - **Core Value:** Offer lifetime access, product influence, and personalized support for early users (“Founding Customers” cohort).
 
 ---
@@ -91,7 +91,7 @@ This playbook guides an AI agent or developer in creating a **conversion-focused
 
 ### Data Integration
 - Store all leads in NeuraCRM plus score/segmentation.
-- Trigger Auto.Mark agents for:
+- Trigger Unitasa agents for:
   - Drip onboarding emails/WhatsApp messages
   - Webinar/demo invitations
   - Feature suggestion and feedback loop
@@ -126,7 +126,7 @@ This playbook guides an AI agent or developer in creating a **conversion-focused
 
 - [ ] Launch conversion-focused, mobile-first landing page
 - [ ] Deploy 10–15 question AI Readiness Assessment
-- [ ] Integrate lead capture and scoring with NeuraCRM/Auto.Mark backend
+- [ ] Integrate lead capture and scoring with NeuraCRM/Unitasa backend
 - [ ] Add Stripe/PayPal/UPI payment for early adopter seats
 - [ ] Automate onboarding workflow and communication
 - [ ] Track analytics and iterate based on cohort feedback

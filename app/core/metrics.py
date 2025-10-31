@@ -9,7 +9,8 @@ from functools import wraps
 import prometheus_client as prom
 from prometheus_client import Counter, Histogram, Gauge, Summary
 
-from app.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 
 
 # API Metrics

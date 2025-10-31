@@ -214,7 +214,7 @@ const AIDemoModal: React.FC<AIDemoModalProps> = ({ isOpen, onClose, initialDemo 
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">AI Capabilities Interactive Demo</h2>
-            <p className="text-gray-600">Experience Auto.Mark's advanced AI features in action</p>
+            <p className="text-gray-600">Experience Unitasa's advanced AI features in action</p>
           </div>
           <button
             onClick={onClose}

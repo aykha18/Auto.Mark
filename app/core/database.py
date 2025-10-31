@@ -1,55 +1,54 @@
 """
-Database configuration and session management
+Database configuration for Unitasa
+Supports both local development and Railway PostgreSQL
 """
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.pool import StaticPool
+import os
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-from app.config import get_settings
-from app.models.base import Base
+# Get database URL from environment
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-settings = get_settings()
+# Railway provides DATABASE_URL, but we need to ensure it's async
+if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+elif not DATABASE_URL:
+    # Fallback for local development
+    DATABASE_URL = "postgresql+asyncpg://postgres:aykha123@localhost:5432/unitasa"
 
-# Create database engine
-engine = create_engine(
-    settings.database.url,
-    pool_size=settings.database.pool_size,
-    max_overflow=settings.database.max_overflow,
-    pool_timeout=settings.database.pool_timeout,
-    echo=settings.api.debug,
+# Create async engine
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=False,  # Set to True for SQL logging in development
+    pool_size=10,
+    max_overflow=20,
+    pool_pre_ping=True,
+    pool_recycle=3600,
 )
 
-# Create session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Create async session factory
+AsyncSessionLocal = sessionmaker(
+    engine, 
+    class_=AsyncSession, 
+    expire_on_commit=False
+)
+
+# Create declarative base
+Base = declarative_base()
 
 
-async def create_tables():
-    """Create all database tables"""
-    # Import all models to ensure they're registered
-    from app.models import (
-        User, Event, Lead, Campaign, Content,
-        Assessment, CoCreatorProgram, CoCreator,
-        PaymentTransaction, FounderStory, FounderMilestone
-    )
-    
-    # Create all tables
-    Base.metadata.create_all(bind=engine)
+async def get_db():
+    """Dependency to get database session"""
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
 
 
-def get_db() -> Session:
-    """Get database session"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-async def get_async_db() -> Session:
-    """Get async database session"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+async def init_db():
+    """Initialize database tables"""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)

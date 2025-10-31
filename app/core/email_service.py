@@ -13,7 +13,7 @@ from jinja2 import Template
 
 from app.models.payment_transaction import PaymentTransaction
 from app.models.co_creator_program import CoCreator
-from app.config import get_settings
+from app.core.config import get_settings
 
 settings = get_settings()
 
@@ -27,7 +27,7 @@ class EmailService:
         self.smtp_username = os.getenv("SMTP_USERNAME")
         self.smtp_password = os.getenv("SMTP_PASSWORD")
         self.from_email = os.getenv("FROM_EMAIL", self.smtp_username)
-        self.from_name = os.getenv("FROM_NAME", "Auto.Mark Co-Creator Program")
+        self.from_name = os.getenv("FROM_NAME", "Unitasa Co-Creator Program")
     
     def send_email(
         self,
@@ -130,7 +130,7 @@ class EmailService:
                         
                         <h3>What's Next?</h3>
                         <ul>
-                            <li>You now have lifetime access to the Auto.Mark platform</li>
+                            <li>You now have lifetime access to the Unitasa platform</li>
                             <li>Priority integration support for your CRM setup</li>
                             <li>Direct access to founder calls and feature discussions</li>
                             <li>Exclusive co-creator badge and recognition</li>
@@ -167,7 +167,7 @@ class EmailService:
             - Program: {{ program.program_name }}
             
             What's Next?
-            - You now have lifetime access to the Auto.Mark platform
+            - You now have lifetime access to the Unitasa platform
             - Priority integration support for your CRM setup
             - Direct access to founder calls and feature discussions
             - Exclusive co-creator badge and recognition
@@ -240,7 +240,7 @@ class EmailService:
                     <div class="content">
                         <div class="welcome-box">
                             <h2>Welcome, {{ user_name }}!</h2>
-                            <p>Congratulations! You're now officially a <span class="seat-badge">Co-Creator #{{ seat_number }}</span> in the Auto.Mark founding users program.</p>
+                            <p>Congratulations! You're now officially a <span class="seat-badge">Co-Creator #{{ seat_number }}</span> in the Unitasa founding users program.</p>
                             <p>You're part of an exclusive group of 25 visionaries who are helping shape the future of AI marketing automation.</p>
                         </div>
                         
@@ -288,7 +288,7 @@ class EmailService:
             
             Welcome, {{ user_name }}!
             
-            Congratulations! You're now officially Co-Creator #{{ seat_number }} in the Auto.Mark founding users program.
+            Congratulations! You're now officially Co-Creator #{{ seat_number }} in the Unitasa founding users program.
             
             You're part of an exclusive group of 25 visionaries who are helping shape the future of AI marketing automation.
             

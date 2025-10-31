@@ -10,7 +10,8 @@ from langchain_community.retrievers import BM25Retriever
 from langchain_core.vectorstores import VectorStore
 
 from app.rag.vectorstore_manager import get_vector_store
-from app.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 
 
 class MultiQueryRetriever(BaseRetriever):

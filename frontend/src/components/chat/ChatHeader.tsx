@@ -27,7 +27,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           }`} />
         </div>
         <div>
-          <h3 className="font-semibold text-sm">Auto.Mark Assistant</h3>
+          <h3 className="font-semibold text-sm">Unitasa Assistant</h3>
           <p className="text-xs text-blue-100">
             {isConnected ? 'Online' : 'Connecting...'}
           </p>

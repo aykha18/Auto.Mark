@@ -12,7 +12,7 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.documents import Document
 
 from app.rag.advanced_retrievers import get_advanced_retriever
-from app.rag.confidence_scorer import ConfidenceScorer
+from app.rag.confidence_scorer import RAGConfidenceScorer as ConfidenceScorer
 from app.rag.monitoring import record_rag_query
 from app.llm.router import get_optimal_llm
 

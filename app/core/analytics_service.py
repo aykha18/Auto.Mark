@@ -18,8 +18,7 @@ from app.models.payment_transaction import PaymentTransaction
 from app.models.co_creator_program import CoCreatorProgram
 from app.models.crm_integration import CRMConnection
 from app.core.metrics import (
-    leads_generated_total, campaigns_created_total,
-    track_metric
+    leads_generated_total, campaigns_created_total
 )
 
 logger = logging.getLogger(__name__)

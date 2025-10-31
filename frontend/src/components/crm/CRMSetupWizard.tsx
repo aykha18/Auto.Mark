@@ -52,7 +52,7 @@ const CRMSetupWizard: React.FC<CRMSetupWizardProps> = ({ crmType, onComplete, on
     {
       id: 'mapping',
       title: 'Field Mapping',
-      description: 'Map CRM fields to Auto.Mark',
+      description: 'Map CRM fields to Unitasa',
       icon: Settings
     },
     {
@@ -232,7 +232,7 @@ const CRMSetupWizard: React.FC<CRMSetupWizardProps> = ({ crmType, onComplete, on
           Field Mapping
         </h3>
         <p className="text-gray-600">
-          Map your {crmType} fields to Auto.Mark fields for seamless data synchronization.
+          Map your {crmType} fields to Unitasa fields for seamless data synchronization.
         </p>
       </div>
 
@@ -284,7 +284,7 @@ const CRMSetupWizard: React.FC<CRMSetupWizardProps> = ({ crmType, onComplete, on
           Sync Settings
         </h3>
         <p className="text-gray-600">
-          Choose what data to synchronize between {crmType} and Auto.Mark.
+          Choose what data to synchronize between {crmType} and Unitasa.
         </p>
       </div>
 

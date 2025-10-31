@@ -23,7 +23,8 @@ except ImportError:
     ANTHROPIC_AVAILABLE = False
     ChatAnthropic = None
 
-from app.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 
 logger = structlog.get_logger(__name__)
 

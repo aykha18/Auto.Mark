@@ -40,6 +40,17 @@ const LandingPage: React.FC = () => {
 
   useEffect(() => {
     trackPageView('/');
+    
+    // Listen for custom events to open assessment
+    const handleOpenAssessment = () => {
+      setIsAssessmentOpen(true);
+    };
+    
+    window.addEventListener('openAssessment', handleOpenAssessment);
+    
+    return () => {
+      window.removeEventListener('openAssessment', handleOpenAssessment);
+    };
   }, []);
 
   const handleAssessmentComplete = (result: CRMAssessmentResult) => {
@@ -88,7 +99,7 @@ const LandingPage: React.FC = () => {
             </Suspense>
             
             {/* Co-Creator Program Preview */}
-            <section className="py-20">
+            <section id="co-creator" className="py-20">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-2xl p-8 md:p-12 relative overflow-hidden">
                   {/* Urgency Badge */}

@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from typing import Dict, Any, Optional
 
-from langgraph import StateGraph, END
+from langgraph.graph import StateGraph, END
 from langchain_openai import ChatOpenAI
 
 from app.agents.state import MarketingAgentState, create_initial_state
@@ -16,7 +16,8 @@ from app.agents.lead_generation import LeadGenerationAgent
 from app.agents.content_creator import ContentCreatorAgent
 from app.agents.ad_manager import AdManagerAgent
 from app.agents.monitoring import get_agent_monitor
-from app.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 
 logger = logging.getLogger(__name__)
 

@@ -17,7 +17,7 @@ from app.models.campaign import Campaign
 from app.models.payment_transaction import PaymentTransaction
 from app.models.co_creator_program import CoCreatorProgram
 from app.core.analytics_service import AnalyticsService
-from app.core.metrics import track_metric
+# from app.core.metrics import track_metric  # Function not available
 
 logger = logging.getLogger(__name__)
 

@@ -11,7 +11,7 @@ from typing import Dict, Any, Optional, Tuple
 import stripe
 from fastapi import Request, HTTPException
 
-from app.config import get_settings
+from app.core.config import get_settings
 from app.core.security_middleware import FraudDetectionService
 
 logger = logging.getLogger(__name__)

@@ -7,7 +7,7 @@ from typing import Optional, Any
 import json
 import structlog
 
-from app.config import get_settings
+from app.core.config import get_settings
 
 settings = get_settings()
 logger = structlog.get_logger(__name__)

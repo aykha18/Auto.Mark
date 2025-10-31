@@ -158,7 +158,7 @@ const lead = await zoho.createRecord('Leads', {
               <h1 className="text-3xl font-bold text-gray-900">CRM Integration Documentation</h1>
             </div>
             <p className="text-xl text-gray-600 max-w-3xl">
-              Complete guides, code examples, and API references for integrating your CRM with Auto.Mark.
+              Complete guides, code examples, and API references for integrating your CRM with Unitasa.
             </p>
           </div>
         </div>
@@ -265,9 +265,9 @@ const lead = await zoho.createRecord('Leads', {
                       2
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Configure Auto.Mark</h4>
+                      <h4 className="font-semibold text-gray-900 mb-2">Configure Unitasa</h4>
                       <p className="text-gray-600 mb-3">
-                        Add your {currentDoc.name} credentials to Auto.Mark and test the connection.
+                        Add your {currentDoc.name} credentials to Unitasa and test the connection.
                       </p>
                       <Button variant="outline" size="sm" icon={Play}>
                         Test Connection

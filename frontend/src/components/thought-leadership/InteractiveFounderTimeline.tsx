@@ -254,7 +254,7 @@ const InteractiveFounderTimeline: React.FC<InteractiveFounderTimelineProps> = ({
               Explore the Journey
             </h4>
             <p className="text-gray-600 mb-4">
-              Click on any milestone above to see the detailed story of how Auto.Mark evolved.
+              Click on any milestone above to see the detailed story of how Unitasa evolved.
             </p>
             <button
               onClick={() => handleMilestoneClick(sortedMilestones[0], 0)}

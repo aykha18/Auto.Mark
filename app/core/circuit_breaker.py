@@ -10,7 +10,8 @@ from typing import Any, Callable, Optional, Dict, Tuple
 from contextlib import asynccontextmanager
 import structlog
 
-from app.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 from app.core.metrics import circuit_breaker_state, circuit_breaker_failures
 
 

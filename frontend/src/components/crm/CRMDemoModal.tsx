@@ -29,7 +29,7 @@ const CRMDemoModal: React.FC<CRMDemoModalProps> = ({
     },
     {
       title: 'Map Your Data',
-      description: 'Automatically map your CRM fields to Auto.Mark for seamless synchronization',
+      description: 'Automatically map your CRM fields to Unitasa for seamless synchronization',
       duration: '1 minute',
       preview: 'Smart field mapping with AI-powered suggestions'
     },
@@ -81,7 +81,7 @@ const CRMDemoModal: React.FC<CRMDemoModalProps> = ({
                 {crmName} Integration Demo
               </h2>
               <p className="text-gray-600">
-                See how easy it is to connect {crmName} with Auto.Mark
+                See how easy it is to connect {crmName} with Unitasa
               </p>
             </div>
           </div>

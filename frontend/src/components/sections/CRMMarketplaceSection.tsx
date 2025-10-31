@@ -565,7 +565,7 @@ const CRMMarketplaceSection: React.FC = () => {
           </h3>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
             Take our AI Readiness Assessment to get personalized integration recommendations 
-            and see how Auto.Mark can transform your current setup.
+            and see how Unitasa can transform your current setup.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="primary" size="lg" icon={Zap}>

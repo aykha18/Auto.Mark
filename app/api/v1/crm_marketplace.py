@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
 from app.core.database import get_db
-from app.config import get_settings
+from app.core.config import get_settings
 from app.core.crm_marketplace_service import CRMMarketplaceService
 from app.core.crm_integration_framework import CRMIntegrationFramework
 from app.models.crm_integration import CRMConnector, CRMConnection
@@ -387,7 +387,7 @@ async def get_supported_objects() -> Dict[str, Any]:
             }
         },
         "field_mapping_info": {
-            "description": "Fields can be mapped between Auto.Mark and CRM systems",
+            "description": "Fields can be mapped between Unitasa and CRM systems",
             "custom_fields_supported": True,
             "transformation_rules_available": True
         }

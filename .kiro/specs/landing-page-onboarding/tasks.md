@@ -152,7 +152,7 @@
     - Extend existing Lead model for CRM preference and assessment data tracking
     - Create assessment response storage with integration insights
     - Build conversion event tracking using existing Event model
-    - Integrate with existing Auto.Mark agents for lead nurturing workflows
+    - Integrate with existing Unitasa agents for lead nurturing workflows
     - Add landing page specific fields to existing Campaign model
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
@@ -190,7 +190,7 @@
 
     - Create hero section showcasing AI Marketing Automation Platform
     - Build founder story component with CRM integration timeline
-    - Implement Auto.Mark platform positioning and value proposition section
+    - Implement Unitasa platform positioning and value proposition section
     - Create social proof and credibility indicators
     - Build responsive navigation and footer components
     - _Requirements: 1.1, 1.2, 8.1_

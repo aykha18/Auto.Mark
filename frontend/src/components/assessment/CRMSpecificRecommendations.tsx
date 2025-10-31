@@ -66,14 +66,14 @@ const CRMSpecificRecommendations: React.FC<CRMSpecificRecommendationsProps> = ({
         'Generate API token with full permissions (read/write access)',
         'Configure webhook endpoints for real-time sync (deals, persons, activities)',
         'Set up custom fields for AI lead scoring and automation tags',
-        'Map Pipedrive pipeline stages to Auto.Mark automation triggers',
+        'Map Pipedrive pipeline stages to Unitasa automation triggers',
         ...baseSteps.slice(1)
       ],
       'HubSpot': [
-        'Install Auto.Mark app from HubSpot App Marketplace',
+        'Install Unitasa app from HubSpot App Marketplace',
         'Grant necessary permissions: contacts, deals, companies, and workflows',
         'Configure custom properties for AI insights and lead scoring',
-        'Set up HubSpot workflows to trigger Auto.Mark automations',
+        'Set up HubSpot workflows to trigger Unitasa automations',
         'Enable contact and deal sync with bidirectional updates',
         ...baseSteps.slice(1)
       ],
@@ -81,7 +81,7 @@ const CRMSpecificRecommendations: React.FC<CRMSpecificRecommendationsProps> = ({
         'Create connected app in Salesforce Setup → App Manager',
         'Configure OAuth2 authentication with appropriate scopes',
         'Set up custom fields for automation data and AI insights',
-        'Install Auto.Mark managed package from AppExchange',
+        'Install Unitasa managed package from AppExchange',
         'Configure Process Builder flows for automation triggers',
         ...baseSteps.slice(1)
       ],
@@ -90,14 +90,14 @@ const CRMSpecificRecommendations: React.FC<CRMSpecificRecommendationsProps> = ({
         'Generate OAuth2 credentials with CRM.modules.ALL scope',
         'Configure custom modules for automation tracking if needed',
         'Set up Zoho Flow integrations for real-time sync',
-        'Map Zoho CRM stages to Auto.Mark automation sequences',
+        'Map Zoho CRM stages to Unitasa automation sequences',
         ...baseSteps.slice(1)
       ],
       'Monday': [
-        'Install Auto.Mark integration from Monday.com marketplace',
+        'Install Unitasa integration from Monday.com marketplace',
         'Configure board permissions and access for relevant workspaces',
         'Map Monday board items to CRM entities (leads, deals, contacts)',
-        'Set up Monday automations to trigger Auto.Mark workflows',
+        'Set up Monday automations to trigger Unitasa workflows',
         'Configure status column mapping for lead progression tracking',
         ...baseSteps.slice(1)
       ]
@@ -210,7 +210,7 @@ const CRMSpecificRecommendations: React.FC<CRMSpecificRecommendationsProps> = ({
       {/* Estimated ROI Section */}
       {getEstimatedROI() && (
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <h4 className="font-semibold text-gray-900 mb-4">Estimated ROI with Auto.Mark Integration</h4>
+          <h4 className="font-semibold text-gray-900 mb-4">Estimated ROI with Unitasa Integration</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Object.entries(getEstimatedROI()!).map(([key, value], index) => (
               <div key={index} className="text-center p-3 bg-primary-50 rounded-lg">

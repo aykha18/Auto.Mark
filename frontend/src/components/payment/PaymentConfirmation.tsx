@@ -75,12 +75,12 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
   };
 
   const handleShareSuccess = async () => {
-    const shareText = `🎉 Just became a Co-Creator at Auto.Mark! Excited to help shape the future of AI marketing automation. #CoCreator #AIMarketing #AutoMark`;
+    const shareText = `🎉 Just became a Co-Creator at Unitasa! Excited to help shape the future of AI marketing automation. #CoCreator #AIMarketing #AutoMark`;
     
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Auto.Mark Co-Creator',
+          title: 'Unitasa Co-Creator',
           text: shareText,
           url: window.location.origin,
         });
@@ -301,7 +301,7 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
         <div className="text-center bg-gradient-to-r from-primary-600/20 to-secondary-600/20 rounded-xl p-6 border border-primary-400/30 mb-8">
           <h2 className="text-2xl font-bold mb-4">A Personal Message from the Founder</h2>
           <blockquote className="text-lg italic opacity-90 mb-4">
-            "Welcome to the Co-Creator family! Your support and insights will directly shape how Auto.Mark evolves. 
+            "Welcome to the Co-Creator family! Your support and insights will directly shape how Unitasa evolves. 
             I'm personally committed to making sure your CRM integration experience is seamless and that your voice 
             is heard in every product decision. Thank you for believing in this vision."
           </blockquote>
@@ -311,7 +311,7 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
             </div>
             <div className="text-left">
               <div className="font-semibold">John Doe</div>
-              <div className="text-sm text-gray-300">Founder & CEO, Auto.Mark</div>
+              <div className="text-sm text-gray-300">Founder & CEO, Unitasa</div>
             </div>
           </div>
         </div>

@@ -72,7 +72,7 @@ const OnboardingActivation: React.FC<OnboardingActivationProps> = ({
         {
           id: 'platform_access',
           title: 'Platform Access Activated',
-          description: 'Lifetime access to Auto.Mark with all current and future features',
+          description: 'Lifetime access to Unitasa with all current and future features',
           icon: Rocket,
           status: 'in_progress',
           estimatedTime: '30 seconds',

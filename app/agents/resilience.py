@@ -10,7 +10,8 @@ from typing import Any, Callable, Optional, Dict, Tuple
 from enum import Enum
 
 from app.core.circuit_breaker import get_circuit_breaker, CircuitBreakerOpenException
-from app.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 
 logger = logging.getLogger(__name__)
 

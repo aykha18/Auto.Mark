@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
 from app.core.database import get_db
-from app.config import get_settings
+from app.core.config import get_settings
 from app.core.assessment_engine import assessment_engine, CRMSystem
 from app.core.lead_scoring import lead_scoring_engine, LeadSegment
 from app.models.assessment import Assessment

@@ -1,6 +1,6 @@
 """
 Lead Nurturing Integration Service
-Integrates with existing Auto.Mark agents for lead nurturing workflows
+Integrates with existing Unitasa agents for lead nurturing workflows
 """
 
 import asyncio
@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.models.lead import Lead
 from app.models.assessment import Assessment
 from app.models.campaign import Campaign
-from app.agents.communication import CommunicationAgent
+from app.agents.communication import AgentCommunicator
 from app.agents.content_creator import ContentCreatorAgent
 from app.agents.lead_generation import LeadGenerationAgent
 from app.core.analytics_service import AnalyticsService
@@ -21,14 +21,14 @@ logger = logging.getLogger(__name__)
 
 
 class LeadNurturingIntegration:
-    """Service for integrating lead capture with Auto.Mark agent workflows"""
+    """Service for integrating lead capture with Unitasa agent workflows"""
     
     def __init__(self, db: Session):
         self.db = db
         self.analytics = AnalyticsService(db)
         
         # Initialize agents
-        self.communication_agent = CommunicationAgent()
+        self.communication_agent = AgentCommunicator()
         self.content_creator = ContentCreatorAgent()
         self.lead_gen_agent = LeadGenerationAgent()
     
@@ -311,7 +311,7 @@ class LeadNurturingIntegration:
                 {
                     "delay_hours": 1,
                     "type": "welcome_email",
-                    "subject": "Welcome to Auto.Mark - Your AI Marketing Journey Begins",
+                    "subject": "Welcome to Unitasa - Your AI Marketing Journey Begins",
                     "content_type": "welcome",
                     "cta": "Complete Your AI Readiness Assessment"
                 },

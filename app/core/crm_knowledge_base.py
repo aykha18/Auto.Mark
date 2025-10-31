@@ -34,7 +34,7 @@ class CRMKnowledgeBase:
                     "Smart contact management",
                     "Integrated marketing automation"
                 ],
-                "pricing": "Included with Auto.Mark platform",
+                "pricing": "Included with Unitasa platform",
                 "best_for": "Businesses wanting all-in-one AI marketing automation"
             },
             "hubspot": {
@@ -137,8 +137,8 @@ class CRMKnowledgeBase:
                 "steps": [
                     "Create developer account with your CRM provider",
                     "Register your application to get Client ID and Secret",
-                    "Configure redirect URLs for Auto.Mark integration",
-                    "Authorize the connection through Auto.Mark interface",
+                    "Configure redirect URLs for Unitasa integration",
+                    "Authorize the connection through Unitasa interface",
                     "Test the connection with sample data sync"
                 ],
                 "security_notes": [
@@ -153,7 +153,7 @@ class CRMKnowledgeBase:
                     "Log into your CRM admin panel",
                     "Navigate to API settings or integrations",
                     "Generate a new API key with appropriate permissions",
-                    "Copy the API key to Auto.Mark integration settings",
+                    "Copy the API key to Unitasa integration settings",
                     "Configure sync preferences and field mapping"
                 ],
                 "security_notes": [
@@ -164,7 +164,7 @@ class CRMKnowledgeBase:
             },
             "field_mapping": {
                 "title": "Field Mapping Configuration",
-                "description": "Map fields between Auto.Mark and your CRM",
+                "description": "Map fields between Unitasa and your CRM",
                 "common_mappings": {
                     "contact_fields": {
                         "email": "Email Address",
@@ -195,16 +195,16 @@ class CRMKnowledgeBase:
                 "answer": "Yes, we use enterprise-grade security: OAuth2 authentication, encrypted data transmission, secure token storage, and compliance with SOC 2 and GDPR standards. You maintain full control over your data."
             },
             {
-                "question": "Can I sync existing CRM data with Auto.Mark?",
-                "answer": "Absolutely! Auto.Mark can sync existing contacts, leads, and deals from your CRM. We offer both one-time migration and ongoing bi-directional sync to keep everything up-to-date."
+                "question": "Can I sync existing CRM data with Unitasa?",
+                "answer": "Absolutely! Unitasa can sync existing contacts, leads, and deals from your CRM. We offer both one-time migration and ongoing bi-directional sync to keep everything up-to-date."
             },
             {
                 "question": "What if my CRM isn't directly supported?",
                 "answer": "We support integration via Zapier, Make.com, or custom webhooks for any CRM with an API. Our team can also build custom connectors for enterprise clients."
             },
             {
-                "question": "How does Auto.Mark enhance my existing CRM?",
-                "answer": "Auto.Mark adds AI-powered lead scoring, automated nurturing sequences, predictive analytics, and marketing automation while keeping your existing CRM as the central hub."
+                "question": "How does Unitasa enhance my existing CRM?",
+                "answer": "Unitasa adds AI-powered lead scoring, automated nurturing sequences, predictive analytics, and marketing automation while keeping your existing CRM as the central hub."
             },
             {
                 "question": "Can I use NeuraCRM instead of my current CRM?",
@@ -308,7 +308,7 @@ class CRMKnowledgeBase:
         base_checklist = [
             f"Verify {crm_info.get('name', crm_name)} admin access",
             "Backup existing CRM data",
-            "Review Auto.Mark integration requirements",
+            "Review Unitasa integration requirements",
             "Plan field mapping strategy"
         ]
         

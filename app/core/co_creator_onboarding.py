@@ -14,7 +14,7 @@ from app.models.lead import Lead
 from app.agents.communication import get_communicator, AgentMessage
 from app.agents.orchestrator import get_orchestrator
 from app.core.email_service import EmailService
-from app.config import get_settings
+from app.core.config import get_settings
 
 settings = get_settings()
 

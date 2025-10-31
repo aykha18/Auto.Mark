@@ -11,7 +11,8 @@ from langchain_core.embeddings import Embeddings
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 
-from app.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 
 
 class VectorStoreManager:

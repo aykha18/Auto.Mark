@@ -192,7 +192,20 @@ const AICapabilitiesSection: React.FC = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="px-8">
+            <Button 
+              size="lg" 
+              className="px-8"
+              onClick={() => {
+                // Scroll to assessment or trigger assessment modal
+                const assessmentSection = document.querySelector('#assessment');
+                if (assessmentSection) {
+                  assessmentSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  // Fallback: trigger assessment modal if no section found
+                  window.dispatchEvent(new CustomEvent('openAssessment'));
+                }
+              }}
+            >
               Secure Founding Spot
             </Button>
             <Button 
