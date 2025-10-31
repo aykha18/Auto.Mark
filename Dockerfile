@@ -32,7 +32,7 @@ WORKDIR /app
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-# Force rebuild after langchain-community addition
+# Force rebuild after aiosqlite addition
 
 # Copy application code
 COPY app/ ./app/
