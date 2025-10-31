@@ -15,6 +15,9 @@ from app.core.database import engine, Base
 from app.core.security_middleware import SecurityHeadersMiddleware
 from app.api.v1 import landing, chat, analytics, crm_marketplace, health
 
+# Import all models to ensure they are registered with SQLAlchemy
+from app.models import *
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
