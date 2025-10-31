@@ -90,7 +90,7 @@ if os.path.exists("frontend/build"):
 @app.get("/health")
 async def health_check():
     """Health check endpoint for Railway"""
-    return {"status": "healthy", "service": "unitasa-api"}
+    return {"status": "healthy", "service": "unitasa-api", "timestamp": "2025-10-31T12:04:00.000Z"}
 
 @app.get("/")
 async def root():
