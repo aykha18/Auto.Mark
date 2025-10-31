@@ -20,13 +20,22 @@ from app.api.v1 import landing, chat, analytics, crm_marketplace, health
 async def lifespan(app: FastAPI):
     """Application lifespan events"""
     # Startup
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        print("Database tables initialized successfully")
+    except Exception as e:
+        print(f"Database connection failed during startup: {e}")
+        print("Application will continue without database initialization")
+
     yield
-    
+
     # Shutdown
-    await engine.dispose()
+    try:
+        await engine.dispose()
+        print("Database connection disposed successfully")
+    except Exception as e:
+        print(f"Error disposing database connection: {e}")
 
 
 # Create FastAPI application
