@@ -32,7 +32,7 @@ WORKDIR /app
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-# Force rebuild after aiosqlite addition
+# Force rebuild after removing SQLite fallback
 
 # Copy application code
 COPY app/ ./app/

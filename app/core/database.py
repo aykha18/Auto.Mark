@@ -15,18 +15,25 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 elif not DATABASE_URL:
-    # Fallback for local development - use SQLite for testing
-    DATABASE_URL = "sqlite+aiosqlite:///./test.db"
+    raise ValueError("DATABASE_URL environment variable is required")
 
 # Create async engine
-engine = create_async_engine(
-    DATABASE_URL,
-    echo=False,  # Set to True for SQL logging in development
-    pool_size=10,
-    max_overflow=20,
-    pool_pre_ping=True,
-    pool_recycle=3600,
-)
+if DATABASE_URL.startswith("sqlite"):
+    # SQLite doesn't support connection pooling
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=False,  # Set to True for SQL logging in development
+    )
+else:
+    # PostgreSQL with connection pooling
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=False,  # Set to True for SQL logging in development
+        pool_size=10,
+        max_overflow=20,
+        pool_pre_ping=True,
+        pool_recycle=3600,
+    )
 
 # Create async session factory
 AsyncSessionLocal = sessionmaker(
