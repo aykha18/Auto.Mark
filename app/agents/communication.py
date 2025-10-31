@@ -90,7 +90,7 @@ class AgentCommunicator:
         self.mcp_transport.register_handler("tool_call", self._handle_mcp_tool_call)
         self.mcp_transport.register_handler("tool_result", self._handle_mcp_tool_result)
 
-    async def _handle_mcp_tool_call(self, mcp_message: MCPMessage):
+    async def _handle_mcp_tool_call(self, mcp_message: Any):
         """Handle MCP tool calls and convert to agent messages"""
         try:
             # Convert MCP message to agent message for compatibility
@@ -105,7 +105,7 @@ class AgentCommunicator:
         except Exception as e:
             logger.error(f"Error handling MCP tool call: {e}")
 
-    async def _handle_mcp_tool_result(self, mcp_message: MCPMessage):
+    async def _handle_mcp_tool_result(self, mcp_message: Any):
         """Handle MCP tool results"""
         try:
             agent_message = AgentMessage(
