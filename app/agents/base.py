@@ -10,8 +10,19 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.tools import Tool
+from langchain_core.runnables import Runnable
+from langchain_openai import ChatOpenAI
+
 # Simplified agents without langchain dependencies for deployment
 from app.core.config import get_settings
+from app.agents.state import MarketingAgentState, update_state_timestamp
+from app.mcp.tools import MCPTool
+from app.mcp.server import AgentMCPServer
+from app.mcp.client import AgentMCPClient
+# from app.core.monitoring import record_agent_execution  # TODO: Implement monitoring
+
 settings = get_settings()
 
 logger = logging.getLogger(__name__)
@@ -62,24 +73,24 @@ class BaseAgent(ABC):
 
             # Record successful execution
             execution_time = time.time() - start_time
-            await record_agent_execution(
-                agent_name=self.name,
-                execution_time=execution_time,
-                success=True,
-                metadata={"state_keys": list(updated_state.keys())}
-            )
+            # await record_agent_execution(
+            #     agent_name=self.name,
+            #     execution_time=execution_time,
+            #     success=True,
+            #     metadata={"state_keys": list(updated_state.keys())}
+            # )
 
             return updated_state
 
         except Exception as e:
             # Record failed execution
             execution_time = time.time() - start_time
-            await record_agent_execution(
-                agent_name=self.name,
-                execution_time=execution_time,
-                success=False,
-                error=str(e)
-            )
+            # await record_agent_execution(
+            #     agent_name=self.name,
+            #     execution_time=execution_time,
+            #     success=False,
+            #     error=str(e)
+            # )
 
             logger.error(f"Agent {self.name} execution failed: {e}")
             return self.handle_error(state, e)
