@@ -20,7 +20,9 @@ from app.api.v1 import landing, chat, analytics, crm_marketplace, health
 async def lifespan(app: FastAPI):
     """Application lifespan events"""
     # Startup
+    print("Starting Unitasa application...")
     try:
+        print("Attempting database connection...")
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         print("Database tables initialized successfully")
@@ -28,9 +30,11 @@ async def lifespan(app: FastAPI):
         print(f"Database connection failed during startup: {e}")
         print("Application will continue without database initialization")
 
+    print("Application startup complete")
     yield
 
     # Shutdown
+    print("Shutting down application...")
     try:
         await engine.dispose()
         print("Database connection disposed successfully")
@@ -90,7 +94,13 @@ if os.path.exists("frontend/build"):
 @app.get("/health")
 async def health_check():
     """Health check endpoint for Railway"""
-    return {"status": "healthy", "service": "unitasa-api", "timestamp": "2025-10-31T12:04:00.000Z"}
+    from datetime import datetime
+    return {
+        "status": "healthy",
+        "service": "unitasa-api",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0"
+    }
 
 @app.get("/")
 async def root():
