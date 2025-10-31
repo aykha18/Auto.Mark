@@ -14,7 +14,7 @@ FROM python:3.11-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PORT=8080
+ENV PORT=3000
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -51,4 +51,4 @@ EXPOSE $PORT
 #     CMD curl -f http://localhost:$PORT/health || exit 1
 
 # Start application
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--log-level", "info"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3000", "--log-level", "info"]
