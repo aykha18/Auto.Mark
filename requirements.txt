@@ -23,7 +23,7 @@ pydantic==2.5.0
 pydantic-settings==2.1.0
 
 # AI & ML (simplified for deployment)
-openai==1.3.7
+openai>=1.109.1
 langchain-core>=0.1.16
 langchain-openai>=0.0.5
 
