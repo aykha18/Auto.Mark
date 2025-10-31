@@ -77,23 +77,35 @@ app.include_router(crm_marketplace.router, prefix="/api/v1", tags=["crm"])
 print("API routers included")
 
 # Serve static files from React build
+print("Checking for frontend build...")
 if os.path.exists("frontend/build"):
+    print("Frontend build found, mounting static files")
     app.mount("/static", StaticFiles(directory="frontend/build/static"), name="static")
-    
+
     @app.get("/{full_path:path}")
     async def serve_react_app(request: Request, full_path: str):
         """Serve React app for all non-API routes"""
+        print(f"Serving path: {full_path}")
         # API routes should not be caught by this
         if full_path.startswith("api/"):
             return {"error": "API endpoint not found"}
-        
+
         # Serve static files
         file_path = f"frontend/build/{full_path}"
         if os.path.exists(file_path) and os.path.isfile(file_path):
+            print(f"Serving static file: {file_path}")
             return FileResponse(file_path)
-        
+
         # Serve index.html for all other routes (React Router)
-        return FileResponse("frontend/build/index.html")
+        index_path = "frontend/build/index.html"
+        if os.path.exists(index_path):
+            print(f"Serving index.html: {index_path}")
+            return FileResponse(index_path)
+        else:
+            print("index.html not found!")
+            return {"error": "Frontend not built"}
+else:
+    print("Frontend build not found!")
 
 @app.get("/health")
 async def health_check():
