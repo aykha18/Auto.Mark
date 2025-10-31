@@ -43,12 +43,14 @@ async def lifespan(app: FastAPI):
 
 
 # Create FastAPI application
+print("Creating FastAPI application...")
 app = FastAPI(
     title="Unitasa API",
     description="Unified Marketing Intelligence Platform - Everything you need IN one platform",
     version="1.0.0",
     lifespan=lifespan
 )
+print("FastAPI application created")
 
 # Add security middleware (commented out for debugging)
 # app.add_middleware(SecurityHeadersMiddleware)
@@ -66,11 +68,13 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Include API routers
+print("Including API routers...")
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
 app.include_router(landing.router, prefix="/api/v1", tags=["landing"])
 app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
 app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
 app.include_router(crm_marketplace.router, prefix="/api/v1", tags=["crm"])
+print("API routers included")
 
 # Serve static files from React build
 if os.path.exists("frontend/build"):
