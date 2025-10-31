@@ -12,7 +12,7 @@ from sqlalchemy import and_, or_
 from app.models.chat_session import ChatSession, ChatMessage
 from app.models.lead import Lead
 from app.models.user import User
-from app.agents.communication import get_communicator, AgentMessage
+from app.agents.stubs import get_communicator, AgentMessage
 
 
 class HandoffService:

@@ -13,7 +13,7 @@ from sqlalchemy import and_, or_
 from app.models.chat_session import ChatSession, ChatMessage
 from app.models.lead import Lead
 from app.models.user import User
-from app.agents.conversational_agent import get_conversational_agent, process_chat_message
+from app.agents.stubs import get_conversational_agent, process_chat_message
 from app.core.lead_scoring import lead_scoring_engine
 from app.core.assessment_engine import assessment_engine
 from app.core.voice_service import get_voice_service

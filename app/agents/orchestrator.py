@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from typing import Dict, Any, Optional
 
-from langgraph.graph import StateGraph, END
+# Simplified for deployment - removed langgraph dependencies
 from langchain_openai import ChatOpenAI
 
 from app.agents.state import MarketingAgentState, create_initial_state

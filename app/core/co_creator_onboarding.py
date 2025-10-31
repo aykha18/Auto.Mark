@@ -11,8 +11,7 @@ from sqlalchemy.orm import Session
 from app.models.co_creator_program import CoCreator
 from app.models.user import User
 from app.models.lead import Lead
-from app.agents.communication import get_communicator, AgentMessage
-from app.agents.orchestrator import get_orchestrator
+from app.agents.stubs import get_communicator, AgentMessage, get_orchestrator
 from app.core.email_service import EmailService
 from app.core.config import get_settings
 

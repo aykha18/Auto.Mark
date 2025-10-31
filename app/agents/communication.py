@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 
-from app.mcp import MCPTransport, MCPMessage
+# Simplified for deployment - removed MCP dependencies
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,7 @@ class AgentCommunicator:
         self.message_handlers: Dict[str, callable] = {}
 
         # MCP integration
-        self.mcp_transport = MCPTransport()
+        # self.mcp_transport = MCPTransport()  # Disabled for deployment
         self._setup_mcp_handlers()
 
         logger.info("Agent Communicator initialized with MCP support")
