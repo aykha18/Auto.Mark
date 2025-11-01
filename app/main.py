@@ -21,8 +21,18 @@ try:
     print("Health module imported successfully")
     
     print("Importing landing module...")
-    from app.api.v1 import landing_working as landing
-    print("Landing module imported successfully")
+    try:
+        from app.api.v1 import landing_working as landing
+        print("Landing module imported successfully")
+        print(f"Landing router object: {landing.router}")
+        print(f"Landing router routes: {[route.path for route in landing.router.routes]}")
+    except Exception as e:
+        print(f"ERROR importing landing module: {e}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        # Import fallback
+        from app.api.v1 import landing
+        print("Fallback to original landing module")
     
     print("Importing chat module...")
     from app.api.v1 import chat
@@ -139,8 +149,15 @@ try:
     print("Health router included successfully")
     
     print("Including landing router...")
-    app.include_router(landing.router, prefix="/api/v1/landing", tags=["landing"])
-    print("Landing router included successfully")
+    try:
+        print(f"Landing router routes before inclusion: {[route.path for route in landing.router.routes]}")
+        app.include_router(landing.router, prefix="/api/v1/landing", tags=["landing"])
+        print("Landing router included successfully")
+        print(f"App routes after inclusion: {[route.path for route in app.routes if '/landing' in route.path]}")
+    except Exception as e:
+        print(f"ERROR including landing router: {e}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
     
     print("Including chat router...")
     app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
