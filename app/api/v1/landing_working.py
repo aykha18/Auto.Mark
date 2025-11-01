@@ -33,31 +33,54 @@ def generate_compact_assessment_id() -> str:
     return f"assess_{date_part}_{random_part}"
 
 
-async def ensure_default_campaign(db: AsyncSession) -> int:
-    """Ensure default campaign exists and return its ID"""
+async def ensure_default_campaign_and_user(db: AsyncSession) -> int:
+    """Ensure default user and campaign exist"""
     try:
-        # Check if default campaign exists
-        result = await db.execute(select(Campaign).where(Campaign.id == 1))
+        # First, try to find any existing campaign
+        result = await db.execute(select(Campaign).limit(1))
         campaign = result.scalar_one_or_none()
         
-        if not campaign:
-            # Create default campaign
-            campaign = Campaign(
+        if campaign:
+            print(f"[CAMPAIGN] Using existing campaign ID: {campaign.id}")
+            return campaign.id
+        
+        # Check if we have any users
+        user_result = await db.execute(select(User).limit(1))
+        user = user_result.scalar_one_or_none()
+        
+        if not user:
+            # Create a system user
+            user = User(
                 id=1,
-                name="Landing Page Assessments",
-                description="Default campaign for landing page assessment leads",
-                status="active",
-                campaign_type="assessment",
-                source="landing_page"
+                email="system@unitasa.com",
+                username="system",
+                full_name="System User",
+                is_active=True,
+                is_superuser=True
             )
-            db.add(campaign)
+            db.add(user)
             await db.flush()
-            print(f"[CAMPAIGN] Created default campaign with ID: {campaign.id}")
+            print(f"[USER] Created system user with ID: {user.id}")
+        
+        # Now create the campaign
+        campaign = Campaign(
+            id=1,
+            campaign_id="default_landing_page_campaign",
+            user_id=user.id,
+            name="Landing Page Assessments",
+            description="Default campaign for landing page assessment leads",
+            status="active",
+            campaign_type="landing_page",
+            target_audience={}
+        )
+        db.add(campaign)
+        await db.flush()
+        print(f"[CAMPAIGN] Created default campaign with ID: {campaign.id}")
         
         return campaign.id
     except Exception as e:
-        print(f"[CAMPAIGN] Error ensuring default campaign: {e}")
-        # Return 1 as fallback, but this might still cause the foreign key error
+        print(f"[CAMPAIGN] Error ensuring campaign and user: {e}")
+        # If all else fails, return 1 and let the error happen - it will be logged
         return 1
 
 
@@ -141,13 +164,20 @@ async def start_assessment(
 
             if not lead:
                 print(f"[ASSESSMENT START] Creating new lead for email: {request.email}")
-                # Ensure default campaign exists
-                campaign_id = await ensure_default_campaign(db)
+                # Ensure we have a campaign (and user if needed)
+                campaign_id = await ensure_default_campaign_and_user(db)
                 
                 # Create new lead
                 lead = Lead(
                     lead_id=generate_compact_assessment_id(),
-                    campaign_id=campaign_id,  # Default campaign for assessment leads
+                    campaign_id=campaign_id,
+                    email=request.email,
+                    first_name=request.name.split()[0] if request.name else None,
+                    last_name=" ".join(request.name.split()[1:]) if request.name and len(request.name.split()) > 1 else None,
+                    company=request.company,
+                    source="landing_page_assessment",
+                    preferred_crm=request.preferred_crm
+                )
                     email=request.email,
                     first_name=request.name.split()[0] if request.name else None,
                     last_name=" ".join(request.name.split()[1:]) if request.name and len(request.name.split()) > 1 else None,
