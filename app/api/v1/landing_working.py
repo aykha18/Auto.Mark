@@ -24,6 +24,9 @@ from app.models.user import User
 router = APIRouter()
 settings = get_settings()
 
+print(f"[LANDING_WORKING] Router initialized successfully")
+print(f"[LANDING_WORKING] Settings loaded: {settings.app_name}")
+
 
 def generate_compact_assessment_id() -> str:
     """Generate a compact assessment ID"""
@@ -113,11 +116,29 @@ class AssessmentSubmissionRequest(BaseModel):
 @router.get("/health")
 async def landing_health_check() -> Dict[str, Any]:
     """Health check endpoint for landing page services"""
+    print(f"[LANDING_WORKING] Health check endpoint called")
     return {
         "status": "healthy",
-        "service": "landing_page",
+        "service": "landing_page_working",
         "version": settings.version,
-        "environment": settings.environment
+        "environment": settings.environment,
+        "router": "landing_working",
+        "endpoints": [
+            "/health",
+            "/assessment/questions", 
+            "/assessment/start",
+            "/assessment/submit"
+        ]
+    }
+
+@router.get("/test")
+async def test_endpoint() -> Dict[str, Any]:
+    """Test endpoint to verify router is working"""
+    print(f"[LANDING_WORKING] Test endpoint called successfully")
+    return {
+        "status": "success",
+        "message": "Landing working router is functioning",
+        "timestamp": datetime.utcnow().isoformat()
     }
 
 
@@ -142,6 +163,11 @@ async def start_assessment(
     http_request: Request = None
 ) -> Dict[str, Any]:
     """Start a new AI Business Readiness Assessment"""
+    print(f"[ROUTER] Assessment start endpoint called!")
+    print(f"[ROUTER] Request method: {http_request.method if http_request else 'Unknown'}")
+    print(f"[ROUTER] Request URL: {http_request.url if http_request else 'Unknown'}")
+    print(f"[ROUTER] Request data: email={request.email}, name={request.name}, company={request.company}, preferred_crm={request.preferred_crm}")
+    
     try:
         print(f"[ASSESSMENT START] Starting assessment for email: {request.email}, lead_id: {request.lead_id}")
 
