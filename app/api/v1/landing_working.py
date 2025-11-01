@@ -204,13 +204,6 @@ async def start_assessment(
                     source="landing_page_assessment",
                     preferred_crm=request.preferred_crm
                 )
-                    email=request.email,
-                    first_name=request.name.split()[0] if request.name else None,
-                    last_name=" ".join(request.name.split()[1:]) if request.name and len(request.name.split()) > 1 else None,
-                    company=request.company,
-                    source="landing_page_assessment",
-                    preferred_crm=request.preferred_crm
-                )
                 db.add(lead)
                 await db.flush()  # Get the ID without committing
                 print(f"[ASSESSMENT START] Created new lead with ID: {lead.id}")
