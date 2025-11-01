@@ -2,15 +2,15 @@ import axios from 'axios';
 
 // API Configuration - Use environment variable or detect environment
 const getApiBaseUrl = () => {
-  // If REACT_APP_API_URL is set, use it
-  if (process.env.REACT_APP_API_URL) {
+  // If REACT_APP_API_URL is set and it's not the placeholder, use it
+  if (process.env.REACT_APP_API_URL && 
+      !process.env.REACT_APP_API_URL.includes('your-backend-service.railway.app')) {
     return process.env.REACT_APP_API_URL;
   }
   
-  // If we're in production (Railway), check if we're on the same domain as backend
+  // If we're in production (Railway), use relative URLs for same-service deployment
   if (process.env.NODE_ENV === 'production' || window.location.hostname !== 'localhost') {
-    // If frontend and backend are on same Railway service, use relative URLs
-    // If they're separate services, you'll need to set REACT_APP_API_URL
+    // Backend and frontend are on the same Railway service
     return ''; // Relative URLs will use the same domain
   }
   
