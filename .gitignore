@@ -198,3 +198,31 @@ yarn-error.log*
 *.bak
 *.backup
 *~
+
+# Temporary and test files
+tmp/
+temp/
+test_*.py
+check_*.py
+verify_*.py
+validate_*.py
+
+# Documentation and summary files
+*_SUMMARY.md
+*_IMPLEMENTATION*.md
+*_CHECKLIST.md
+*_FIXES.md
+*_REPLACEMENT.md
+*_GUIDE.md
+UNITASA*.md
+UNITAS*.md
+FINAL_*.md
+RAILWAY_*.md
+
+# Frontend validation files
+validate-*.js
+
+# Additional cleanup patterns
+*.1761*.log
+swark-output/
+0.*

@@ -6,6 +6,8 @@ import {
 } from '../components/sections';
 import { CRMAssessmentResult } from '../types';
 import { trackPageView } from '../utils/analytics';
+import LeadCaptureForm, { LeadData } from '../components/assessment/LeadCaptureForm';
+import CRMSelectorStep from '../components/assessment/CRMSelectorStep';
 
 // Lazy load heavy components
 const AICapabilitiesSection = lazy(() => import('../components/sections/AICapabilitiesSection'));
@@ -35,8 +37,11 @@ const ChatWidgetContainer: React.FC = () => {
 };
 
 const LandingPage: React.FC = () => {
+  const [isLeadCaptureOpen, setIsLeadCaptureOpen] = useState(false);
+  const [isCRMSelectorOpen, setIsCRMSelectorOpen] = useState(false);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
   const [assessmentResult, setAssessmentResult] = useState<CRMAssessmentResult | null>(null);
+  const [leadData, setLeadData] = useState<LeadData | null>(null);
 
   useEffect(() => {
     trackPageView('/');
@@ -60,7 +65,42 @@ const LandingPage: React.FC = () => {
   };
 
   const openAssessment = () => {
+    // First show lead capture form
+    setIsLeadCaptureOpen(true);
+  };
+
+  const handleLeadCapture = (data: LeadData) => {
+    console.log('Lead captured, opening CRM selector:', data);
+    setLeadData(data);
+    setIsLeadCaptureOpen(false);
+    setIsCRMSelectorOpen(true);
+  };
+
+  const handleCRMSelection = (selectedCRM: string) => {
+    console.log('CRM selected:', selectedCRM);
+    if (leadData) {
+      setLeadData({ ...leadData, preferredCRM: selectedCRM });
+    }
+    setIsCRMSelectorOpen(false);
     setIsAssessmentOpen(true);
+  };
+
+  const closeLeadCapture = () => {
+    setIsLeadCaptureOpen(false);
+  };
+
+  const closeCRMSelector = () => {
+    setIsCRMSelectorOpen(false);
+  };
+
+  const backToCRMSelector = () => {
+    setIsAssessmentOpen(false);
+    setIsCRMSelectorOpen(true);
+  };
+
+  const backToLeadCapture = () => {
+    setIsCRMSelectorOpen(false);
+    setIsLeadCaptureOpen(true);
   };
 
   const closeAssessment = () => {
@@ -163,6 +203,21 @@ const LandingPage: React.FC = () => {
               </div>
             </section>
 
+            {/* Lead Capture Form */}
+            <LeadCaptureForm
+              isOpen={isLeadCaptureOpen}
+              onClose={closeLeadCapture}
+              onSubmit={handleLeadCapture}
+            />
+
+            {/* CRM Selector Step */}
+            <CRMSelectorStep
+              isOpen={isCRMSelectorOpen}
+              onClose={closeCRMSelector}
+              onNext={handleCRMSelection}
+              onBack={backToLeadCapture}
+            />
+
             {/* Assessment Modal */}
             {isAssessmentOpen && (
               <Suspense fallback={<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -172,6 +227,7 @@ const LandingPage: React.FC = () => {
                   isOpen={isAssessmentOpen}
                   onClose={closeAssessment}
                   onComplete={handleAssessmentComplete}
+                  leadData={leadData}
                 />
               </Suspense>
             )}

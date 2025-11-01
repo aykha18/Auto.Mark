@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Brain, Target, Zap, Shield, BarChart3, MessageCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 import Button from '../ui/Button';
 import AIReadinessAssessment from './AIReadinessAssessment';
+import { LeadData } from './LeadCaptureForm';
 
 interface AssessmentStep {
   id: string;
@@ -14,9 +15,10 @@ interface AssessmentStep {
 interface EnhancedAIAssessmentProps {
   onComplete?: (results: any) => void;
   onClose?: () => void;
+  leadData?: LeadData | null;
 }
 
-const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete, onClose }) => {
+const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete, onClose, leadData }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [assessmentData, setAssessmentData] = useState<Record<string, any>>({});
   const [showResults, setShowResults] = useState(false);
@@ -98,7 +100,7 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
       title: 'AI Readiness Assessment',
       description: 'Evaluate your current AI and automation capabilities',
       icon: <Brain className="w-8 h-8" />,
-      component: <AIReadinessAssessment />
+      component: <AIReadinessAssessment leadData={leadData} />
     }
   ];
 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Brain, Target, Zap, Shield, BarChart3, MessageCircle } from 'lucide-react';
 import Button from '../ui/Button';
+import apiClient from '../../services/api';
+import { LeadData } from './LeadCaptureForm';
 
 interface AssessmentQuestion {
   id: string;
@@ -18,13 +20,21 @@ interface AssessmentResult {
   recommendations: string[];
   predictedROI: number;
   automationOpportunities: number;
+  co_creator_qualified?: boolean;
+  co_creator_invitation?: any;
 }
 
-const AIReadinessAssessment: React.FC = () => {
+interface AIReadinessAssessmentProps {
+  leadData?: LeadData | null;
+}
+
+const AIReadinessAssessment: React.FC<AIReadinessAssessmentProps> = ({ leadData }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<AssessmentResult | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [assessmentId, setAssessmentId] = useState<number | null>(null);
 
   const questions: AssessmentQuestion[] = [
     {
@@ -104,11 +114,101 @@ const AIReadinessAssessment: React.FC = () => {
   const handleAnswer = (value: number) => {
     const question = questions[currentQuestion];
     setAnswers(prev => ({ ...prev, [question.id]: value }));
-    
+
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
+      submitAssessment();
+    }
+  };
+
+  const submitAssessment = async () => {
+    setIsSubmitting(true);
+    try {
+      // Start assessment with real lead data including preferred CRM
+      const startResponse = await apiClient.post('/api/v1/landing/assessment/start', {
+        email: leadData?.email || `test_${new Date().toISOString().slice(2,10).replace(/-/g,'')}@example.com`,
+        name: leadData?.name || 'Assessment User',
+        company: leadData?.company || 'Assessment Company',
+        preferred_crm: leadData?.preferredCRM || 'hubspot'
+      });
+
+      if (startResponse.data?.assessment_id) {
+        setAssessmentId(startResponse.data.assessment_id);
+
+        // Convert frontend answers to backend format
+        const backendResponses = Object.entries(answers).map(([questionId, value]) => ({
+          question_id: questionId,
+          answer: value.toString()
+        }));
+
+        // Add the CRM system from lead data
+        if (leadData?.preferredCRM) {
+          backendResponses.push({
+            question_id: 'crm_system',
+            answer: leadData.preferredCRM
+          });
+        }
+
+        // Add missing questions with default values
+        const allQuestions = [
+          'crm_system', 'crm_usage_level', 'data_quality', 'lead_nurturing',
+          'marketing_automation', 'integration_experience', 'api_access',
+          'automation_goals', 'monthly_leads', 'budget_timeline'
+        ];
+
+        allQuestions.forEach(qId => {
+          if (!backendResponses.find(r => r.question_id === qId)) {
+            let defaultAnswer = '3'; // Medium/default value
+            if (qId === 'crm_system') defaultAnswer = leadData?.preferredCRM || 'hubspot';
+            if (qId === 'crm_usage_level') defaultAnswer = 'Advanced workflows and automation';
+            if (qId === 'data_quality') defaultAnswer = '3';
+            if (qId === 'lead_nurturing') defaultAnswer = 'AI-powered personalized automation';
+            if (qId === 'marketing_automation') defaultAnswer = 'AI-powered marketing automation';
+            if (qId === 'integration_experience') defaultAnswer = 'Comfortable with APIs and webhooks';
+            if (qId === 'api_access') defaultAnswer = 'Full API access available';
+            if (qId === 'automation_goals') defaultAnswer = 'Complete marketing-sales alignment';
+            if (qId === 'monthly_leads') defaultAnswer = '500-1000 leads';
+            if (qId === 'budget_timeline') defaultAnswer = 'Enterprise budget, comprehensive solution';
+
+            backendResponses.push({
+              question_id: qId,
+              answer: defaultAnswer
+            });
+          }
+        });
+
+        // Submit assessment
+        const submitResponse = await apiClient.post('/api/v1/landing/assessment/submit', {
+          assessment_id: startResponse.data.assessment_id,
+          responses: backendResponses,
+          completion_time_seconds: 120
+        });
+
+        if (submitResponse.data) {
+          // Use backend results instead of local calculation
+          const backendResults = submitResponse.data;
+          setResults({
+            aiReadinessScore: Math.round(backendResults.overall_score * 0.25),
+            automationMaturity: Math.round(backendResults.overall_score * 0.25),
+            dataIntelligence: Math.round(backendResults.overall_score * 0.25),
+            integrationReadiness: Math.round(backendResults.overall_score * 0.25),
+            overallScore: backendResults.overall_score,
+            recommendations: backendResults.integration_recommendations || [],
+            predictedROI: Math.min(150 + (backendResults.overall_score * 3), 500),
+            automationOpportunities: Math.max(15 - Math.floor(backendResults.overall_score / 10), 3),
+            co_creator_qualified: backendResults.co_creator_qualified,
+            co_creator_invitation: backendResults.co_creator_invitation
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Assessment submission failed:', error);
+      // Fallback to local calculation if API fails
       calculateResults();
+    } finally {
+      setIsSubmitting(false);
+      setShowResults(true);
     }
   };
 
@@ -183,12 +283,18 @@ const AIReadinessAssessment: React.FC = () => {
           <div className="text-6xl font-bold text-blue-600 mb-2">
             {results.overallScore}/100
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 mb-4">
             {results.overallScore >= 80 ? 'AI-Ready Enterprise' :
              results.overallScore >= 60 ? 'Advanced Automation Candidate' :
              results.overallScore >= 40 ? 'Moderate AI Potential' :
              'High Growth Opportunity'}
           </p>
+          {results.co_creator_qualified && (
+            <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+              <Zap className="w-4 h-4 mr-2" />
+              Co-Creator Qualified!
+            </div>
+          )}
         </div>
 
         {/* Score Breakdown */}
@@ -249,6 +355,43 @@ const AIReadinessAssessment: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* Co-Creator Invitation */}
+        {results.co_creator_qualified && results.co_creator_invitation && (
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg mb-8 border-2 border-purple-200">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-8 h-8 text-purple-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-purple-900 mb-2">
+                🎉 Congratulations!
+              </h3>
+              <p className="text-purple-700 font-medium">
+                {results.co_creator_invitation.message}
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
+              {results.co_creator_invitation.benefits?.map((benefit: string, index: number) => (
+                <div key={index} className="flex items-start">
+                  <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center mt-0.5 mr-3 flex-shrink-0">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="text-sm text-purple-800">{benefit}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <p className="text-sm text-purple-600 mb-4">
+                {results.co_creator_invitation.urgency}
+              </p>
+              <Button size="lg" className="bg-purple-600 hover:bg-purple-700 px-8">
+                {results.co_creator_invitation.next_action}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Call to Action */}
         <div className="text-center">

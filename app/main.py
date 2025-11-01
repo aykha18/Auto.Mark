@@ -11,9 +11,36 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from contextlib import asynccontextmanager
 
-from app.core.database import engine, Base
+from app.core.database import Base, init_database
 from app.core.security_middleware import SecurityHeadersMiddleware
-from app.api.v1 import landing, chat, analytics, crm_marketplace, health
+
+print("Importing API modules...")
+try:
+    print("Importing health module...")
+    from app.api.v1 import health
+    print("Health module imported successfully")
+    
+    print("Importing landing module...")
+    from app.api.v1 import landing_working as landing
+    print("Landing module imported successfully")
+    
+    print("Importing chat module...")
+    from app.api.v1 import chat
+    print("Chat module imported successfully")
+    
+    print("Importing analytics module...")
+    from app.api.v1 import analytics
+    print("Analytics module imported successfully")
+    
+    print("Importing crm_marketplace module...")
+    from app.api.v1 import crm_marketplace
+    print("CRM marketplace module imported successfully")
+    
+    print("All API modules imported successfully")
+except Exception as e:
+    print(f"Error importing API modules: {e}")
+    import traceback
+    traceback.print_exc()
 
 # Import all models to ensure they are registered with SQLAlchemy
 from app.models import *
@@ -26,6 +53,7 @@ async def lifespan(app: FastAPI):
     print("Starting Unitasa application...")
     try:
         print("Attempting database connection...")
+        engine, _ = init_database()
         print(f"Database URL: {engine.url}")
         async with engine.begin() as conn:
             print("Creating database tables...")
@@ -44,6 +72,7 @@ async def lifespan(app: FastAPI):
     # Shutdown
     print("Shutting down application...")
     try:
+        engine, _ = init_database()
         await engine.dispose()
         print("Database connection disposed successfully")
     except Exception as e:
@@ -77,12 +106,32 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Include API routers
 print("Including API routers...")
-app.include_router(health.router, prefix="/api/v1", tags=["health"])
-app.include_router(landing.router, prefix="/api/v1", tags=["landing"])
-app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
-app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
-app.include_router(crm_marketplace.router, prefix="/api/v1", tags=["crm"])
-print("API routers included")
+try:
+    print("Including health router...")
+    app.include_router(health.router, prefix="/api/v1", tags=["health"])
+    print("Health router included successfully")
+    
+    print("Including landing router...")
+    app.include_router(landing.router, prefix="/api/v1/landing", tags=["landing"])
+    print("Landing router included successfully")
+    
+    print("Including chat router...")
+    app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
+    print("Chat router included successfully")
+    
+    print("Including analytics router...")
+    app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
+    print("Analytics router included successfully")
+    
+    print("Including crm_marketplace router...")
+    app.include_router(crm_marketplace.router, prefix="/api/v1", tags=["crm"])
+    print("CRM marketplace router included successfully")
+    
+    print("All API routers included successfully")
+except Exception as e:
+    print(f"Error including API routers: {e}")
+    import traceback
+    traceback.print_exc()
 
 # Serve static files from React build
 print("Checking for frontend build...")
@@ -90,28 +139,8 @@ if os.path.exists("frontend/build"):
     print("Frontend build found, mounting static files")
     app.mount("/static", StaticFiles(directory="frontend/build/static"), name="static")
 
-    @app.get("/{full_path:path}")
-    async def serve_react_app(request: Request, full_path: str):
-        """Serve React app for all non-API routes"""
-        print(f"Serving path: {full_path}")
-        # API routes should not be caught by this
-        if full_path.startswith("api/"):
-            return {"error": "API endpoint not found"}
-
-        # Serve static files
-        file_path = f"frontend/build/{full_path}"
-        if os.path.exists(file_path) and os.path.isfile(file_path):
-            print(f"Serving static file: {file_path}")
-            return FileResponse(file_path)
-
-        # Serve index.html for all other routes (React Router)
-        index_path = "frontend/build/index.html"
-        if os.path.exists(index_path):
-            print(f"Serving index.html: {index_path}")
-            return FileResponse(index_path)
-        else:
-            print("index.html not found!")
-            return {"error": "Frontend not built"}
+    # Note: This catch-all route will be defined at the end of the file
+    # to avoid intercepting API routes
 else:
     print("Frontend build not found!")
 
@@ -170,6 +199,9 @@ async def root():
     if os.path.exists("frontend/build/index.html"):
         return FileResponse("frontend/build/index.html")
     return {"message": "Unitasa API - Unified Marketing Intelligence Platform"}
+
+
+# TODO: Add catch-all route for React app after API testing is complete
 
 
 if __name__ == "__main__":

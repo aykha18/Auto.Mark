@@ -1,18 +1,21 @@
 import React from 'react';
 import EnhancedAIAssessment from './EnhancedAIAssessment';
 import { CRMAssessmentResult } from '../../types';
+import { LeadData } from './LeadCaptureForm';
 import { X } from 'lucide-react';
 
 interface AssessmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete?: (result: CRMAssessmentResult) => void;
+  leadData?: LeadData | null;
 }
 
 export const AssessmentModal: React.FC<AssessmentModalProps> = ({
   isOpen,
   onClose,
   onComplete,
+  leadData,
 }) => {
   if (!isOpen) return null;
 
@@ -45,6 +48,7 @@ export const AssessmentModal: React.FC<AssessmentModalProps> = ({
             <EnhancedAIAssessment 
               onComplete={handleComplete}
               onClose={onClose}
+              leadData={leadData}
             />
           </div>
         </div>

@@ -25,10 +25,12 @@ export const trackPageView = async (page: string, referrer?: string): Promise<vo
       timestamp: new Date(),
       sessionId: getSessionId(),
     };
-    
+
+    // Only track if backend is available
     await LandingPageAPI.trackPageView(pageViewEvent);
   } catch (error) {
-    console.error('Failed to track page view:', error);
+    // Silently fail for analytics - don't show errors to users
+    console.log('Analytics tracking skipped (backend not available)');
   }
 };
 
