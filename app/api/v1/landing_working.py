@@ -38,8 +38,11 @@ def generate_compact_assessment_id() -> str:
 
 async def ensure_default_campaign_and_user(db: AsyncSession) -> int:
     """Ensure default user and campaign exist"""
+    print(f"[CAMPAIGN] Starting ensure_default_campaign_and_user function")
+    
     try:
         # First, try to find any existing campaign
+        print(f"[CAMPAIGN] Checking for existing campaigns...")
         result = await db.execute(select(Campaign).limit(1))
         campaign = result.scalar_one_or_none()
         
@@ -47,11 +50,13 @@ async def ensure_default_campaign_and_user(db: AsyncSession) -> int:
             print(f"[CAMPAIGN] Using existing campaign ID: {campaign.id}")
             return campaign.id
         
+        print(f"[CAMPAIGN] No campaigns found, checking for users...")
         # Check if we have any users
         user_result = await db.execute(select(User).limit(1))
         user = user_result.scalar_one_or_none()
         
         if not user:
+            print(f"[USER] No users found, creating system user...")
             # Create a system user
             user = User(
                 id=1,
@@ -64,7 +69,10 @@ async def ensure_default_campaign_and_user(db: AsyncSession) -> int:
             db.add(user)
             await db.flush()
             print(f"[USER] Created system user with ID: {user.id}")
+        else:
+            print(f"[USER] Using existing user ID: {user.id}")
         
+        print(f"[CAMPAIGN] Creating default campaign with user_id: {user.id}")
         # Now create the campaign
         campaign = Campaign(
             id=1,
@@ -78,11 +86,15 @@ async def ensure_default_campaign_and_user(db: AsyncSession) -> int:
         )
         db.add(campaign)
         await db.flush()
-        print(f"[CAMPAIGN] Created default campaign with ID: {campaign.id}")
+        await db.commit()  # Commit the campaign and user creation
+        print(f"[CAMPAIGN] Created and committed default campaign with ID: {campaign.id}")
+        print(f"[CAMPAIGN] Returning campaign ID: {campaign.id}")
         
         return campaign.id
     except Exception as e:
-        print(f"[CAMPAIGN] Error ensuring campaign and user: {e}")
+        print(f"[CAMPAIGN] ERROR in ensure_default_campaign_and_user: {e}")
+        import traceback
+        print(f"[CAMPAIGN] Full traceback: {traceback.format_exc()}")
         # If all else fails, return 1 and let the error happen - it will be logged
         return 1
 
