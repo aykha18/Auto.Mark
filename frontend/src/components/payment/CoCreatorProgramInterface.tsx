@@ -2,19 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { CoCreatorProgramStatus } from '../../types';
 import LandingPageAPI from '../../services/landingPageApi';
 import Button from '../ui/Button';
-import { 
-  Crown, 
-  Users, 
-  Zap, 
-  Clock, 
-  CheckCircle, 
+import {
+  Crown,
+  Users,
+  Zap,
+  Clock,
+  CheckCircle,
   Star,
   Shield,
   Rocket,
   Heart,
   TrendingUp,
   MessageCircle,
-  Award
+  Award,
+  Timer,
+  Flame
 } from 'lucide-react';
 
 interface CoCreatorProgramInterfaceProps {
@@ -29,11 +31,14 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
   const [programStatus, setProgramStatus] = useState<CoCreatorProgramStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<{days: number, hours: number, minutes: number, seconds: number} | null>(null);
+  const [recentJoins, setRecentJoins] = useState<string[]>([]);
 
   useEffect(() => {
     loadProgramStatus();
     setupWebSocketConnection();
-    
+    startCountdownTimer();
+
     return () => {
       // Cleanup WebSocket connection
       if ((window as any).coCreatorWebSocket) {
@@ -41,6 +46,32 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
       }
     };
   }, []);
+
+  const startCountdownTimer = () => {
+    // Set program end date to 30 days from now (adjustable)
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 30);
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const distance = endDate.getTime() - now;
+
+      if (distance > 0) {
+        setTimeLeft({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000)
+        });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  };
 
   const loadProgramStatus = async () => {
     try {
@@ -77,6 +108,13 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
             seatsRemaining: data.seatsRemaining,
             urgencyLevel: data.urgencyLevel
           } : null);
+        } else if (data.type === 'new_join') {
+          // Add recent join notification
+          setRecentJoins(prev => [data.name, ...prev.slice(0, 2)]);
+          // Remove after 10 seconds
+          setTimeout(() => {
+            setRecentJoins(prev => prev.filter(name => name !== data.name));
+          }, 10000);
         }
       };
       
@@ -176,7 +214,8 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
       company: 'TechFlow Solutions',
       avatar: '👩‍💼',
       quote: 'Being a co-creator gave me direct influence over the HubSpot integration. The founder actually implemented my suggestions!',
-      integration: 'HubSpot'
+      integration: 'HubSpot',
+      joinedDaysAgo: 3
     },
     {
       name: 'Marcus Rodriguez',
@@ -184,7 +223,8 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
       company: 'Growth Dynamics',
       avatar: '👨‍💻',
       quote: 'The lifetime access alone is worth 10x the investment. Plus, the Pipedrive integration works flawlessly.',
-      integration: 'Pipedrive'
+      integration: 'Pipedrive',
+      joinedDaysAgo: 7
     },
     {
       name: 'Emily Watson',
@@ -192,7 +232,26 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
       company: 'StartupBoost',
       avatar: '👩‍🚀',
       quote: 'As a co-creator, I helped shape the Zoho integration. Now my entire sales process is automated.',
-      integration: 'Zoho CRM'
+      integration: 'Zoho CRM',
+      joinedDaysAgo: 12
+    },
+    {
+      name: 'David Kim',
+      role: 'VP of Sales',
+      company: 'ScaleUp Inc',
+      avatar: '👨‍💼',
+      quote: 'The Salesforce integration saved us 20 hours/week. As a co-creator, I got priority setup and custom field mapping.',
+      integration: 'Salesforce',
+      joinedDaysAgo: 1
+    },
+    {
+      name: 'Lisa Thompson',
+      role: 'CMO',
+      company: 'DigitalFirst',
+      avatar: '👩‍💻',
+      quote: 'ROI was immediate. The AI automation reduced our lead qualification time by 80%. Worth every penny.',
+      integration: 'ActiveCampaign',
+      joinedDaysAgo: 5
     }
   ];
 
@@ -234,6 +293,50 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
             Join 25 founding entrepreneurs who get lifetime access to our AI marketing platform + direct product influence + priority support
           </p>
           
+          {/* Countdown Timer */}
+          {timeLeft && (
+            <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-400 rounded-lg p-4 max-w-lg mx-auto mb-6">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <Timer className="w-5 h-5 text-red-400 mr-2" />
+                  <div className="text-red-200 font-semibold">⏰ PROGRAM CLOSES IN</div>
+                </div>
+                <div className="flex justify-center space-x-4 text-2xl font-bold text-white">
+                  <div className="text-center">
+                    <div className="bg-red-500/30 px-3 py-2 rounded-lg">{timeLeft.days}</div>
+                    <div className="text-xs text-red-300 mt-1">DAYS</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-red-500/30 px-3 py-2 rounded-lg">{timeLeft.hours}</div>
+                    <div className="text-xs text-red-300 mt-1">HRS</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-red-500/30 px-3 py-2 rounded-lg">{timeLeft.minutes}</div>
+                    <div className="text-xs text-red-300 mt-1">MIN</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-red-500/30 px-3 py-2 rounded-lg">{timeLeft.seconds}</div>
+                    <div className="text-xs text-red-300 mt-1">SEC</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Recent Joins Notifications */}
+          {recentJoins.length > 0 && (
+            <div className="max-w-lg mx-auto mb-6">
+              {recentJoins.map((name, index) => (
+                <div key={index} className="bg-green-500/20 border border-green-400 rounded-lg p-3 mb-2 animate-fade-in">
+                  <div className="flex items-center text-green-200">
+                    <Flame className="w-4 h-4 mr-2" />
+                    <span className="text-sm font-medium">{name} just secured their co-creator spot!</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="bg-red-500/20 border border-red-400 rounded-lg p-4 max-w-lg mx-auto mb-6">
             <div className="text-red-200 font-semibold">⚡ FOUNDER PRICING ENDS SOON</div>
             <div className="text-sm text-red-300">Regular price increases to $2,000+ after founding phase</div>
@@ -353,10 +456,16 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
                 <blockquote className="text-sm opacity-90 mb-4 italic">
                   "{testimonial.quote}"
                 </blockquote>
-                
-                <div className="flex items-center text-xs">
-                  <Zap className="w-4 h-4 text-blue-400 mr-1" />
-                  <span className="text-blue-400 font-semibold">{testimonial.integration} Integration</span>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-xs">
+                    <Zap className="w-4 h-4 text-blue-400 mr-1" />
+                    <span className="text-blue-400 font-semibold">{testimonial.integration} Integration</span>
+                  </div>
+                  <div className="flex items-center text-xs text-green-400">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    <span>Joined {testimonial.joinedDaysAgo} days ago</span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -403,6 +512,19 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
             <div className="flex items-center">
               <Clock className="w-4 h-4 mr-1" />
               Limited time
+            </div>
+          </div>
+
+          {/* Referral Program Teaser */}
+          <div className="mt-6 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-400/30 rounded-lg p-4 max-w-md mx-auto">
+            <div className="text-center">
+              <div className="flex items-center justify-center mb-2">
+                <Users className="w-4 h-4 text-purple-400 mr-2" />
+                <span className="text-sm font-semibold text-purple-200">🎁 Referral Bonus</span>
+              </div>
+              <div className="text-xs text-purple-300">
+                Bring a friend and both get $50 credit toward future features
+              </div>
             </div>
           </div>
         </div>

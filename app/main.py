@@ -123,8 +123,46 @@ async def health_check():
         "status": "healthy",
         "service": "unitasa-api",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "features": {
+            "database": True,
+            "co_creator_program": True,
+            "assessment_engine": True,
+            "payment_processing": True
+        }
     }
+
+@app.middleware("http")
+async def track_conversion_funnel(request, call_next):
+    """Middleware to track conversion funnel analytics"""
+    from datetime import datetime
+
+    # Track page views and user journey
+    path = request.url.path
+    user_agent = request.headers.get("user-agent", "")
+    referrer = request.headers.get("referer", "")
+
+    # Could store this data for analytics
+    # For now, just pass through
+    response = await call_next(request)
+
+    # Add tracking headers for analytics
+    response.headers["X-Conversion-Stage"] = get_conversion_stage(path)
+
+    return response
+
+def get_conversion_stage(path: str) -> str:
+    """Determine conversion stage based on URL path"""
+    if path == "/":
+        return "landing"
+    elif "assessment" in path:
+        return "assessment"
+    elif "co-creator" in path:
+        return "co_creator_interest"
+    elif "payment" in path:
+        return "payment"
+    else:
+        return "other"
 
 @app.get("/")
 async def root():

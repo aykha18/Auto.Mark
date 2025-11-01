@@ -349,36 +349,61 @@ async def submit_assessment_responses(
         if assessment.lead:
             # Update lead score (0-1 scale for compatibility)
             assessment.lead.update_score(lead_score.overall_score / 100.0)
-            
+
             # Update lead with detailed assessment data
             assessment.lead.update_assessment_data(
-                responses_dict, 
+                responses_dict,
                 lead_score.factor_scores,
                 lead_score.segment.value,
                 lead_score.confidence
             )
-            
+
             # Add assessment-related tags
             assessment.lead.add_tag("assessment_completed")
             assessment.lead.add_tag(f"crm_{crm_system.value}")
             assessment.lead.add_tag(f"readiness_{assessment.readiness_level}")
             assessment.lead.add_tag(f"confidence_{int(lead_score.confidence * 100)}")
+
+            # Auto-qualify high-scoring leads for co-creator program
+            if lead_score.overall_score >= 70:  # Hot leads
+                assessment.lead.add_tag("co_creator_qualified")
+                assessment.lead.add_tag("high_priority")
+                # Could trigger email notification here
         
         db.commit()
-        
-        return AssessmentResultResponse(
-            assessment_id=assessment.id,
-            overall_score=assessment.overall_score,
-            category_scores=assessment.category_scores,
-            readiness_level=assessment.readiness_level,
-            segment=assessment.segment,
-            current_crm=assessment.current_crm,
-            integration_recommendations=assessment.integration_recommendations,
-            automation_opportunities=assessment.automation_opportunities,
-            technical_requirements=assessment.technical_requirements,
-            next_steps=assessment.next_steps,
-            is_completed=assessment.is_completed
-        )
+
+        # Return enhanced response with co-creator qualification
+        response_data = {
+            "assessment_id": assessment.id,
+            "overall_score": assessment.overall_score,
+            "category_scores": assessment.category_scores,
+            "readiness_level": assessment.readiness_level,
+            "segment": assessment.segment,
+            "current_crm": assessment.current_crm,
+            "integration_recommendations": assessment.integration_recommendations,
+            "automation_opportunities": assessment.automation_opportunities,
+            "technical_requirements": assessment.technical_requirements,
+            "next_steps": assessment.next_steps,
+            "is_completed": assessment.is_completed,
+            "co_creator_qualified": lead_score.overall_score >= 70,
+            "co_creator_invitation": None
+        }
+
+        # Add personalized co-creator invitation for qualified leads
+        if lead_score.overall_score >= 70:
+            response_data["co_creator_invitation"] = {
+                "message": "🎉 Congratulations! Based on your assessment results, you're qualified for our exclusive Co-Creator Program!",
+                "benefits": [
+                    "Lifetime access to all platform features",
+                    "Direct influence on product development",
+                    "Priority support and custom integrations",
+                    "Exclusive community access"
+                ],
+                "next_action": "Reserve your founding member seat now",
+                "urgency": "Only 25 seats available - program fills quickly"
+            }
+
+        return AssessmentResultResponse(**{k: v for k, v in response_data.items() if k != "co_creator_invitation"})
         
     except Exception as e:
         db.rollback()
