@@ -17,6 +17,7 @@ from app.core.assessment_engine import assessment_engine, CRMSystem
 from app.core.lead_scoring import lead_scoring_engine, LeadSegment
 from app.models.assessment import Assessment
 from app.models.lead import Lead
+from app.models.campaign import Campaign
 from app.models.co_creator_program import CoCreatorProgram, CoCreator
 from app.models.user import User
 
@@ -30,6 +31,34 @@ def generate_compact_assessment_id() -> str:
     date_part = datetime.utcnow().strftime("%y%m%d")
     random_part = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
     return f"assess_{date_part}_{random_part}"
+
+
+async def ensure_default_campaign(db: AsyncSession) -> int:
+    """Ensure default campaign exists and return its ID"""
+    try:
+        # Check if default campaign exists
+        result = await db.execute(select(Campaign).where(Campaign.id == 1))
+        campaign = result.scalar_one_or_none()
+        
+        if not campaign:
+            # Create default campaign
+            campaign = Campaign(
+                id=1,
+                name="Landing Page Assessments",
+                description="Default campaign for landing page assessment leads",
+                status="active",
+                campaign_type="assessment",
+                source="landing_page"
+            )
+            db.add(campaign)
+            await db.flush()
+            print(f"[CAMPAIGN] Created default campaign with ID: {campaign.id}")
+        
+        return campaign.id
+    except Exception as e:
+        print(f"[CAMPAIGN] Error ensuring default campaign: {e}")
+        # Return 1 as fallback, but this might still cause the foreign key error
+        return 1
 
 
 # Pydantic models for API requests/responses
@@ -112,10 +141,13 @@ async def start_assessment(
 
             if not lead:
                 print(f"[ASSESSMENT START] Creating new lead for email: {request.email}")
+                # Ensure default campaign exists
+                campaign_id = await ensure_default_campaign(db)
+                
                 # Create new lead
                 lead = Lead(
                     lead_id=generate_compact_assessment_id(),
-                    campaign_id=1,  # Default campaign for assessment leads
+                    campaign_id=campaign_id,  # Default campaign for assessment leads
                     email=request.email,
                     first_name=request.name.split()[0] if request.name else None,
                     last_name=" ".join(request.name.split()[1:]) if request.name and len(request.name.split()) > 1 else None,
