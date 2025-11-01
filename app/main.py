@@ -93,9 +93,36 @@ print("FastAPI application created")
 # app.add_middleware(SecurityHeadersMiddleware)
 
 # Add CORS middleware
+# Configure CORS for Railway deployment
+def get_allowed_origins():
+    """Get allowed origins based on environment"""
+    # Base allowed origins
+    origins = [
+        "http://localhost:3000",  # Local development
+        "http://localhost:3001",  # Alternative local port
+        "https://unitas.up.railway.app",  # Railway frontend
+    ]
+    
+    # Add environment-specific origins
+    frontend_url = os.getenv("FRONTEND_URL")
+    if frontend_url:
+        origins.append(frontend_url)
+    
+    # In development or if no specific environment, allow all
+    environment = os.getenv("ENVIRONMENT", "development")
+    railway_env = os.getenv("RAILWAY_ENVIRONMENT")
+    
+    if environment == "development" and not railway_env:
+        return ["*"]
+    
+    return origins
+
+allowed_origins = get_allowed_origins()
+print(f"CORS allowed origins: {allowed_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -159,6 +186,18 @@ async def health_check():
             "assessment_engine": True,
             "payment_processing": True
         }
+    }
+
+@app.get("/cors-debug")
+async def cors_debug(request: Request):
+    """Debug CORS configuration"""
+    return {
+        "allowed_origins": get_allowed_origins(),
+        "request_origin": request.headers.get("origin"),
+        "environment": os.getenv("ENVIRONMENT", "development"),
+        "railway_environment": os.getenv("RAILWAY_ENVIRONMENT"),
+        "frontend_url": os.getenv("FRONTEND_URL"),
+        "all_headers": dict(request.headers)
     }
 
 @app.middleware("http")
