@@ -248,6 +248,9 @@ if os.path.exists("frontend/build"):
     print("Frontend build found, mounting static files")
     app.mount("/static", StaticFiles(directory="frontend/build/static"), name="static")
 
+    # Mount the entire frontend build directory to serve logo.svg and other assets
+    app.mount("/", StaticFiles(directory="frontend/build", html=True), name="frontend")
+
     # Note: This catch-all route will be defined at the end of the file
     # to avoid intercepting API routes
 else:
@@ -314,12 +317,7 @@ def get_conversion_stage(path: str) -> str:
     else:
         return "other"
 
-@app.get("/")
-async def root():
-    """Root endpoint - serve React app"""
-    if os.path.exists("frontend/build/index.html"):
-        return FileResponse("frontend/build/index.html")
-    return {"message": "Unitasa API - Unified Marketing Intelligence Platform"}
+# Root endpoint removed - now handled by StaticFiles mount above
 
 
 # TODO: Add catch-all route for React app after API testing is complete
