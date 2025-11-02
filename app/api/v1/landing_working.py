@@ -175,39 +175,44 @@ async def start_assessment(
     http_request: Request = None
 ) -> Dict[str, Any]:
     """Start a new AI Business Readiness Assessment"""
-    print(f"[ROUTER] Assessment start endpoint called!")
+    print(f"[ROUTER] ===== ASSESSMENT START ENDPOINT CALLED =====")
     print(f"[ROUTER] Request method: {http_request.method if http_request else 'Unknown'}")
     print(f"[ROUTER] Request URL: {http_request.url if http_request else 'Unknown'}")
     print(f"[ROUTER] Request data: email={request.email}, name={request.name}, company={request.company}, preferred_crm={request.preferred_crm}")
-    
+
     try:
-        print(f"[ASSESSMENT START] Starting assessment for email: {request.email}, lead_id: {request.lead_id}")
+        print(f"[STEP 1] Starting assessment for email: {request.email}, lead_id: {request.lead_id}")
 
         # Create or find lead
         lead = None
         if request.lead_id:
-            print(f"[ASSESSMENT START] Looking for existing lead with ID: {request.lead_id}")
+            print(f"[STEP 2A] Looking for existing lead with ID: {request.lead_id}")
             result = await db.execute(select(Lead).where(Lead.id == request.lead_id))
             lead = result.scalar_one_or_none()
             if not lead:
-                print(f"[ASSESSMENT START] Lead not found with ID: {request.lead_id}")
+                print(f"[STEP 2A] ERROR: Lead not found with ID: {request.lead_id}")
                 raise HTTPException(status_code=404, detail="Lead not found")
             else:
-                print(f"[ASSESSMENT START] Found existing lead: {lead.id} - {lead.email}")
+                print(f"[STEP 2A] SUCCESS: Found existing lead: {lead.id} - {lead.email}")
         elif request.email:
-            print(f"[ASSESSMENT START] Looking for existing lead with email: {request.email}")
+            print(f"[STEP 2B] Looking for existing lead with email: {request.email}")
             # Try to find existing lead by email
             result = await db.execute(select(Lead).where(Lead.email == request.email))
             lead = result.scalar_one_or_none()
 
             if not lead:
-                print(f"[ASSESSMENT START] Creating new lead for email: {request.email}")
+                print(f"[STEP 2B] Creating new lead for email: {request.email}")
                 # Ensure we have a campaign (and user if needed)
+                print(f"[STEP 2B] Ensuring default campaign and user exist...")
                 campaign_id = await ensure_default_campaign_and_user(db)
-                
+                print(f"[STEP 2B] Got campaign ID: {campaign_id}")
+
                 # Create new lead
+                lead_id = generate_compact_assessment_id()
+                print(f"[STEP 2B] Generated lead_id: {lead_id}")
+
                 lead = Lead(
-                    lead_id=generate_compact_assessment_id(),
+                    lead_id=lead_id,
                     campaign_id=campaign_id,
                     email=request.email,
                     first_name=request.name.split()[0] if request.name else None,
@@ -216,19 +221,24 @@ async def start_assessment(
                     source="landing_page_assessment",
                     preferred_crm=request.preferred_crm
                 )
+                print(f"[STEP 2B] Created lead object: {lead}")
+
                 db.add(lead)
+                print(f"[STEP 2B] Added lead to session")
+
                 await db.flush()  # Get the ID without committing
-                print(f"[ASSESSMENT START] Created new lead with ID: {lead.id}")
+                print(f"[STEP 2B] SUCCESS: Created new lead with ID: {lead.id}")
             else:
-                print(f"[ASSESSMENT START] Found existing lead: {lead.id} - {lead.email}")
+                print(f"[STEP 2B] SUCCESS: Found existing lead: {lead.id} - {lead.email}")
                 # Update preferred CRM if provided
                 if request.preferred_crm:
                     lead.preferred_crm = request.preferred_crm
+                    print(f"[STEP 2B] Updated preferred CRM to: {request.preferred_crm}")
         else:
-            print(f"[ASSESSMENT START] ERROR: Neither lead_id nor email provided")
+            print(f"[STEP 2] ERROR: Neither lead_id nor email provided")
             raise HTTPException(status_code=400, detail="Either lead_id or email must be provided")
 
-        print(f"[ASSESSMENT START] Checking for existing incomplete assessment for lead: {lead.id}")
+        print(f"[STEP 3] Checking for existing incomplete assessment for lead: {lead.id}")
         # Check for existing incomplete assessment
         result = await db.execute(
             select(Assessment).where(
@@ -239,7 +249,7 @@ async def start_assessment(
         existing_assessment = result.scalar_one_or_none()
 
         if existing_assessment:
-            print(f"[ASSESSMENT START] Found existing incomplete assessment: {existing_assessment.id}")
+            print(f"[STEP 3] SUCCESS: Found existing incomplete assessment: {existing_assessment.id}")
             return {
                 "assessment_id": existing_assessment.id,
                 "status": "resumed",
@@ -247,7 +257,7 @@ async def start_assessment(
                 "questions": assessment_engine.get_questions()
             }
 
-        print(f"[ASSESSMENT START] Creating new assessment for lead: {lead.id}")
+        print(f"[STEP 4] Creating new assessment for lead: {lead.id}")
         # Create new assessment
         assessment = Assessment(
             lead_id=lead.id,
@@ -257,20 +267,30 @@ async def start_assessment(
             referrer=request.referrer,
             ip_address=http_request.client.host if http_request else None
         )
+        print(f"[STEP 4] Created assessment object: {assessment}")
 
         db.add(assessment)
+        print(f"[STEP 4] Added assessment to session")
+
+        print(f"[STEP 5] Committing transaction...")
         await db.commit()
-        print(f"[ASSESSMENT START] Assessment created and committed with ID: {assessment.id}")
+        print(f"[STEP 5] SUCCESS: Assessment created and committed with ID: {assessment.id}")
+
+        print(f"[STEP 6] Getting assessment questions...")
+        questions = assessment_engine.get_questions()
+        print(f"[STEP 6] Got {len(questions)} questions")
 
         return {
             "assessment_id": assessment.id,
             "status": "started",
             "message": "Assessment started successfully",
-            "questions": assessment_engine.get_questions()
+            "questions": questions
         }
 
     except Exception as e:
-        print(f"[ASSESSMENT START] ERROR: {e}")
+        print(f"[ASSESSMENT START] CRITICAL ERROR: {e}")
+        import traceback
+        print(f"[ASSESSMENT START] Full traceback: {traceback.format_exc()}")
         await db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to start assessment: {str(e)}")
 
