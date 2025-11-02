@@ -47,15 +47,15 @@ const PlatformPositioningSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+          <div className="inline-flex items-center bg-unitasa-electric/10 text-unitasa-blue px-4 py-2 rounded-full text-sm font-medium mb-6 border border-unitasa-electric/20">
             <Zap className="w-4 h-4 mr-2" />
             Unitasa Platform
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-unitasa-blue mb-4 font-display">
             AI Marketing Automation That Actually Works
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Stop juggling disconnected tools. Unitasa unifies your marketing stack with intelligent automation 
+          <p className="text-xl text-unitasa-gray max-w-3xl mx-auto">
+            Stop juggling disconnected tools. Unitasa unifies your marketing stack with intelligent automation
             that works with any CRM, scales with your business, and delivers measurable results.
           </p>
         </div>
@@ -85,22 +85,22 @@ const PlatformPositioningSection: React.FC = () => {
         </div>
 
         {/* Platform Comparison */}
-        <div className="bg-gray-50 rounded-2xl p-8">
-          <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
+        <div className="bg-unitasa-light rounded-2xl p-8">
+          <h3 className="text-2xl font-bold text-unitasa-blue text-center mb-8 font-display">
             Why Choose Unitasa Over Traditional Solutions?
           </h3>
           
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-4 px-4 font-semibold text-gray-900">Feature</th>
-                  <th className="text-center py-4 px-4 font-semibold text-primary-600">Unitasa</th>
-                  <th className="text-center py-4 px-4 font-semibold text-gray-500">Traditional Tools</th>
-                  <th className="text-center py-4 px-4 font-semibold text-gray-500">Custom Development</th>
+                <tr className="border-b border-unitasa-electric/20">
+                  <th className="text-left py-4 px-4 font-semibold text-unitasa-blue">Feature</th>
+                  <th className="text-center py-4 px-4 font-semibold text-unitasa-electric">Unitasa</th>
+                  <th className="text-center py-4 px-4 font-semibold text-unitasa-gray">Traditional Tools</th>
+                  <th className="text-center py-4 px-4 font-semibold text-unitasa-gray">Custom Development</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-unitasa-electric/10">
                 <tr>
                   <td className="py-4 px-4 font-medium">CRM Integration</td>
                   <td className="py-4 px-4 text-center">
@@ -146,24 +146,29 @@ const PlatformPositioningSection: React.FC = () => {
             </table>
           </div>
           
-          <p className="text-sm text-gray-500 mt-4 text-center">
+          <p className="text-sm text-unitasa-gray mt-4 text-center">
             *Co-creator program pricing. Regular pricing will be higher after launch.
           </p>
         </div>
 
         {/* Call to Action */}
         <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          <h3 className="text-2xl font-bold text-unitasa-blue mb-4 font-display">
             Ready to Transform Your Marketing?
           </h3>
-          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-unitasa-gray mb-8 max-w-2xl mx-auto">
             Join thousands of businesses that have automated their lead generation and scaled their growth with Unitasa.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors">
+            <button
+              className="bg-gradient-primary text-white px-8 py-4 rounded-lg text-lg font-semibold hover:shadow-brand transition-all duration-200"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('openAssessment'));
+              }}
+            >
               Start Free Assessment
             </button>
-            <button className="border-2 border-primary-600 text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-50 transition-colors">
+            <button className="border-2 border-unitasa-electric text-unitasa-electric px-8 py-4 rounded-lg text-lg font-semibold hover:bg-unitasa-electric hover:text-white transition-all duration-200">
               Schedule Demo
             </button>
           </div>
