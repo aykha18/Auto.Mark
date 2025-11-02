@@ -40,7 +40,18 @@ const Footer: React.FC = () => {
             <ul className="space-y-2 text-gray-400">
               <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
               <li><a href="#integrations" className="hover:text-white transition-colors">Integrations</a></li>
-              <li><a href="#assessment" className="hover:text-white transition-colors">AI Assessment</a></li>
+              <li>
+                <a
+                  href="#assessment"
+                  className="hover:text-white transition-colors cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.dispatchEvent(new CustomEvent('openAssessment'));
+                  }}
+                >
+                  AI Assessment
+                </a>
+              </li>
               <li><a href="#pricing" className="hover:text-white transition-colors">Co-Creator Program</a></li>
             </ul>
           </div>

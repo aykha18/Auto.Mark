@@ -29,7 +29,14 @@ const Header: React.FC = () => {
             <a href="#integrations" className="text-unitasa-gray hover:text-unitasa-electric transition-colors font-medium">
               Integrations
             </a>
-            <a href="#assessment" className="text-unitasa-gray hover:text-unitasa-electric transition-colors font-medium">
+            <a
+              href="#assessment"
+              className="text-unitasa-gray hover:text-unitasa-electric transition-colors font-medium cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                window.dispatchEvent(new CustomEvent('openAssessment'));
+              }}
+            >
               Assessment
             </a>
             <a href="#story" className="text-unitasa-gray hover:text-unitasa-electric transition-colors font-medium">
@@ -97,8 +104,12 @@ const Header: React.FC = () => {
               </a>
               <a
                 href="#assessment"
-                className="text-gray-700 hover:text-primary-600 transition-colors"
-                onClick={toggleMenu}
+                className="text-gray-700 hover:text-primary-600 transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleMenu();
+                  window.dispatchEvent(new CustomEvent('openAssessment'));
+                }}
               >
                 Assessment
               </a>
