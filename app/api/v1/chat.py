@@ -112,8 +112,19 @@ async def initialize_chat_session(
     """
     Create a new chat session
     """
+    print(f"[CHAT INIT] ===== STARTING CHAT INITIALIZATION =====")
+    print(f"[CHAT INIT] HTTP Method: {http_request.method if http_request else 'None'}")
+    print(f"[CHAT INIT] Request URL: {http_request.url if http_request else 'None'}")
+    print(f"[CHAT INIT] Request Headers: {dict(http_request.headers) if http_request else 'None'}")
+
     try:
+        print(f"[CHAT INIT] Request body present: {request is not None}")
+        if request:
+            print(f"[CHAT INIT] Request data: lead_id={request.lead_id}, user_id={request.user_id}, user_agent={request.user_agent}, referrer={request.referrer}")
+
+        print(f"[CHAT INIT] Creating ChatService...")
         chat_service = ChatService(db)
+        print(f"[CHAT INIT] ChatService created successfully")
 
         # Create session with optional request data
         session_kwargs = {}
@@ -124,14 +135,22 @@ async def initialize_chat_session(
                 'user_agent': request.user_agent,
                 'referrer': request.referrer
             })
+            print(f"[CHAT INIT] Session kwargs from request: {session_kwargs}")
 
         if http_request:
             session_kwargs['ip_address'] = http_request.client.host
+            print(f"[CHAT INIT] Added IP address: {http_request.client.host}")
+
+        print(f"[CHAT INIT] Final session kwargs: {session_kwargs}")
+        print(f"[CHAT INIT] Calling chat_service.create_session()...")
 
         session = chat_service.create_session(**session_kwargs)
+        print(f"[CHAT INIT] Session created successfully!")
+        print(f"[CHAT INIT] Session ID: {session.session_id}")
+        print(f"[CHAT INIT] Session status: {session.status}")
 
         # Return dict instead of Pydantic model for flexibility
-        return {
+        response_data = {
             "session_id": session.session_id,
             "status": session.status,
             "started_at": session.started_at.isoformat(),
@@ -144,7 +163,17 @@ async def initialize_chat_session(
             "messages": []  # Frontend expects messages array
         }
 
+        print(f"[CHAT INIT] Response data prepared: {response_data}")
+        print(f"[CHAT INIT] ===== CHAT INITIALIZATION COMPLETED SUCCESSFULLY =====")
+
+        return response_data
+
     except Exception as e:
+        print(f"[CHAT INIT] ERROR: {str(e)}")
+        print(f"[CHAT INIT] Full traceback:")
+        import traceback
+        traceback.print_exc()
+        print(f"[CHAT INIT] ===== CHAT INITIALIZATION FAILED =====")
         raise HTTPException(status_code=500, detail=f"Failed to create chat session: {str(e)}")
 
 
