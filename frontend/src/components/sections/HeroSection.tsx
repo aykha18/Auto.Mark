@@ -11,27 +11,27 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
   return (
-    <section className="bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-20 lg:py-32">
+    <section className="bg-gradient-to-br from-unitasa-light via-white to-unitasa-light py-20 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Column - Content */}
           <div className="text-center lg:text-left">
             {/* Badge */}
-            <div className="inline-flex items-center bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <span className="w-2 h-2 bg-primary-500 rounded-full mr-2"></span>
+            <div className="inline-flex items-center bg-unitasa-electric/10 text-unitasa-blue px-4 py-2 rounded-full text-sm font-medium mb-6 border border-unitasa-electric/20">
+              <span className="w-2 h-2 bg-unitasa-electric rounded-full mr-2 animate-pulse"></span>
               Built by a founder who went from zero to automated lead generation
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-unitasa-blue mb-6 leading-tight font-display">
               Unified Marketing
-              <span className="text-primary-600 block">Intelligence Platform</span>
+              <span className="bg-gradient-primary bg-clip-text text-transparent block">Intelligence Platform</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto lg:mx-0">
-              <strong>Everything you need IN one platform.</strong> Unified marketing intelligence that replaces 
-              fragmented tools with <strong>complete marketing unity</strong>.
+            <p className="text-xl text-unitasa-gray mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">
+              <strong className="text-unitasa-blue">Everything you need IN one platform.</strong> Unified marketing intelligence that replaces
+              fragmented tools with <strong className="text-unitasa-electric">complete marketing unity</strong>.
             </p>
 
             {/* Key Benefits */}
@@ -90,7 +90,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
           <div className="relative">
             {/* Main Dashboard Mockup */}
             <div className="bg-white rounded-2xl shadow-2xl p-6 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-              <div className="bg-gradient-to-r from-primary-500 to-secondary-500 h-12 rounded-lg mb-4 flex items-center px-4">
+              <div className="bg-gradient-primary h-12 rounded-lg mb-4 flex items-center px-4 shadow-brand">
                 <div className="flex space-x-2">
                   <div className="w-3 h-3 bg-white/30 rounded-full"></div>
                   <div className="w-3 h-3 bg-white/30 rounded-full"></div>
@@ -106,7 +106,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
                   <div className="text-2xl font-bold text-primary-600">24/7</div>
                 </div>
                 <div className="bg-gray-100 h-2 rounded-full">
-                  <div className="bg-primary-500 h-2 rounded-full w-3/4"></div>
+                  <div className="bg-gradient-primary h-2 rounded-full w-3/4"></div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div className="bg-green-50 p-3 rounded-lg">

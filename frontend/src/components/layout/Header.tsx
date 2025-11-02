@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Zap } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '../ui';
 import PWAInstallButton from '../ui/PWAInstallButton';
 
@@ -14,29 +14,25 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="flex items-center space-x-2">
-              <div className="bg-primary-600 p-2 rounded-lg">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Unitasa</h1>
-                <p className="text-xs text-gray-500">Unified Marketing Intelligence</p>
-              </div>
-            </div>
+            <img
+              src="/logo.svg"
+              alt="Unitasa Logo"
+              className="h-10 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-gray-700 hover:text-primary-600 transition-colors">
+            <a href="#features" className="text-unitasa-gray hover:text-unitasa-electric transition-colors font-medium">
               Features
             </a>
-            <a href="#integrations" className="text-gray-700 hover:text-primary-600 transition-colors">
+            <a href="#integrations" className="text-unitasa-gray hover:text-unitasa-electric transition-colors font-medium">
               Integrations
             </a>
-            <a href="#assessment" className="text-gray-700 hover:text-primary-600 transition-colors">
+            <a href="#assessment" className="text-unitasa-gray hover:text-unitasa-electric transition-colors font-medium">
               Assessment
             </a>
-            <a href="#story" className="text-gray-700 hover:text-primary-600 transition-colors">
+            <a href="#story" className="text-unitasa-gray hover:text-unitasa-electric transition-colors font-medium">
               Our Story
             </a>
           </nav>
@@ -44,18 +40,19 @@ const Header: React.FC = () => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
             <PWAInstallButton className="text-xs" />
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
+              className="border-unitasa-electric text-unitasa-electric hover:bg-unitasa-electric hover:text-white"
               onClick={() => {
                 window.dispatchEvent(new CustomEvent('openAssessment'));
               }}
             >
               Take Assessment
             </Button>
-            <Button 
-              variant="primary" 
+            <Button
               size="sm"
+              className="bg-gradient-primary text-white hover:shadow-brand"
               onClick={() => {
                 const coCreatorSection = document.querySelector('#co-creator');
                 if (coCreatorSection) {
