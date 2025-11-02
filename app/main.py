@@ -31,8 +31,8 @@ try:
         import traceback
         print(f"Traceback: {traceback.format_exc()}")
         # Import fallback
-        from app.api.v1 import landing
-        print("Fallback to original landing module")
+        from app.api.v1 import landing_working as landing
+        print("Fallback to working landing module")
     
     print("Importing chat module...")
     from app.api.v1 import chat
@@ -56,6 +56,69 @@ except Exception as e:
 from app.models import *
 
 
+async def create_default_data(engine):
+    """Create default user and campaign data"""
+    from sqlalchemy.ext.asyncio import AsyncSession
+    from sqlalchemy.orm import sessionmaker
+    from sqlalchemy import select
+    from app.models.user import User
+    from app.models.campaign import Campaign
+    
+    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    
+    try:
+        async with async_session() as session:
+            # Check if system user exists
+            result = await session.execute(select(User).where(User.id == 1))
+            user = result.scalar_one_or_none()
+            
+            if not user:
+                print("Creating system user...")
+                user = User(
+                    id=1,
+                    email="system@unitasa.com",
+                    username="system",
+                    full_name="System User",
+                    is_active=True,
+                    is_superuser=True
+                )
+                session.add(user)
+                await session.flush()
+                print(f"✅ Created system user with ID: {user.id}")
+            else:
+                print(f"✅ System user already exists with ID: {user.id}")
+            
+            # Check if default campaign exists
+            result = await session.execute(select(Campaign).where(Campaign.id == 1))
+            campaign = result.scalar_one_or_none()
+            
+            if not campaign:
+                print("Creating default campaign...")
+                campaign = Campaign(
+                    id=1,
+                    campaign_id="default_landing_page_campaign",
+                    user_id=user.id,
+                    name="Landing Page Assessments",
+                    description="Default campaign for landing page assessment leads",
+                    status="active",
+                    campaign_type="landing_page",
+                    target_audience={}
+                )
+                session.add(campaign)
+                await session.flush()
+                print(f"✅ Created default campaign with ID: {campaign.id}")
+            else:
+                print(f"✅ Default campaign already exists with ID: {campaign.id}")
+            
+            await session.commit()
+            print("✅ Default data creation completed successfully")
+            
+    except Exception as e:
+        print(f"❌ Error creating default data: {e}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events"""
@@ -69,6 +132,10 @@ async def lifespan(app: FastAPI):
             print("Creating database tables...")
             await conn.run_sync(Base.metadata.create_all)
             print(f"Created tables: {list(Base.metadata.tables.keys())}")
+        
+        # Create default data
+        print("Creating default user and campaign...")
+        await create_default_data(engine)
         print("Database tables initialized successfully")
     except Exception as e:
         print(f"Database connection failed during startup: {e}")
