@@ -61,7 +61,9 @@ class Assessment(Base, TimestampMixin):
     lead = relationship("Lead", back_populates="assessments")
 
     def __repr__(self):
-        return f"<Assessment(id={self.id}, lead_id={self.lead_id}, score={self.overall_score:.1f}, level='{self.readiness_level}')>"
+        score = self.overall_score if self.overall_score is not None else 0.0
+        level = self.readiness_level if self.readiness_level is not None else "unknown"
+        return f"<Assessment(id={self.id}, lead_id={self.lead_id}, score={score:.1f}, level='{level}')>"
 
     @property
     def is_cold_lead(self) -> bool:
