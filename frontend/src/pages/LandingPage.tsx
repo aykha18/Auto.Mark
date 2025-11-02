@@ -45,16 +45,23 @@ const LandingPage: React.FC = () => {
 
   useEffect(() => {
     trackPageView('/');
-    
+
     // Listen for custom events to open assessment
     const handleOpenAssessment = () => {
       setIsAssessmentOpen(true);
     };
-    
+
+    // Listen for custom events to open lead capture
+    const handleOpenLeadCapture = () => {
+      setIsLeadCaptureOpen(true);
+    };
+
     window.addEventListener('openAssessment', handleOpenAssessment);
-    
+    window.addEventListener('openLeadCapture', handleOpenLeadCapture);
+
     return () => {
       window.removeEventListener('openAssessment', handleOpenAssessment);
+      window.removeEventListener('openLeadCapture', handleOpenLeadCapture);
     };
   }, []);
 

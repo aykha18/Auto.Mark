@@ -34,7 +34,8 @@ const Header: React.FC = () => {
               className="text-unitasa-gray hover:text-unitasa-electric transition-colors font-medium cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
-                window.dispatchEvent(new CustomEvent('openAssessment'));
+                // Dispatch event to trigger lead capture flow
+                window.dispatchEvent(new CustomEvent('openLeadCapture'));
               }}
             >
               Assessment
@@ -52,7 +53,7 @@ const Header: React.FC = () => {
               size="sm"
               className="border-unitasa-electric text-unitasa-electric hover:bg-unitasa-electric hover:text-white"
               onClick={() => {
-                window.dispatchEvent(new CustomEvent('openAssessment'));
+                window.dispatchEvent(new CustomEvent('openLeadCapture'));
               }}
             >
               Take Assessment
@@ -128,7 +129,7 @@ const Header: React.FC = () => {
                   className="w-full"
                   onClick={() => {
                     toggleMenu();
-                    window.dispatchEvent(new CustomEvent('openAssessment'));
+                    window.dispatchEvent(new CustomEvent('openLeadCapture'));
                   }}
                 >
                   Take Assessment

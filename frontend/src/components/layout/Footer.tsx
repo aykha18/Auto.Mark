@@ -46,7 +46,7 @@ const Footer: React.FC = () => {
                   className="hover:text-white transition-colors cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
-                    window.dispatchEvent(new CustomEvent('openAssessment'));
+                    window.dispatchEvent(new CustomEvent('openLeadCapture'));
                   }}
                 >
                   AI Assessment
