@@ -195,7 +195,7 @@ const AIReadinessAssessment: React.FC<AIReadinessAssessmentProps> = ({ leadData 
             integrationReadiness: Math.round(backendResults.overall_score * 0.25),
             overallScore: backendResults.overall_score,
             recommendations: backendResults.integration_recommendations || [],
-            predictedROI: Math.min(150 + (backendResults.overall_score * 3), 500),
+            predictedROI: Math.round(Math.min(150 + (backendResults.overall_score * 3), 500)),
             automationOpportunities: Math.max(15 - Math.floor(backendResults.overall_score / 10), 3),
             co_creator_qualified: backendResults.co_creator_qualified,
             co_creator_invitation: backendResults.co_creator_invitation
