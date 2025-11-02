@@ -466,13 +466,54 @@ const CRMMarketplaceSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-unitasa-blue mb-4 font-display">
             CRM Integration Marketplace
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Connect your existing CRM with 2-click setup, or choose from our supported platforms. 
+          <p className="text-xl text-unitasa-gray max-w-3xl mx-auto">
+            Connect your existing CRM with 2-click setup, or choose from our supported platforms.
             All integrations include real-time sync, advanced automation, and comprehensive support.
           </p>
+
+          {/* CRM App Promotion */}
+          <div className="mt-8 bg-gradient-to-r from-unitasa-electric/10 to-unitasa-purple/10 border border-unitasa-electric/20 rounded-2xl p-6 max-w-4xl mx-auto">
+            <div className="flex items-center justify-center mb-4">
+              <div className="bg-unitasa-electric text-white p-3 rounded-full mr-4">
+                <Settings className="w-6 h-6" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-lg font-bold text-unitasa-blue">🚀 Bonus: Custom CRM App Included</h3>
+                <p className="text-unitasa-gray text-sm">Get a fully customized CRM application built specifically for your business</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+              <div className="flex items-start">
+                <CheckCircle className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-semibold text-unitasa-blue text-sm">Tailored Interface</div>
+                  <div className="text-unitasa-gray text-xs">Custom dashboard designed for your workflow</div>
+                </div>
+              </div>
+              <div className="flex items-start">
+                <CheckCircle className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-semibold text-unitasa-blue text-sm">Advanced Automation</div>
+                  <div className="text-unitasa-gray text-xs">AI-powered workflows and smart triggers</div>
+                </div>
+              </div>
+              <div className="flex items-start">
+                <CheckCircle className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-semibold text-unitasa-blue text-sm">Full Integration</div>
+                  <div className="text-unitasa-gray text-xs">Seamlessly connects with Unitasa platform</div>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 text-center">
+              <span className="inline-block bg-gradient-primary bg-clip-text text-transparent font-bold text-sm">
+                🎁 FREE with any CRM integration - No additional cost!
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* View Toggle */}
@@ -505,13 +546,13 @@ const CRMMarketplaceSection: React.FC = () => {
         {viewMode === 'gallery' ? renderGalleryView() : renderComparisonView()}
 
         {/* Integration Support */}
-        <div className="mt-16 bg-gray-50 rounded-2xl p-8">
+        <div className="mt-16 bg-unitasa-light rounded-2xl p-8">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <h3 className="text-2xl font-bold text-unitasa-blue mb-4 font-display">
               Need Help with Integration?
             </h3>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Our integration experts are here to help you connect any CRM, customize workflows, 
+            <p className="text-unitasa-gray max-w-2xl mx-auto">
+              Our integration experts are here to help you connect any CRM, customize workflows,
               and optimize your automation setup for maximum results.
             </p>
           </div>
@@ -560,18 +601,30 @@ const CRMMarketplaceSection: React.FC = () => {
 
         {/* Call to Action */}
         <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          <h3 className="text-2xl font-bold text-unitasa-blue mb-4 font-display">
             Ready to Connect Your CRM?
           </h3>
-          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Take our AI Readiness Assessment to get personalized integration recommendations 
+          <p className="text-unitasa-gray mb-8 max-w-2xl mx-auto">
+            Take our AI Readiness Assessment to get personalized integration recommendations
             and see how Unitasa can transform your current setup.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="primary" size="lg" icon={Zap}>
+            <Button
+              size="lg"
+              icon={Zap}
+              className="bg-gradient-primary text-white hover:shadow-brand"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('openAssessment'));
+              }}
+            >
               Start Assessment
             </Button>
-            <Button variant="outline" size="lg" icon={Play}>
+            <Button
+              variant="outline"
+              size="lg"
+              icon={Play}
+              className="border-unitasa-electric text-unitasa-electric hover:bg-unitasa-electric hover:text-white"
+            >
               Watch Integration Demo
             </Button>
           </div>
