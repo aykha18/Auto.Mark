@@ -98,7 +98,8 @@ class Lead(Base, TimestampMixin):
     chat_sessions = relationship("ChatSession", back_populates="lead", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<Lead(id={self.id}, email='{self.email}', company='{self.company}', score={self.score:.2f})>"
+        score = self.score if self.score is not None else 0.0
+        return f"<Lead(id={self.id}, email='{self.email}', company='{self.company}', score={score:.2f})>"
 
     @property
     def full_name(self) -> str:

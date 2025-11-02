@@ -61,10 +61,11 @@ async def ensure_default_campaign_and_user(db: AsyncSession) -> int:
             user = User(
                 id=1,
                 email="system@unitasa.com",
-                username="system",
+                hashed_password="system",  # Required field
                 full_name="System User",
+                role="admin",
                 is_active=True,
-                is_superuser=True
+                is_verified=True
             )
             db.add(user)
             await db.flush()
