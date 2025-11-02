@@ -103,8 +103,8 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@router.post("/sessions", response_model=ChatSessionResponse)
-async def create_chat_session(
+@router.post("/initialize", response_model=ChatSessionResponse)
+async def initialize_chat_session(
     request: ChatSessionCreateRequest,
     http_request: Request,
     db: Session = Depends(get_db)
