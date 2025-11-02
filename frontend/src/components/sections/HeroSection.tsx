@@ -24,14 +24,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
 
             {/* Main Headline */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-unitasa-blue mb-6 leading-tight font-display">
-              Unified Marketing
-              <span className="bg-gradient-primary bg-clip-text text-transparent block">Intelligence Platform</span>
+              Marketing Intelligence
+              <span className="bg-gradient-primary bg-clip-text text-transparent block">That Thinks & Optimizes</span>
             </h1>
 
             {/* Subheadline */}
             <p className="text-xl text-unitasa-gray mb-8 max-w-2xl mx-auto lg:mx-0 font-medium">
-              <strong className="text-unitasa-blue">Everything you need IN one platform.</strong> Unified marketing intelligence that replaces
-              fragmented tools with <strong className="text-unitasa-electric">complete marketing unity</strong>.
+              <strong className="text-unitasa-blue">Beyond traditional marketing automation.</strong> AI that makes 10,000+ intelligent decisions per hour,
+              replacing human oversight with <strong className="text-unitasa-electric">autonomous marketing excellence</strong>.
             </p>
 
             {/* Key Benefits */}
@@ -46,7 +46,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
               </div>
               <div className="flex items-center">
                 <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-unitasa-gray">Voice-enabled AI assistant</span>
+                <span className="text-unitasa-gray">340% average ROI improvement</span>
               </div>
             </div>
 
@@ -76,12 +76,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
 
             {/* Social Proof */}
             <div className="mt-12 pt-8 border-t border-unitasa-electric/20">
-              <p className="text-sm text-unitasa-gray mb-4">Trusted by growing businesses</p>
+              <p className="text-sm text-unitasa-gray mb-4">Chosen by marketing leaders who demand enterprise results</p>
               <div className="flex items-center justify-center lg:justify-start space-x-8 opacity-60">
-                <div className="text-unitasa-gray font-semibold">TechCorp</div>
-                <div className="text-unitasa-gray font-semibold">GrowthCo</div>
-                <div className="text-unitasa-gray font-semibold">ScaleUp</div>
-                <div className="text-unitasa-gray font-semibold">InnovateLab</div>
+                <div className="text-unitasa-gray font-semibold">Enterprise Solutions Inc.</div>
+                <div className="text-unitasa-gray font-semibold">Global Marketing Group</div>
+                <div className="text-unitasa-gray font-semibold">RevenueMax Corp</div>
+                <div className="text-unitasa-gray font-semibold">AI Marketing Labs</div>
               </div>
             </div>
           </div>

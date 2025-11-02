@@ -467,11 +467,10 @@ const CRMMarketplaceSection: React.FC = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-unitasa-blue mb-4 font-display">
-            CRM Integration Marketplace
+            CRM Intelligence Enhancement
           </h2>
           <p className="text-xl text-unitasa-gray max-w-3xl mx-auto">
-            Connect your existing CRM with 2-click setup, or choose from our supported platforms.
-            All integrations include real-time sync, advanced automation, and comprehensive support.
+            Transform your existing CRM into an AI-powered revenue engine. We don't replace your CRM—we make it 10x smarter with autonomous decision-making and predictive intelligence.
           </p>
 
           {/* CRM App Promotion */}
@@ -602,11 +601,10 @@ const CRMMarketplaceSection: React.FC = () => {
         {/* Call to Action */}
         <div className="text-center mt-16">
           <h3 className="text-2xl font-bold text-unitasa-blue mb-4 font-display">
-            Ready to Connect Your CRM?
+            Ready to Evolve Beyond Traditional CRM?
           </h3>
           <p className="text-unitasa-gray mb-8 max-w-2xl mx-auto">
-            Take our AI Readiness Assessment to get personalized integration recommendations
-            and see how Unitasa can transform your current setup.
+            Join marketing leaders who have transformed their CRM from a data repository into an autonomous revenue-generating AI system.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -617,7 +615,7 @@ const CRMMarketplaceSection: React.FC = () => {
                 window.dispatchEvent(new CustomEvent('openAssessment'));
               }}
             >
-              Start Assessment
+              Assess Your AI Readiness
             </Button>
             <Button
               variant="outline"
@@ -625,7 +623,7 @@ const CRMMarketplaceSection: React.FC = () => {
               icon={Play}
               className="border-unitasa-electric text-unitasa-electric hover:bg-unitasa-electric hover:text-white"
             >
-              Watch Integration Demo
+              See AI in Action
             </Button>
           </div>
         </div>
