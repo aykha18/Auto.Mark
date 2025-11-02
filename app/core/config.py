@@ -24,11 +24,12 @@ class SecuritySettings(BaseSettings):
     access_token_expire_minutes: int = 30
 
 
-class StripeSettings(BaseSettings):
-    """Stripe payment configuration"""
-    publishable_key: str = Field(default_factory=lambda: os.getenv("STRIPE_PUBLISHABLE_KEY", ""))
-    secret_key: str = Field(default_factory=lambda: os.getenv("STRIPE_SECRET_KEY", ""))
-    webhook_secret: str = Field(default_factory=lambda: os.getenv("STRIPE_WEBHOOK_SECRET", ""))
+class WiseSettings(BaseSettings):
+    """Wise payment configuration"""
+    api_key: str = Field(default_factory=lambda: os.getenv("WISE_API_KEY", ""))
+    profile_id: str = Field(default_factory=lambda: os.getenv("WISE_PROFILE_ID", ""))
+    webhook_secret: str = Field(default_factory=lambda: os.getenv("WISE_WEBHOOK_SECRET", ""))
+    environment: str = Field(default_factory=lambda: os.getenv("WISE_ENVIRONMENT", "sandbox"))  # sandbox or live
 
 
 class OpenAISettings(BaseSettings):
@@ -61,7 +62,7 @@ class Settings(BaseSettings):
     # Sub-settings
     database: DatabaseSettings = Field(default_factory=DatabaseSettings)
     security: SecuritySettings = Field(default_factory=SecuritySettings)
-    stripe: StripeSettings = Field(default_factory=StripeSettings)
+    wise: WiseSettings = Field(default_factory=WiseSettings)
     openai: OpenAISettings = Field(default_factory=OpenAISettings)
     email: EmailSettings = Field(default_factory=EmailSettings)
     

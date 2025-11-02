@@ -17,8 +17,13 @@ class PaymentTransaction(Base, TimestampMixin):
 
     id = Column(Integer, primary_key=True, index=True)
     
-    # External payment provider IDs
-    stripe_payment_intent_id = Column(String(255), unique=True, index=True)
+    # External payment provider IDs (Wise)
+    wise_transfer_id = Column(String(255), unique=True, index=True)
+    wise_quote_id = Column(String(255), index=True)
+    wise_recipient_id = Column(String(255), index=True)
+
+    # Legacy Stripe fields (deprecated)
+    stripe_payment_intent_id = Column(String(255), index=True)
     stripe_charge_id = Column(String(255), index=True)
     stripe_customer_id = Column(String(255), index=True)
     
@@ -76,7 +81,7 @@ class PaymentTransaction(Base, TimestampMixin):
     co_creator = relationship("CoCreator")
 
     def __repr__(self):
-        return f"<PaymentTransaction(id={self.id}, amount=${self.amount:.2f}, status='{self.status}', stripe_id='{self.stripe_payment_intent_id}')>"
+        return f"<PaymentTransaction(id={self.id}, amount=${self.amount:.2f}, status='{self.status}', wise_id='{self.wise_transfer_id}')>"
 
     @property
     def is_successful(self) -> bool:
@@ -199,22 +204,25 @@ class PaymentTransaction(Base, TimestampMixin):
         return self.retry_count < max_retries and self.status == "failed"
 
     @classmethod
-    def create_from_stripe_intent(cls, stripe_payment_intent: Dict[str, Any], 
+    def create_from_wise_transfer(cls, wise_transfer: Dict[str, Any],
                                  user_id: int = None, lead_id: int = None,
-                                 **kwargs) -> 'PaymentTransaction':
-        """Create transaction from Stripe PaymentIntent"""
+                                 co_creator_id: int = None) -> 'PaymentTransaction':
+        """Create transaction from Wise transfer"""
         transaction = cls(
-            stripe_payment_intent_id=stripe_payment_intent.get("id"),
-            amount=stripe_payment_intent.get("amount", 0) / 100,  # Convert cents to dollars
-            currency=stripe_payment_intent.get("currency", "usd").upper(),
-            status=stripe_payment_intent.get("status", "pending"),
-            description=stripe_payment_intent.get("description"),
+            wise_transfer_id=wise_transfer.get("id"),
+            amount=wise_transfer.get("targetValue", 0),
+            currency=wise_transfer.get("targetCurrency", "USD"),
+            status="processing",  # Wise transfers start as processing
+            description=wise_transfer.get("details", {}).get("referenceText", "Wise Payment"),
             user_id=user_id,
             lead_id=lead_id,
-            payment_metadata=stripe_payment_intent.get("metadata", {}),
-            **kwargs
+            co_creator_id=co_creator_id,
+            payment_metadata={
+                "wise_quote_id": wise_transfer.get("quoteUuid"),
+                "wise_recipient_id": wise_transfer.get("targetAccount")
+            }
         )
-        
+
         return transaction
 
     @classmethod
