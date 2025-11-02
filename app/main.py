@@ -22,7 +22,7 @@ try:
     
     print("Importing landing module...")
     try:
-        from app.api.v1 import landing_working as landing
+        from app.api.v1 import landing
         print("Landing module imported successfully")
         print(f"Landing router object: {landing.router}")
         print(f"Landing router routes: {[route.path for route in landing.router.routes]}")
@@ -30,9 +30,7 @@ try:
         print(f"ERROR importing landing module: {e}")
         import traceback
         print(f"Traceback: {traceback.format_exc()}")
-        # Fallback to original if working version fails
-        from app.api.v1 import landing
-        print("Fallback to original landing module")
+        raise
     
     print("Importing chat module...")
     from app.api.v1 import chat
