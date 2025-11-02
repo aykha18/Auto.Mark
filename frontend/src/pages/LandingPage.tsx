@@ -141,28 +141,28 @@ const LandingPage: React.FC = () => {
             {/* Co-Creator Program Preview */}
             <section id="co-creator" className="py-20">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-2xl p-8 md:p-12 relative overflow-hidden">
+                <div className="bg-gradient-to-r from-unitasa-electric to-unitasa-purple text-white rounded-2xl p-8 md:p-12 relative overflow-hidden shadow-brand">
                   {/* Urgency Badge */}
                   <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
                     LIMITED TIME
                   </div>
                   
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
                     Join 25 Founding Co-Creators
                   </h2>
                   
                   <div className="mb-6">
-                    <div className="text-4xl font-bold mb-2">$497</div>
-                    <div className="text-lg opacity-90 line-through mb-1">Regular price: $2,000+</div>
-                    <p className="text-xl opacity-90">
+                    <div className="text-4xl font-bold mb-2 text-white">$497</div>
+                    <div className="text-lg opacity-90 line-through mb-1 text-white">Regular price: $2,000+</div>
+                    <p className="text-xl opacity-90 text-white">
                       Founder Pricing • Lifetime Access • Direct Product Influence
                     </p>
                   </div>
                   
                   {/* Value Stack */}
                   <div className="bg-white/10 rounded-lg p-4 mb-6 text-left max-w-md mx-auto">
-                    <div className="text-sm font-semibold mb-2 text-center">What You Get ($1,400+ Value):</div>
-                    <div className="space-y-1 text-sm">
+                    <div className="text-sm font-semibold mb-2 text-center text-white">What You Get ($1,400+ Value):</div>
+                    <div className="space-y-1 text-sm text-white">
                       <div className="flex justify-between">
                         <span>• Lifetime AI Platform Access</span>
                         <span>$500+/month</span>
@@ -184,18 +184,18 @@ const LandingPage: React.FC = () => {
                   
                   <div className="flex items-center justify-center mb-6">
                     <div className="bg-white/20 rounded-full px-4 py-2">
-                      <span className="font-semibold">⚡ Only 12 founding spots remaining</span>
+                      <span className="font-semibold text-white">⚡ Only 12 founding spots remaining</span>
                     </div>
                   </div>
                   
                   <div className="space-y-3">
-                    <button 
+                    <button
                       onClick={openAssessment}
-                      className="bg-white text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors w-full sm:w-auto"
+                      className="bg-white text-unitasa-blue px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors w-full sm:w-auto shadow-lg"
                     >
                       Secure Your Founding Spot
                     </button>
-                    <div className="text-sm opacity-75">
+                    <div className="text-sm opacity-75 text-white">
                       💡 Take assessment first to qualify for founder pricing
                     </div>
                   </div>
