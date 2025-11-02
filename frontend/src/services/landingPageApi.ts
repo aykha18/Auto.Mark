@@ -39,7 +39,12 @@ export class LandingPageAPI {
 
   // Analytics
   static async trackPageView(pageData: PageViewEvent): Promise<void> {
-    await apiClient.post('/api/v1/landing/track-page-view', pageData);
+    try {
+      await apiClient.post('/api/v1/landing/track-page-view', pageData);
+    } catch (error) {
+      // Silently fail for now - endpoint might not exist yet
+      console.log('Page view tracking not available');
+    }
   }
 
   // Chat

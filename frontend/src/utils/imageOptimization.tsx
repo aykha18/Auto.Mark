@@ -53,15 +53,16 @@ export function preloadImage(src: string, as: 'image' = 'image'): void {
 
 // Preload critical images for above-the-fold content
 export function preloadCriticalImages(): void {
-  const criticalImages = [
-    '/images/hero-background.webp',
-    '/images/founder-photo.webp',
-    '/images/auto-mark-logo.webp'
-  ];
+  // Temporarily disabled - images not available yet
+  // const criticalImages = [
+  //   '/images/hero-background.webp',
+  //   '/images/founder-photo.webp',
+  //   '/images/auto-mark-logo.webp'
+  // ];
 
-  criticalImages.forEach(src => {
-    preloadImage(src);
-  });
+  // criticalImages.forEach(src => {
+  //   preloadImage(src);
+  // });
 }
 
 // Convert images to WebP format (client-side detection)
