@@ -166,6 +166,7 @@ logs/
 .env.local
 .env.production
 .env.staging
+.env.railway
 secrets.json
 
 # Alembic
