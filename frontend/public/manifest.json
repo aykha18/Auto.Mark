@@ -4,9 +4,10 @@
   "description": "Everything you need IN one platform. Unified marketing intelligence that replaces all your fragmented tools.",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
       "src": "logo192.png",
@@ -21,7 +22,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#2563eb",
+  "theme_color": "#3b82f6",
   "background_color": "#ffffff",
   "orientation": "portrait-primary",
   "categories": ["business", "productivity", "marketing"],
