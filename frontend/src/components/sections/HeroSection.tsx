@@ -38,15 +38,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
             <div className="flex flex-col sm:flex-row gap-4 mb-8 text-left">
               <div className="flex items-center">
                 <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-gray-700">10,000+ AI decisions per hour</span>
+                <span className="text-unitasa-gray">10,000+ AI decisions per hour</span>
               </div>
               <div className="flex items-center">
                 <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-gray-700">94% prediction accuracy</span>
+                <span className="text-unitasa-gray">94% prediction accuracy</span>
               </div>
               <div className="flex items-center">
                 <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-gray-700">Voice-enabled AI assistant</span>
+                <span className="text-unitasa-gray">Voice-enabled AI assistant</span>
               </div>
             </div>
 
@@ -75,13 +75,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
             </div>
 
             {/* Social Proof */}
-            <div className="mt-12 pt-8 border-t border-gray-200">
-              <p className="text-sm text-gray-500 mb-4">Trusted by growing businesses</p>
+            <div className="mt-12 pt-8 border-t border-unitasa-electric/20">
+              <p className="text-sm text-unitasa-gray mb-4">Trusted by growing businesses</p>
               <div className="flex items-center justify-center lg:justify-start space-x-8 opacity-60">
-                <div className="text-gray-400 font-semibold">TechCorp</div>
-                <div className="text-gray-400 font-semibold">GrowthCo</div>
-                <div className="text-gray-400 font-semibold">ScaleUp</div>
-                <div className="text-gray-400 font-semibold">InnovateLab</div>
+                <div className="text-unitasa-gray font-semibold">TechCorp</div>
+                <div className="text-unitasa-gray font-semibold">GrowthCo</div>
+                <div className="text-unitasa-gray font-semibold">ScaleUp</div>
+                <div className="text-unitasa-gray font-semibold">InnovateLab</div>
               </div>
             </div>
           </div>
@@ -102,20 +102,20 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
               {/* Dashboard Content */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-600">Active Campaigns</div>
-                  <div className="text-2xl font-bold text-primary-600">24/7</div>
+                  <div className="text-sm text-unitasa-gray">Active Campaigns</div>
+                  <div className="text-2xl font-bold text-unitasa-electric">24/7</div>
                 </div>
-                <div className="bg-gray-100 h-2 rounded-full">
+                <div className="bg-unitasa-light h-2 rounded-full">
                   <div className="bg-gradient-primary h-2 rounded-full w-3/4"></div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div className="bg-green-50 p-3 rounded-lg">
                     <div className="text-lg font-bold text-green-600">+340%</div>
-                    <div className="text-xs text-gray-600">ROI Improvement</div>
+                    <div className="text-xs text-unitasa-gray">ROI Improvement</div>
                   </div>
                   <div className="bg-blue-50 p-3 rounded-lg">
-                    <div className="text-lg font-bold text-blue-600">10K+</div>
-                    <div className="text-xs text-gray-600">AI Decisions/Hour</div>
+                    <div className="text-lg font-bold text-unitasa-electric">10K+</div>
+                    <div className="text-xs text-unitasa-gray">AI Decisions/Hour</div>
                   </div>
                 </div>
               </div>
