@@ -103,38 +103,47 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@router.post("/initialize", response_model=ChatSessionResponse)
+@router.post("/initialize")
 async def initialize_chat_session(
-    request: ChatSessionCreateRequest,
-    http_request: Request,
+    request: Optional[ChatSessionCreateRequest] = None,
+    http_request: Request = None,
     db: Session = Depends(get_db)
-) -> ChatSessionResponse:
+) -> Dict[str, Any]:
     """
     Create a new chat session
     """
     try:
         chat_service = ChatService(db)
-        
-        session = chat_service.create_session(
-            lead_id=request.lead_id,
-            user_id=request.user_id,
-            ip_address=http_request.client.host,
-            user_agent=request.user_agent,
-            referrer=request.referrer
-        )
-        
-        return ChatSessionResponse(
-            session_id=session.session_id,
-            status=session.status,
-            started_at=session.started_at,
-            lead_id=session.lead_id,
-            user_id=session.user_id,
-            qualification_score=session.qualification_score,
-            crm_interest_level=session.crm_interest_level,
-            identified_crm=session.identified_crm,
-            total_messages=session.total_messages
-        )
-        
+
+        # Create session with optional request data
+        session_kwargs = {}
+        if request:
+            session_kwargs.update({
+                'lead_id': request.lead_id,
+                'user_id': request.user_id,
+                'user_agent': request.user_agent,
+                'referrer': request.referrer
+            })
+
+        if http_request:
+            session_kwargs['ip_address'] = http_request.client.host
+
+        session = chat_service.create_session(**session_kwargs)
+
+        # Return dict instead of Pydantic model for flexibility
+        return {
+            "session_id": session.session_id,
+            "status": session.status,
+            "started_at": session.started_at.isoformat(),
+            "lead_id": session.lead_id,
+            "user_id": session.user_id,
+            "qualification_score": session.qualification_score,
+            "crm_interest_level": session.crm_interest_level,
+            "identified_crm": session.identified_crm,
+            "total_messages": session.total_messages,
+            "messages": []  # Frontend expects messages array
+        }
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create chat session: {str(e)}")
 
