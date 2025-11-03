@@ -131,17 +131,36 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str):
         while True:
             # Receive message from client
             data = await websocket.receive_json()
+            print(f"[WEBSOCKET] Received data: {data}")
             
             if data.get("type") == "message":
+                user_content = data.get("content", "").lower()
+                
+                # Generate contextual responses
+                if "hi" in user_content or "hello" in user_content:
+                    response_content = "Hello! 👋 I'm Unitasa's AI Marketing Assistant. I'm here to help you transform your marketing operations with AI-powered CRM integrations. What can I help you with today?"
+                elif "how are you" in user_content:
+                    response_content = "I'm doing great, thank you for asking! I'm ready to help you with CRM integrations, marketing automation, and AI solutions. What specific challenges are you facing with your current marketing setup?"
+                elif "crm" in user_content:
+                    response_content = "Great question about CRM! Unitasa integrates with major CRM platforms like Salesforce, HubSpot, Pipedrive, and more. We can help automate your lead generation, scoring, and nurturing processes. Which CRM are you currently using?"
+                elif "salesforce" in user_content:
+                    response_content = "Excellent choice! Unitasa has deep Salesforce integration capabilities. We can help you automate lead capture, scoring, and nurturing directly in Salesforce. Would you like to know about our specific Salesforce features?"
+                elif "price" in user_content or "cost" in user_content:
+                    response_content = "Our pricing is designed to scale with your business needs. We offer flexible plans starting from basic integrations to enterprise solutions. Would you like me to connect you with our team for a personalized quote?"
+                else:
+                    response_content = f"Thanks for your message! I'm Unitasa's AI Marketing Assistant. I can help you with CRM integrations, marketing automation, lead generation, and AI readiness assessments. What specific area would you like to explore?"
+                
                 # Send back a proper chat message
                 response_message = {
                     "id": str(uuid.uuid4()),
-                    "content": "Thank you for your message! I'm Unitasa's AI Marketing Assistant. I can help you with CRM integrations, marketing automation, and understanding our platform. What would you like to know?",
+                    "content": response_content,
                     "sender": "agent",
                     "timestamp": datetime.utcnow().isoformat(),
                     "type": "text"
                 }
+                print(f"[WEBSOCKET] Sending response: {response_message}")
                 await websocket.send_json(response_message)
+                
             elif data.get("type") == "ping":
                 # Respond to ping
                 await websocket.send_json({
