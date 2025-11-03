@@ -158,25 +158,55 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
       messages: [...prev.messages, userMessage]
     } : null);
 
-    // Send via WebSocket if connected, otherwise fallback to HTTP
-    if (wsRef.current && isConnected) {
-      wsRef.current.send(JSON.stringify({
-        type: "message",
-        content: content.trim(),
-        message_type: type
-      }));
-    } else {
-      try {
-        await fetch(`/api/v1/chat/${session.id}/message`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(userMessage)
-        });
-      } catch (error) {
-        console.error('Failed to send message:', error);
+    // Always try HTTP first for reliability, then WebSocket as enhancement
+    try {
+      const response = await fetch(`/api/v1/chat/${session.id}/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: content.trim(),
+          type: type
+        })
+      });
+
+      if (response.ok) {
+        const aiMessage: ChatMessage = await response.json();
+        // Add AI response to chat
+        setSession(prev => prev ? {
+          ...prev,
+          messages: [...prev.messages, aiMessage]
+        } : null);
+      } else {
+        console.error('Failed to get response:', response.status);
+        // Add error message
+        const errorMessage: ChatMessage = {
+          id: Date.now().toString() + '_error',
+          content: 'Sorry, I encountered an error. Please try again.',
+          sender: 'agent',
+          timestamp: new Date(),
+          type: 'text'
+        };
+        setSession(prev => prev ? {
+          ...prev,
+          messages: [...prev.messages, errorMessage]
+        } : null);
       }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // Add error message
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString() + '_error',
+        content: 'Connection error. Please check your internet connection and try again.',
+        sender: 'agent',
+        timestamp: new Date(),
+        type: 'text'
+      };
+      setSession(prev => prev ? {
+        ...prev,
+        messages: [...prev.messages, errorMessage]
+      } : null);
     }
   };
 
