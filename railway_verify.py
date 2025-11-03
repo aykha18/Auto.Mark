@@ -26,12 +26,16 @@ def verify_railway_deployment():
         health_response = requests.get(f"{base_url}/api/v1/health", timeout=10)
         
         if health_response.status_code == 200:
-            print("✅ Health endpoint working")
-            health_data = health_response.json()
-            print(f"   Status: {health_data.get('status')}")
-            print(f"   Environment: {health_data.get('environment')}")
+            print("SUCCESS: Health endpoint working")
+            try:
+                health_data = health_response.json()
+                print(f"   Status: {health_data.get('status')}")
+                print(f"   Environment: {health_data.get('environment')}")
+            except ValueError as e:
+                print(f"   Warning: Could not parse JSON response: {e}")
+                print(f"   Response text: {health_response.text[:200]}...")
         else:
-            print(f"❌ Health endpoint failed: {health_response.status_code}")
+            print(f"FAILED: Health endpoint failed: {health_response.status_code}")
             return False
         
         # 2. Test assessment questions endpoint
@@ -39,12 +43,12 @@ def verify_railway_deployment():
         questions_response = requests.get(f"{base_url}/api/v1/landing/assessment/questions", timeout=10)
         
         if questions_response.status_code == 200:
-            print("✅ Assessment questions endpoint working")
+            print("SUCCESS: Assessment questions endpoint working")
             questions_data = questions_response.json()
             print(f"   Total questions: {questions_data.get('total_questions')}")
             print(f"   Assessment type: {questions_data.get('assessment_type')}")
         else:
-            print(f"❌ Assessment questions endpoint failed: {questions_response.status_code}")
+            print(f"FAILED: Assessment questions endpoint failed: {questions_response.status_code}")
             return False
         
         # 3. Test assessment start with CRM data
@@ -63,20 +67,20 @@ def verify_railway_deployment():
         )
         
         if start_response.status_code == 200:
-            print("✅ Assessment start endpoint working")
+            print("SUCCESS: Assessment start endpoint working")
             start_data = start_response.json()
             assessment_id = start_data.get("assessment_id")
             print(f"   Assessment ID: {assessment_id}")
             print(f"   Status: {start_data.get('status')}")
-            
+
             # Check if using new compact format
             if str(assessment_id).startswith('assess_'):
-                print("✅ Using new compact assessment ID format")
+                print("SUCCESS: Using new compact assessment ID format")
             else:
-                print("⚠️  Still using old assessment ID format")
-                
+                print("WARNING: Still using old assessment ID format")
+
         else:
-            print(f"❌ Assessment start endpoint failed: {start_response.status_code}")
+            print(f"FAILED: Assessment start endpoint failed: {start_response.status_code}")
             print(f"   Response: {start_response.text}")
             return False
         
@@ -85,30 +89,30 @@ def verify_railway_deployment():
         frontend_response = requests.get(base_url, timeout=10)
         
         if frontend_response.status_code == 200:
-            print("✅ Frontend is accessible")
+            print("SUCCESS: Frontend is accessible")
             if "Unitasa" in frontend_response.text:
-                print("✅ Frontend contains expected content")
+                print("SUCCESS: Frontend contains expected content")
             else:
-                print("⚠️  Frontend may not be fully loaded")
+                print("WARNING: Frontend may not be fully loaded")
         else:
-            print(f"❌ Frontend not accessible: {frontend_response.status_code}")
+            print(f"FAILED: Frontend not accessible: {frontend_response.status_code}")
             return False
         
-        print("\n🎉 Railway deployment verification completed successfully!")
+        print("\nSUCCESS: Railway deployment verification completed successfully!")
         print("\nDeployment Summary:")
-        print("✅ Backend API is running")
-        print("✅ Database tables are created")
-        print("✅ CRM selection functionality is working")
-        print("✅ Compact assessment IDs are being generated")
-        print("✅ Frontend is accessible")
+        print("SUCCESS: Backend API is running")
+        print("SUCCESS: Database tables are created")
+        print("SUCCESS: CRM selection functionality is working")
+        print("SUCCESS: Compact assessment IDs are being generated")
+        print("SUCCESS: Frontend is accessible")
         
         return True
         
     except requests.exceptions.ConnectionError:
-        print(f"❌ Connection failed. Check if {base_url} is accessible")
+        print(f"FAILED: Connection failed. Check if {base_url} is accessible")
         return False
     except Exception as e:
-        print(f"❌ Verification failed with error: {e}")
+        print(f"FAILED: Verification failed with error: {e}")
         return False
 
 def main():
@@ -119,9 +123,9 @@ def main():
     success = verify_railway_deployment()
     
     if success:
-        print("\n✅ All checks passed! Your Railway deployment is working correctly.")
+        print("\nSUCCESS: All checks passed! Your Railway deployment is working correctly.")
     else:
-        print("\n❌ Some checks failed. Please review the deployment.")
+        print("\nFAILED: Some checks failed. Please review the deployment.")
     
     print("\nNext steps:")
     print("1. Test the complete assessment flow on your Railway URL")

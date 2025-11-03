@@ -225,7 +225,7 @@ try:
         print(f"Traceback: {traceback.format_exc()}")
     
     print("Including chat router...")
-    app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
+    app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
     print("Chat router included successfully")
     
     print("Including analytics router...")

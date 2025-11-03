@@ -25,6 +25,7 @@ class ChatSessionCreateRequest(BaseModel):
     user_id: Optional[int] = None
     user_agent: Optional[str] = None
     referrer: Optional[str] = None
+    context: Optional[Dict[str, Any]] = None
 
 
 class ChatSessionResponse(BaseModel):
@@ -120,7 +121,7 @@ async def initialize_chat_session(
     try:
         print(f"[CHAT INIT] Request body present: {request is not None}")
         if request:
-            print(f"[CHAT INIT] Request data: lead_id={request.lead_id}, user_id={request.user_id}, user_agent={request.user_agent}, referrer={request.referrer}")
+            print(f"[CHAT INIT] Request data: lead_id={request.lead_id}, user_id={request.user_id}, user_agent={request.user_agent}, referrer={request.referrer}, context={request.context}")
 
         print(f"[CHAT INIT] Creating ChatService...")
         chat_service = ChatService(db)
@@ -144,7 +145,11 @@ async def initialize_chat_session(
         print(f"[CHAT INIT] Final session kwargs: {session_kwargs}")
         print(f"[CHAT INIT] Calling chat_service.create_session()...")
 
-        session = chat_service.create_session(**session_kwargs)
+        # Filter out None values and context
+        filtered_kwargs = {k: v for k, v in session_kwargs.items() if v is not None and k != 'context'}
+        print(f"[CHAT INIT] Filtered kwargs: {filtered_kwargs}")
+
+        session = chat_service.create_session(**filtered_kwargs)
         print(f"[CHAT INIT] Session created successfully!")
         print(f"[CHAT INIT] Session ID: {session.session_id}")
         print(f"[CHAT INIT] Session status: {session.status}")

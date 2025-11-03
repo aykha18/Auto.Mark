@@ -29,12 +29,13 @@ class ChatService:
         self.voice_service = get_voice_service()
         self.handoff_service = get_handoff_service(db)
 
-    def create_session(self, 
-                      lead_id: Optional[int] = None,
-                      user_id: Optional[int] = None,
-                      ip_address: Optional[str] = None,
-                      user_agent: Optional[str] = None,
-                      referrer: Optional[str] = None) -> ChatSession:
+    def create_session(self,
+                       lead_id: Optional[int] = None,
+                       user_id: Optional[int] = None,
+                       ip_address: Optional[str] = None,
+                       user_agent: Optional[str] = None,
+                       referrer: Optional[str] = None,
+                       context: Optional[Dict[str, Any]] = None) -> ChatSession:
         """Create a new chat session"""
         
         session = ChatSession(
