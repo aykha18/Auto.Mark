@@ -12,6 +12,7 @@ from .assessment import Assessment
 from .co_creator_program import CoCreatorProgram, CoCreator
 from .payment_transaction import PaymentTransaction
 from .founder_story import FounderStory, FounderMilestone
+from .chat_session import ChatSession, ChatMessage
 
 __all__ = [
     "Base",
@@ -25,5 +26,7 @@ __all__ = [
     "CoCreator",
     "PaymentTransaction",
     "FounderStory",
-    "FounderMilestone"
+    "FounderMilestone",
+    "ChatSession",
+    "ChatMessage"
 ]
