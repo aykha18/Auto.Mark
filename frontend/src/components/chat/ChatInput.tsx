@@ -47,7 +47,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-end space-x-2">
+    <form onSubmit={handleSubmit} className="flex items-end space-x-3">
       <div className="flex-1 relative">
         <textarea
           ref={textareaRef}
@@ -59,19 +59,19 @@ const ChatInput: React.FC<ChatInputProps> = ({
           placeholder={placeholder}
           disabled={disabled}
           rows={1}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-          style={{ minHeight: '40px', maxHeight: '120px' }}
+          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+          style={{ minHeight: '48px', maxHeight: '120px' }}
         />
         {message.trim() && (
-          <div className="absolute right-2 bottom-2 text-xs text-gray-400">
-            Press Enter to send, Shift+Enter for new line
+          <div className="absolute right-3 bottom-2 text-xs text-gray-400">
+            Enter to send • Shift+Enter for new line
           </div>
         )}
       </div>
       <button
         type="submit"
         disabled={!message.trim() || disabled || isComposing}
-        className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white p-2 rounded-lg transition-colors flex-shrink-0"
+        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white p-3 rounded-xl transition-all duration-200 flex-shrink-0 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
         aria-label="Send message"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -208,54 +208,97 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
   }
 
   return (
-    <div className={`fixed bottom-6 right-6 z-50 bg-white rounded-lg shadow-2xl border transition-all duration-300 ${
+    <div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
       isMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
     }`}>
-      <ChatHeader
-        isConnected={isConnected}
-        onMinimize={onMinimize}
-        onClose={onToggle}
-        isMinimized={isMinimized}
-      />
-      
-      {!isMinimized && (
-        <>
-          <div className="flex-1 overflow-hidden flex flex-col h-[520px]">
-            {isLoading ? (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
-            ) : session ? (
-              <>
-                <ChatMessageList 
-                  messages={session.messages} 
-                  isLoading={false}
+      {/* Modern chat container with gradient background */}
+      <div className="h-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-2xl border border-blue-200 overflow-hidden backdrop-blur-sm">
+        <ChatHeader
+          isConnected={isConnected}
+          onMinimize={onMinimize}
+          onClose={onToggle}
+          isMinimized={isMinimized}
+        />
+        
+        {!isMinimized && (
+          <div className="flex flex-col h-[552px]">
+            {/* Messages area with modern styling */}
+            <div className="flex-1 overflow-hidden bg-white/70 backdrop-blur-sm">
+              {isLoading ? (
+                <div className="flex-1 flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-blue-600 font-medium">Connecting to Unitasa Assistant...</p>
+                  </div>
+                </div>
+              ) : session ? (
+                <>
+                  <ChatMessageList 
+                    messages={session.messages} 
+                    isLoading={false}
+                  />
+                  <div ref={messagesEndRef} />
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-gray-500 h-full">
+                  <div className="text-center p-6">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-600 font-medium">Failed to initialize chat</p>
+                    <p className="text-sm text-gray-500 mt-1">Please refresh and try again</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Input area with modern styling - always show */}
+            <div className="bg-white/90 backdrop-blur-sm border-t border-blue-200 p-4">
+              {voiceState.isSupported && (
+                <div className="mb-3">
+                  <VoiceInput
+                    voiceState={voiceState}
+                    onVoiceStateChange={setVoiceState}
+                    onTranscript={handleVoiceInput}
+                  />
+                </div>
+              )}
+              
+              {/* Always show input, just disable if no session */}
+              <div className="relative">
+                <ChatInput
+                  onSendMessage={sendMessage}
+                  disabled={!session}
+                  placeholder={
+                    !session 
+                      ? "Initializing chat..." 
+                      : isConnected 
+                        ? "Ask about CRM integrations..." 
+                        : "Type your message..."
+                  }
                 />
-                <div ref={messagesEndRef} />
-              </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-gray-500">
-                Failed to initialize chat. Please refresh and try again.
+                
+                {/* Connection status indicator */}
+                <div className="flex items-center justify-between mt-2 text-xs">
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-2 h-2 rounded-full ${
+                      isConnected ? 'bg-green-400' : 'bg-yellow-400'
+                    }`}></div>
+                    <span className="text-gray-500">
+                      {isConnected ? 'Connected' : 'Connecting...'}
+                    </span>
+                  </div>
+                  <span className="text-gray-400">
+                    Powered by Unitasa AI
+                  </span>
+                </div>
               </div>
-            )}
+            </div>
           </div>
-          
-          <div className="border-t p-4 space-y-2">
-            {voiceState.isSupported && (
-              <VoiceInput
-                voiceState={voiceState}
-                onVoiceStateChange={setVoiceState}
-                onTranscript={handleVoiceInput}
-              />
-            )}
-            <ChatInput
-              onSendMessage={sendMessage}
-              disabled={!session}
-              placeholder={isConnected ? "Ask about CRM integrations..." : "Type your message..."}
-            />
-          </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 };
