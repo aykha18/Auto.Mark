@@ -9,8 +9,9 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message }) => {
   const isUser = message.sender === 'user';
   const isVoice = message.type === 'voice';
   
-  const formatTime = (timestamp: Date) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
+  const formatTime = (timestamp: Date | string) => {
+    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+    return date.toLocaleTimeString([], { 
       hour: '2-digit', 
       minute: '2-digit' 
     });

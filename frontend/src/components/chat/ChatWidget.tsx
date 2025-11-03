@@ -239,8 +239,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
             )}
             <ChatInput
               onSendMessage={sendMessage}
-              disabled={!session || !isConnected}
-              placeholder={isConnected ? "Ask about CRM integrations..." : "Connecting..."}
+              disabled={!session}
+              placeholder={isConnected ? "Ask about CRM integrations..." : "Type your message..."}
             />
           </div>
         </>
