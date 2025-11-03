@@ -257,7 +257,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
         {!isMinimized && (
           <div className="flex flex-col h-[536px]">
             {/* Messages area with modern styling */}
-            <div className="flex-1 overflow-hidden bg-white/70 backdrop-blur-sm">
+            <div className="flex-1 overflow-y-auto bg-white/70 backdrop-blur-sm">
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center h-full">
                   <div className="text-center">

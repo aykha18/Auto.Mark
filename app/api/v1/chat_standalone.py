@@ -9,10 +9,74 @@ from fastapi import APIRouter, HTTPException, Request, WebSocket, WebSocketDisco
 from pydantic import BaseModel
 
 
-def generate_contextual_response(user_content: str) -> str:
+async def generate_contextual_response(user_content: str) -> str:
     """
-    Generate comprehensive responses about all aspects of Unitasa platform
+    Generate comprehensive responses using Grok AI with Unitasa knowledge
     """
+    import os
+    import httpx
+    
+    # Get Grok API key
+    grok_api_key = os.getenv("GROK_API_KEY")
+    
+    if grok_api_key:
+        try:
+            # Use Grok AI for intelligent responses
+            system_prompt = """You are Unitasa's AI Marketing Assistant. You're an expert on:
+
+UNITASA PLATFORM:
+- AI Marketing Automation Platform with plug-and-play CRM integrations
+- Built by a founder who went from zero to automated lead generation
+- Works with existing CRMs: Salesforce, HubSpot, Pipedrive, Zoho, Monday.com
+- NeuraCRM as built-in default option
+- 24/7 AI lead generation and nurturing
+
+KEY FEATURES:
+- Smart lead scoring and qualification
+- Real-time CRM synchronization  
+- Automated marketing campaigns
+- Voice-to-text lead capture
+- Custom workflow triggers
+
+CO-CREATOR PROGRAM:
+- $250 one-time payment for lifetime access
+- Only 25 seats available
+- Direct founder access and roadmap influence
+- Custom integration support included
+
+PRICING:
+- Co-Creator: $250 lifetime (limited time)
+- Regular: $47-197/month after program
+- ROI: 300-500% typical first year return
+
+Be conversational, helpful, and guide users toward taking the assessment or learning more. Keep responses concise but informative. Use a friendly, professional tone."""
+
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.post(
+                    "https://api.x.ai/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {grok_api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": "grok-beta",
+                        "messages": [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_content}
+                        ],
+                        "max_tokens": 500,
+                        "temperature": 0.7
+                    }
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    return data["choices"][0]["message"]["content"]
+                    
+        except Exception as e:
+            print(f"Grok API error: {e}")
+    
+    # Fallback to contextual responses if Grok fails
     user_content = user_content.lower().strip()
     
     # Greeting responses
@@ -228,7 +292,7 @@ async def send_chat_message(
         user_content = message_data.get("content", "").lower()
         
         # Generate contextual responses based on user input
-        response_content = generate_contextual_response(user_content)
+        response_content = await generate_contextual_response(user_content)
         
         response_message = {
             "id": str(uuid.uuid4()),
@@ -254,7 +318,7 @@ async def send_chat_message_fallback(
         user_content = message_data.get("content", "")
         
         # Generate contextual responses based on user input using the knowledge base
-        response_content = generate_contextual_response(user_content)
+        response_content = await generate_contextual_response(user_content)
         
         response_message = {
             "id": str(uuid.uuid4()),

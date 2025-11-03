@@ -91,25 +91,64 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message }) => {
       );
     }
 
-    return <p>{message.content}</p>;
+    // Format message content with basic markdown-style rendering
+    const formatContent = (content: string) => {
+      // Split by double newlines for paragraphs
+      const paragraphs = content.split('\n\n');
+      
+      return paragraphs.map((paragraph, index) => {
+        // Handle bullet points
+        if (paragraph.includes('•') || paragraph.includes('✅')) {
+          const lines = paragraph.split('\n');
+          return (
+            <div key={index} className="mb-2">
+              {lines.map((line, lineIndex) => {
+                if (line.trim().startsWith('•') || line.trim().startsWith('✅')) {
+                  return (
+                    <div key={lineIndex} className="flex items-start mb-1">
+                      <span className="mr-2 text-blue-500 font-bold">
+                        {line.trim().startsWith('✅') ? '✅' : '•'}
+                      </span>
+                      <span className="text-sm">{line.replace(/^[•✅]\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1')}</span>
+                    </div>
+                  );
+                } else if (line.trim()) {
+                  return <p key={lineIndex} className="text-sm mb-1 font-medium">{line.replace(/\*\*(.*?)\*\*/g, '$1')}</p>;
+                }
+                return null;
+              })}
+            </div>
+          );
+        } else {
+          // Regular paragraph
+          return (
+            <p key={index} className="text-sm mb-2 leading-relaxed">
+              {paragraph.replace(/\*\*(.*?)\*\*/g, '$1')}
+            </p>
+          );
+        }
+      });
+    };
+
+    return <div className="space-y-1">{formatContent(message.content)}</div>;
   };
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+      <div className={`max-w-sm lg:max-w-lg px-3 py-2 rounded-lg ${
         isUser 
           ? 'bg-blue-600 text-white' 
           : 'bg-gray-100 text-gray-800'
       }`}>
         <div className="flex items-start space-x-2">
           {isVoice && (
-            <svg className={`w-4 h-4 mt-1 flex-shrink-0 ${
+            <svg className={`w-3 h-3 mt-1 flex-shrink-0 ${
               isUser ? 'text-blue-200' : 'text-gray-500'
             }`} fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
+              <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 715 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
             </svg>
           )}
-          <div className="flex-1">
+          <div className="flex-1 text-sm leading-relaxed">
             {renderMessageContent()}
           </div>
         </div>
