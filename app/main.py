@@ -285,6 +285,23 @@ async def cors_debug(request: Request):
         "all_headers": dict(request.headers)
     }
 
+@app.get("/debug/routes")
+async def debug_routes():
+    """Debug available routes"""
+    routes = []
+    for route in app.routes:
+        if hasattr(route, 'path'):
+            routes.append({
+                "path": route.path,
+                "methods": getattr(route, 'methods', []),
+                "name": getattr(route, 'name', '')
+            })
+    return {
+        "total_routes": len(routes),
+        "routes": routes,
+        "chat_routes": [r for r in routes if 'chat' in r['path']]
+    }
+
 @app.middleware("http")
 async def track_conversion_funnel(request, call_next):
     """Middleware to track conversion funnel analytics"""
