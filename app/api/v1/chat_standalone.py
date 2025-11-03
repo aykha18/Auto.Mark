@@ -96,13 +96,23 @@ Keep responses conversational but focused on moving the conversation forward tow
                 
                 if response.status_code == 200:
                     data = response.json()
-                    return data["choices"][0]["message"]["content"]
+                    grok_response = data["choices"][0]["message"]["content"]
+                    print(f"✅ Grok API response received")
+                    # Add subtle indicator that this is from Grok
+                    return f"{grok_response}\n\n*Powered by Grok AI*"
+                else:
+                    print(f"Grok API returned status code: {response.status_code}")
+                    print(f"Response: {response.text}")
                     
         except Exception as e:
             print(f"Grok API error: {e}")
+            print(f"Falling back to hardcoded responses")
+    else:
+        print(f"No GROK_API_KEY found, using fallback responses")
     
     # Fallback to contextual responses if Grok fails
     user_content = user_content.lower().strip()
+    print(f"Processing fallback for: {user_content}")
     
     # Name/identity questions - FIRST PRIORITY
     if any(phrase in user_content for phrase in ["what's your name", "whats your name", "your name", "who are you", "what are you", "name"]):
@@ -332,7 +342,9 @@ Ready to transform your marketing ROI? The Co-Creator Program won't last long!""
 
 Once I understand your specific challenges, I can show you exactly how Unitasa's AI Marketing Automation Platform addresses your pain points. We've helped businesses increase qualified leads by 40% while saving 20+ hours per week.
 
-**Want to see how ready your business is for AI automation?** Our free 10-question assessment takes 3 minutes and gives you a personalized roadmap. Should we start there?"""
+**Want to see how ready your business is for AI automation?** Our free 10-question assessment takes 3 minutes and gives you a personalized roadmap. Should we start there?
+
+*[Fallback Response - Grok AI not available]*"""
 
 router = APIRouter()
 
