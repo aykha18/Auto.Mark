@@ -251,10 +251,14 @@ async def send_chat_message_fallback(
     Fallback message endpoint (standalone version)
     """
     try:
-        # Return a proper chat message response
+        user_content = message_data.get("content", "")
+        
+        # Generate contextual responses based on user input using the knowledge base
+        response_content = generate_contextual_response(user_content)
+        
         response_message = {
             "id": str(uuid.uuid4()),
-            "content": "Thank you for your message! I'm here to help you with CRM integrations and marketing automation. What would you like to know?",
+            "content": response_content,
             "sender": "agent",
             "timestamp": datetime.utcnow().isoformat(),
             "type": "text"
