@@ -266,6 +266,30 @@ This isn't just software access - you're becoming a partner in building the futu
 
 Want to check if you qualify? Take our assessment first!"""
     
+    # Signup/registration questions
+    if any(phrase in user_content for phrase in ["signup", "sign up", "register", "join", "get started", "how to start", "onboard"]):
+        return """Great question! I'm excited to help you get started with Unitasa. Here's exactly how to sign up:
+
+**🚀 FASTEST PATH - Co-Creator Program (Limited Time):**
+• **$250 one-time payment** → Lifetime access
+• Only 25 seats left
+• Includes personal onboarding call with me
+• Custom CRM integration setup included
+• Direct access to our founder
+
+**� REgGULAR SIGNUP PROCESS:**
+1. **Take our AI Readiness Assessment** (3 minutes) → Get your personalized plan
+2. **Choose your plan** based on your assessment score
+3. **Connect your CRM** (Salesforce, HubSpot, Pipedrive, etc.)
+4. **Onboarding call** with me to set up your automation
+
+**🎯 RECOMMENDED NEXT STEP:**
+Let's start with the assessment so I can recommend the best signup path for YOUR business. It takes 3 minutes and shows you exactly what you'll get.
+
+**Quick question:** Are you currently using a CRM system? This helps me know which integration we'll set up for you.
+
+Ready to take the assessment and see your personalized signup plan?"""
+    
     # Pricing questions
     if any(word in user_content for word in ["price", "cost", "pricing", "expensive", "cheap", "money", "payment"]):
         return """💰 **Unitasa Pricing - Flexible Options for Every Business**
