@@ -160,7 +160,11 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
 
     // Send via WebSocket if connected, otherwise fallback to HTTP
     if (wsRef.current && isConnected) {
-      wsRef.current.send(JSON.stringify(userMessage));
+      wsRef.current.send(JSON.stringify({
+        type: "message",
+        content: content.trim(),
+        message_type: type
+      }));
     } else {
       try {
         await fetch(`/api/v1/chat/${session.id}/message`, {
@@ -221,7 +225,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
         />
         
         {!isMinimized && (
-          <div className="flex flex-col h-[552px]">
+          <div className="flex flex-col h-[536px]">
             {/* Messages area with modern styling */}
             <div className="flex-1 overflow-hidden bg-white/70 backdrop-blur-sm">
               {isLoading ? (
