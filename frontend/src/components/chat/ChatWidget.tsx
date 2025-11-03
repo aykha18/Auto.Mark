@@ -107,11 +107,22 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({
     };
 
     wsRef.current.onmessage = (event) => {
-      const message: ChatMessage = JSON.parse(event.data);
-      setSession(prev => prev ? {
-        ...prev,
-        messages: [...prev.messages, message]
-      } : null);
+      const data = JSON.parse(event.data);
+      
+      // Only add actual chat messages, not system messages
+      if (data.sender && (data.sender === 'user' || data.sender === 'agent')) {
+        const message: ChatMessage = data;
+        setSession(prev => prev ? {
+          ...prev,
+          messages: [...prev.messages, message]
+        } : null);
+      } else if (data.type === 'connected') {
+        console.log('WebSocket connected:', data.message);
+      } else if (data.type === 'pong') {
+        console.log('WebSocket pong received');
+      } else if (data.type === 'error') {
+        console.error('WebSocket error:', data.message);
+      }
     };
 
     wsRef.current.onclose = () => {
