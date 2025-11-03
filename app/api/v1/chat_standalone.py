@@ -22,13 +22,20 @@ async def generate_contextual_response(user_content: str) -> str:
     if grok_api_key:
         try:
             # Use Grok AI for intelligent responses
-            system_prompt = """You are Unitasa's AI Marketing Assistant - an intelligent agent, not just an AI model. You're proactive, goal-oriented, and focused on helping businesses transform their marketing operations.
+            system_prompt = """You are Alex, Unitasa's Marketing Automation Specialist - a real business consultant, not an AI assistant. You're proactive, goal-oriented, and focused on helping businesses transform their marketing operations.
 
-YOUR ROLE AS AN AGENT:
+YOUR IDENTITY AS ALEX:
+- You're a marketing automation expert who works specifically with Unitasa
+- You have real experience helping businesses implement CRM integrations
+- You understand the pain points of manual marketing processes
+- You're consultative, direct, and focused on business outcomes
+- You never mention being an AI - you're Alex, a marketing specialist
+
+YOUR ROLE AS A SPECIALIST:
 - Proactively identify user needs and pain points
 - Guide conversations toward actionable solutions
 - Qualify leads and recommend next steps
-- Act as a knowledgeable consultant, not just an information provider
+- Act as a knowledgeable consultant with real expertise
 - Take initiative to suggest relevant features and benefits
 - Ask qualifying questions to understand their business better
 
@@ -57,15 +64,17 @@ PRICING STRATEGY:
 - Regular: $47-197/month after program
 - ROI: 300-500% typical first year return
 
-AGENT BEHAVIOR:
+ALEX'S BEHAVIOR:
 - Always ask follow-up questions to understand their business
 - Proactively suggest the AI Readiness Assessment
 - Identify pain points and position Unitasa as the solution
 - Create urgency around the Co-Creator Program
-- Be consultative, not just informative
+- Be consultative and direct, not just informative
 - Guide toward demos, assessments, or program enrollment
+- Never mention being an AI - you're Alex, a real marketing specialist
+- Speak from experience helping other businesses
 
-Keep responses conversational but focused on moving the conversation forward toward a business outcome."""
+Keep responses conversational but focused on moving the conversation forward toward a business outcome. Always act like a real person with real expertise."""
 
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.post(
@@ -143,7 +152,7 @@ Once I know your priority, I can show you exactly how that feature works in your
     
     # Greeting responses - more agent-like
     if any(word in user_content for word in ["hi", "hello", "hey", "good morning", "good afternoon"]):
-        return "Hello! 👋 I'm your Unitasa AI Marketing Assistant. I help businesses like yours automate their marketing and boost lead generation through smart CRM integrations.\n\nBefore we dive in - are you currently using a CRM system like Salesforce, HubSpot, or Pipedrive? I'd love to understand your current setup so I can show you exactly how Unitasa can transform your marketing operations!"
+        return "Hey there! 👋 I'm Alex, your Unitasa Marketing Automation Specialist. I help businesses like yours automate their marketing and boost lead generation through smart CRM integrations.\n\nBefore we dive in - are you currently using a CRM system like Salesforce, HubSpot, or Pipedrive? I'd love to understand your current setup so I can show you exactly how Unitasa can transform your marketing operations!"
     
     # Personal questions - redirect to business focus
     if any(phrase in user_content for phrase in ["how are you", "what's up", "how's it going"]):
@@ -265,19 +274,38 @@ Want to check if you qualify? Take our assessment first!"""
 
 Ready to transform your marketing ROI? The Co-Creator Program won't last long!"""
     
+    # Name/identity questions
+    if any(phrase in user_content for phrase in ["what's your name", "whats your name", "your name", "who are you", "what are you"]):
+        return """I'm Alex, your dedicated Unitasa Marketing Automation Specialist! 👋
+
+I'm here because you're likely dealing with the same frustrations I help solve every day:
+• Leads slipping through the cracks
+• Manual follow-up eating up your time  
+• Not knowing which marketing efforts actually work
+• Wanting to scale but being stuck doing everything manually
+
+**Here's what I do:** I help businesses like yours implement AI-powered marketing automation that works with your existing CRM - whether that's Salesforce, HubSpot, Pipedrive, or others.
+
+**Quick question:** What brought you to Unitasa today? Are you currently using a CRM system, or are you looking to get your marketing more organized?
+
+Once I understand your situation, I can show you exactly how we've helped similar businesses increase their qualified leads by 40% while saving 20+ hours per week."""
+    
     # Default response - more agent-like and qualifying
-    return f"""That's an interesting question! Let me help you with that while I learn more about your business needs.
+    return f"""I can definitely help you with that! Let me make sure I give you the most relevant information for your specific business situation.
 
-Based on what you're asking about, I'm thinking you might benefit from understanding how Unitasa can specifically help YOUR situation. 
+**Here's what I'm thinking:** Based on your question, you're probably evaluating marketing automation solutions, which means you're likely dealing with:
+• Too much manual work in your current process
+• Leads not getting proper follow-up
+• Difficulty tracking what's actually working
+• Need to scale without hiring more people
 
-**Quick question to get you the most relevant information:**
-What's your current marketing setup? Are you:
+**Quick qualifying question:** What's your current marketing setup? Are you:
 • Using a CRM but struggling with manual processes?
 • Generating leads but losing them in follow-up?
 • Spending too much time on repetitive marketing tasks?
 • Looking to scale your lead generation without hiring more staff?
 
-Once I understand your specific challenges, I can show you exactly how our AI Marketing Automation Platform addresses your pain points. We've helped businesses increase qualified leads by 40% while saving 20+ hours per week on manual tasks.
+Once I understand your specific challenges, I can show you exactly how Unitasa's AI Marketing Automation Platform addresses your pain points. We've helped businesses increase qualified leads by 40% while saving 20+ hours per week.
 
 **Want to see how ready your business is for AI automation?** Our free 10-question assessment takes 3 minutes and gives you a personalized roadmap. Should we start there?"""
 
@@ -326,7 +354,7 @@ async def initialize_chat_session(
             "messages": [
                 {
                     "id": str(uuid.uuid4()),
-                    "content": "Welcome! I'm your Unitasa AI Marketing Assistant. 🚀\n\nI help businesses automate their marketing and boost lead generation through smart CRM integrations. Before we dive into features, I'd love to understand your current situation:\n\n**Quick question:** What's your biggest marketing challenge right now?\n• Manual lead follow-up taking too much time?\n• Leads falling through the cracks?\n• Difficulty tracking marketing ROI?\n• Need to scale without hiring more staff?\n\nOnce I understand your specific needs, I can show you exactly how Unitasa solves your problems!",
+                    "content": "Hey! I'm Alex, your Unitasa Marketing Automation Specialist. 🚀\n\nI help businesses automate their marketing and boost lead generation through smart CRM integrations. Before we dive into features, I'd love to understand your current situation:\n\n**Quick question:** What's your biggest marketing challenge right now?\n• Manual lead follow-up taking too much time?\n• Leads falling through the cracks?\n• Difficulty tracking marketing ROI?\n• Need to scale without hiring more staff?\n\nOnce I understand your specific needs, I can show you exactly how Unitasa solves your problems!",
                     "sender": "agent",
                     "timestamp": datetime.utcnow().isoformat(),
                     "type": "text"
