@@ -45,19 +45,22 @@ async def initialize_chat_session(
         # Generate a simple session ID
         session_id = str(uuid.uuid4())
         
-        # Return a basic session response
+        # Return a basic session response that matches frontend expectations
         response_data = {
             "session_id": session_id,
             "id": session_id,  # Frontend uses session.id for WebSocket URL
-            "status": "active",
-            "started_at": datetime.utcnow().isoformat(),
-            "lead_id": None,
-            "user_id": None,
-            "qualification_score": 0.0,
-            "crm_interest_level": "unknown",
-            "identified_crm": None,
-            "total_messages": 0,
-            "messages": []
+            "active": True,  # Frontend expects 'active' boolean instead of 'status'
+            "messages": [
+                {
+                    "id": str(uuid.uuid4()),
+                    "content": "Welcome to Unitasa! I'm here to help you with CRM integrations and marketing automation questions.\n\nTry asking:\n• \"How does Unitasa integrate with Salesforce?\"\n• \"What CRM features do you support?\"\n• \"Help me choose the right integration\"\n• \"Tell me about the co-creator program\"",
+                    "sender": "agent",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "type": "text"
+                }
+            ],
+            "context": request.context if request and request.context else {},
+            "voiceEnabled": True
         }
 
         return response_data
@@ -75,23 +78,15 @@ async def send_chat_message(
     Send a message to the chat (standalone version)
     """
     try:
-        # Mock response for now
-        return {
-            "success": True,
-            "response": "Hello! I'm Unitasa's AI Marketing Assistant. I'm here to help you understand how AI can transform your marketing operations. What specific challenges are you facing with your current marketing setup?",
-            "session_id": session_id,
-            "message_id": str(uuid.uuid4()),
-            "processing_time_ms": 150,
-            "requires_handoff": False,
-            "analytics": {
-                "intent_distribution": {"general_greeting": 1.0},
-                "qualification_score": 0.0,
-                "crm_interest_level": "unknown",
-                "identified_crm": None,
-                "pain_points": [],
-                "sentiment": "neutral"
-            }
+        # Return a proper chat message response
+        response_message = {
+            "id": str(uuid.uuid4()),
+            "content": "Hello! I'm Unitasa's AI Marketing Assistant. I'm here to help you understand how AI can transform your marketing operations. What specific challenges are you facing with your current marketing setup?",
+            "sender": "agent",
+            "timestamp": datetime.utcnow().isoformat(),
+            "type": "text"
         }
+        return response_message
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process message: {str(e)}")
 
@@ -105,23 +100,15 @@ async def send_chat_message_fallback(
     Fallback message endpoint (standalone version)
     """
     try:
-        # Mock response for now
-        return {
-            "success": True,
-            "response": "Thank you for your message! I'm here to help you with CRM integrations and marketing automation. What would you like to know?",
-            "session_id": session_id,
-            "message_id": str(uuid.uuid4()),
-            "processing_time_ms": 120,
-            "requires_handoff": False,
-            "analytics": {
-                "intent_distribution": {"general_question": 1.0},
-                "qualification_score": 0.0,
-                "crm_interest_level": "unknown",
-                "identified_crm": None,
-                "pain_points": [],
-                "sentiment": "neutral"
-            }
+        # Return a proper chat message response
+        response_message = {
+            "id": str(uuid.uuid4()),
+            "content": "Thank you for your message! I'm here to help you with CRM integrations and marketing automation. What would you like to know?",
+            "sender": "agent",
+            "timestamp": datetime.utcnow().isoformat(),
+            "type": "text"
         }
+        return response_message
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process message: {str(e)}")
 
@@ -146,15 +133,15 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str):
             data = await websocket.receive_json()
             
             if data.get("type") == "message":
-                # Echo back a simple response
-                await websocket.send_json({
-                    "type": "message_response",
-                    "response": "I received your message. This is a basic WebSocket response.",
-                    "message_id": str(uuid.uuid4()),
-                    "processing_time_ms": 100,
-                    "analytics": {},
-                    "requires_handoff": False
-                })
+                # Send back a proper chat message
+                response_message = {
+                    "id": str(uuid.uuid4()),
+                    "content": "Thank you for your message! I'm Unitasa's AI Marketing Assistant. I can help you with CRM integrations, marketing automation, and understanding our platform. What would you like to know?",
+                    "sender": "agent",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "type": "text"
+                }
+                await websocket.send_json(response_message)
             elif data.get("type") == "ping":
                 # Respond to ping
                 await websocket.send_json({
