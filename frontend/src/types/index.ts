@@ -122,7 +122,7 @@ export interface ChatMessage {
   id: string;
   content: string;
   sender: 'user' | 'agent';
-  timestamp: Date | string;
+  timestamp: Date | string | undefined;
   type?: 'text' | 'voice' | 'system';
   metadata?: {
     crmRecommendation?: string;

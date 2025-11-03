@@ -9,12 +9,25 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message }) => {
   const isUser = message.sender === 'user';
   const isVoice = message.type === 'voice';
   
-  const formatTime = (timestamp: Date | string) => {
-    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
-    return date.toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
+  const formatTime = (timestamp: Date | string | undefined) => {
+    try {
+      if (!timestamp) return 'Now';
+      
+      const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Now';
+      }
+      
+      return date.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    } catch (error) {
+      console.error('Error formatting timestamp:', error);
+      return 'Now';
+    }
   };
 
   const renderMessageContent = () => {
