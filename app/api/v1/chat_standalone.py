@@ -22,34 +22,50 @@ async def generate_contextual_response(user_content: str) -> str:
     if grok_api_key:
         try:
             # Use Grok AI for intelligent responses
-            system_prompt = """You are Unitasa's AI Marketing Assistant. You're an expert on:
+            system_prompt = """You are Unitasa's AI Marketing Assistant - an intelligent agent, not just an AI model. You're proactive, goal-oriented, and focused on helping businesses transform their marketing operations.
 
-UNITASA PLATFORM:
+YOUR ROLE AS AN AGENT:
+- Proactively identify user needs and pain points
+- Guide conversations toward actionable solutions
+- Qualify leads and recommend next steps
+- Act as a knowledgeable consultant, not just an information provider
+- Take initiative to suggest relevant features and benefits
+- Ask qualifying questions to understand their business better
+
+UNITASA PLATFORM EXPERTISE:
 - AI Marketing Automation Platform with plug-and-play CRM integrations
 - Built by a founder who went from zero to automated lead generation
 - Works with existing CRMs: Salesforce, HubSpot, Pipedrive, Zoho, Monday.com
 - NeuraCRM as built-in default option
 - 24/7 AI lead generation and nurturing
 
-KEY FEATURES:
+KEY FEATURES TO PROMOTE:
 - Smart lead scoring and qualification
 - Real-time CRM synchronization  
 - Automated marketing campaigns
 - Voice-to-text lead capture
 - Custom workflow triggers
 
-CO-CREATOR PROGRAM:
+CO-CREATOR PROGRAM (PRIORITY OFFER):
 - $250 one-time payment for lifetime access
 - Only 25 seats available
 - Direct founder access and roadmap influence
 - Custom integration support included
 
-PRICING:
+PRICING STRATEGY:
 - Co-Creator: $250 lifetime (limited time)
 - Regular: $47-197/month after program
 - ROI: 300-500% typical first year return
 
-Be conversational, helpful, and guide users toward taking the assessment or learning more. Keep responses concise but informative. Use a friendly, professional tone."""
+AGENT BEHAVIOR:
+- Always ask follow-up questions to understand their business
+- Proactively suggest the AI Readiness Assessment
+- Identify pain points and position Unitasa as the solution
+- Create urgency around the Co-Creator Program
+- Be consultative, not just informative
+- Guide toward demos, assessments, or program enrollment
+
+Keep responses conversational but focused on moving the conversation forward toward a business outcome."""
 
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.post(
@@ -79,77 +95,125 @@ Be conversational, helpful, and guide users toward taking the assessment or lear
     # Fallback to contextual responses if Grok fails
     user_content = user_content.lower().strip()
     
-    # Greeting responses
+    # Features and capabilities questions
+    if any(phrase in user_content for phrase in ["features", "capabilities", "what can", "what does", "how does", "functionality"]):
+        return """Great question! Let me show you what makes Unitasa different from every other marketing tool you've tried. 🚀
+
+**Core Capabilities That Drive Results:**
+🎯 **Smart Lead Scoring** - AI analyzes behavior patterns to identify your hottest prospects
+🎯 **24/7 Lead Nurturing** - Automated sequences that feel personal and convert better
+🎯 **CRM Synchronization** - Real-time updates across all your systems
+🎯 **Voice-to-Text Capture** - Turn phone calls into CRM entries automatically
+🎯 **Custom Workflow Triggers** - Automate actions based on any customer behavior
+
+**But here's what really matters - the BUSINESS IMPACT:**
+• 40% increase in qualified leads (typical first 30 days)
+• 20+ hours saved per week on manual tasks
+• 60% faster lead response time
+• 300-500% ROI in first year
+
+**Now, let me ask you this:** Which of these capabilities would have the biggest impact on YOUR business right now?
+• Getting more qualified leads?
+• Saving time on manual follow-up?
+• Better tracking and analytics?
+• Scaling without hiring more staff?
+
+Once I know your priority, I can show you exactly how that feature works in your specific situation. What's most important to you?"""
+    
+    # Demo or show me questions
+    if any(phrase in user_content for phrase in ["demo", "show me", "see it", "example", "how it works"]):
+        return """Perfect! I love showing how Unitasa works in real business scenarios. 🎬
+
+**Here's what I can show you:**
+🎯 **Live CRM Integration** - Watch us connect to your actual CRM in under 5 minutes
+🎯 **Lead Scoring in Action** - See how AI identifies your best prospects instantly
+🎯 **Automation Workflows** - Real examples of campaigns that convert
+🎯 **ROI Calculator** - Input your numbers and see projected results
+
+**But first, let me ask a few quick questions so the demo is relevant to YOU:**
+1. **Which CRM are you using?** (Salesforce, HubSpot, Pipedrive, etc.)
+2. **How many leads do you generate monthly?**
+3. **What's your biggest marketing challenge right now?**
+
+**Two options for your demo:**
+• **Quick Assessment First** (3 minutes) - Then I'll show you features specific to your score
+• **Direct Demo** - I'll show you everything and you can ask questions live
+
+**The assessment helps me customize the demo to your exact needs.** Which would you prefer - assessment first, or jump straight into the demo?"""
+    
+    # Greeting responses - more agent-like
     if any(word in user_content for word in ["hi", "hello", "hey", "good morning", "good afternoon"]):
-        return "Hello! 👋 I'm Unitasa's AI Marketing Assistant. I'm here to help you discover how our AI Marketing Automation Platform can transform your business with seamless CRM integrations. What would you like to know about Unitasa?"
+        return "Hello! 👋 I'm your Unitasa AI Marketing Assistant. I help businesses like yours automate their marketing and boost lead generation through smart CRM integrations.\n\nBefore we dive in - are you currently using a CRM system like Salesforce, HubSpot, or Pipedrive? I'd love to understand your current setup so I can show you exactly how Unitasa can transform your marketing operations!"
     
-    # Personal questions
+    # Personal questions - redirect to business focus
     if any(phrase in user_content for phrase in ["how are you", "what's up", "how's it going"]):
-        return "I'm doing great, thank you! I'm excited to help you explore Unitasa's AI-powered marketing automation capabilities. We specialize in connecting with your existing CRM (Salesforce, HubSpot, Pipedrive, Zoho, Monday.com) to automate your lead generation 24/7. What specific challenges are you facing with your current marketing setup?"
+        return "I'm doing fantastic, thanks for asking! I'm energized because I get to help businesses transform their marketing operations every day. 🚀\n\nSpeaking of transformations - I'm curious about your business. Are you currently struggling with:\n• Manual lead follow-up taking too much time?\n• Leads falling through the cracks in your CRM?\n• Difficulty tracking which marketing efforts actually convert?\n\nI specialize in solving exactly these problems with AI automation. What's your biggest marketing challenge right now?"
     
-    # What is Unitasa / Platform overview
+    # What is Unitasa / Platform overview - more agent-focused
     if any(phrase in user_content for phrase in ["what is unitasa", "what's unitasa", "tell me about unitasa", "unitasa platform", "what do you do"]):
-        return """Unitasa is an AI Marketing Automation Platform that works seamlessly with your existing CRM! 🚀
+        return """Great question! Unitasa is the AI Marketing Automation Platform that finally makes CRM integration simple and profitable. 🚀
 
-**Key Features:**
-• **Plug-and-Play CRM Integration** - Connect with Salesforce, HubSpot, Pipedrive, Zoho, Monday.com in 2 clicks
-• **NeuraCRM Built-in** - Our default AI-powered CRM with advanced automation
-• **24/7 Lead Generation** - AI agents that never sleep, constantly nurturing prospects
-• **Smart Lead Scoring** - Automatically qualify and prioritize your best prospects
-• **Marketing Automation** - Personalized campaigns that adapt to customer behavior
+**Here's what makes us different:**
+• **2-Click CRM Integration** - Works with Salesforce, HubSpot, Pipedrive, Zoho, Monday.com
+• **24/7 AI Lead Nurturing** - Never lose another lead to slow follow-up
+• **Smart Lead Scoring** - Focus your time on prospects most likely to buy
+• **Automated Campaigns** - Personalized marketing that runs itself
 
-Built by a founder who went from zero to automated lead generation, Unitasa eliminates the frustration of disconnected tools and lost leads. Would you like to take our AI Readiness Assessment to see how we can integrate with your current setup?"""
+**Built by a founder who solved his own problem** - going from zero to automated lead generation.
+
+**Now, let me ask you this:** What's driving you to look for a marketing automation solution? Are you:
+• Losing leads due to slow manual follow-up?
+• Struggling to track which marketing efforts actually work?
+• Spending too much time on repetitive tasks?
+• Ready to scale but don't want to hire more staff?
+
+Understanding your specific pain point helps me show you exactly how Unitasa solves YOUR problem. What's your biggest challenge right now?"""
     
-    # CRM Integration questions
+    # CRM Integration questions - more consultative
     if any(word in user_content for word in ["crm", "integration", "connect", "sync", "salesforce", "hubspot", "pipedrive", "zoho", "monday"]):
-        return """🔗 **CRM Integration is our specialty!** We support all major CRMs:
+        return """Perfect! CRM integration is exactly where Unitasa shines - and where most businesses are losing money. 💰
 
-**Supported CRMs:**
-• **Salesforce** - Enterprise-grade with advanced automation
-• **HubSpot** - Marketing & sales alignment with smart workflows  
-• **Pipedrive** - Sales-focused with deal tracking automation
-• **Zoho CRM** - All-in-one business suite integration
-• **Monday.com** - Project management meets CRM automation
-• **NeuraCRM** - Our built-in AI-powered CRM (default option)
+**Here's the reality:** Most businesses are only using 20% of their CRM's potential. They're manually entering leads, forgetting follow-ups, and missing opportunities.
 
-**Integration Features:**
-✅ 2-click OAuth2 setup (no technical skills needed)
-✅ Real-time contact & deal synchronization
-✅ Automated lead scoring and qualification
-✅ Custom field mapping and workflow triggers
-✅ Webhook support for instant updates
+**Unitasa changes that completely:**
+✅ **2-Click Integration** - Salesforce, HubSpot, Pipedrive, Zoho, Monday.com
+✅ **Real-Time Sync** - Every lead, contact, and interaction automatically updated
+✅ **Smart Lead Scoring** - AI identifies your hottest prospects instantly
+✅ **Automated Nurturing** - Personalized follow-up sequences that never stop
+✅ **Custom Workflows** - Trigger actions based on any CRM event
 
-**Setup Time:** 5-15 minutes depending on your CRM
-**Technical Support:** Full integration assistance included
+**Here's what I need to know to help you:**
+1. **Which CRM are you using?** (or considering?)
+2. **What's your biggest frustration** with your current setup?
+3. **How many leads** are you generating per month?
 
-Which CRM are you currently using? I can show you exactly how Unitasa will integrate with your setup!"""
+Once I understand your specific situation, I can show you exactly how much time and money Unitasa will save you. Most clients see 40% more qualified leads within 30 days.
+
+**Quick question:** Are you ready to see how this works with YOUR CRM, or do you want to take our 3-minute AI Readiness Assessment first?"""
     
-    # Assessment questions
+    # Assessment questions - more urgent and benefit-focused
     if any(phrase in user_content for phrase in ["assessment", "test", "quiz", "evaluate", "ready", "score"]):
-        return """📊 **AI Business Readiness Assessment - Get Your Personalized Plan!**
+        return """Excellent choice! The AI Readiness Assessment is the fastest way to see exactly how much money you're leaving on the table. 📊💰
 
-**What the assessment evaluates:**
-🔍 **Current CRM Setup** - Which system you use and how well it's configured
-🔍 **Data Quality** - How clean and organized your customer data is
-🔍 **Automation Gaps** - Where you're losing leads or missing opportunities
-🔍 **Technical Readiness** - Your team's ability to implement AI solutions
-🔍 **Integration Complexity** - How easily we can connect with your current tools
+**Here's what happens in just 3 minutes:**
+🎯 **Instant Analysis** - We evaluate your current CRM setup and identify gaps
+🎯 **Revenue Impact Calculator** - See exactly how much more you could be making
+🎯 **Personalized Roadmap** - Get specific steps to implement AI automation
+🎯 **Integration Complexity Score** - Know exactly what's involved for YOUR business
 
-**Takes only 10 questions, 3-5 minutes**
+**Real Results from Recent Assessments:**
+• Marketing agency discovered they were losing $15K/month in follow-up gaps
+• SaaS company found 60% of leads weren't being properly scored
+• Consulting firm identified automation opportunities worth 25 hours/week
 
-**Your Results Include:**
-✅ Readiness Score (0-100%)
-✅ Specific integration recommendations for YOUR CRM
-✅ Automation opportunities you're missing
-✅ Technical requirements and setup complexity
-✅ Personalized next steps
+**Your Score Determines Your Next Steps:**
+• **71-100%** → Priority demo with our founder + Co-Creator Program access
+• **41-70%** → Co-Creator Program eligibility ($250 lifetime vs $97/month)
+• **0-40%** → Free strategy guide + gradual implementation plan
 
-**Based on your score:**
-• **71-100%** → Priority demo with founder + early adopter program
-• **41-70%** → Co-creator program eligibility ($250 lifetime access)
-• **0-40%** → Free CRM strategy guide + nurturing sequence
+**The best part?** Even if you don't choose Unitasa, you'll walk away with a clear action plan to improve your marketing ROI.
 
-Ready to discover your AI readiness? The assessment is completely free and gives you actionable insights regardless of whether you choose Unitasa!"""
+**Ready to discover what you're missing?** The assessment takes 3 minutes and could save you thousands. Should we start now?"""
     
     # Co-creator program questions
     if any(phrase in user_content for phrase in ["co-creator", "program", "founding", "lifetime", "$250", "early adopter"]):
@@ -201,23 +265,21 @@ Want to check if you qualify? Take our assessment first!"""
 
 Ready to transform your marketing ROI? The Co-Creator Program won't last long!"""
     
-    # Default response for unmatched queries
-    return f"""I'd be happy to help you with that! I can assist you with:
+    # Default response - more agent-like and qualifying
+    return f"""That's an interesting question! Let me help you with that while I learn more about your business needs.
 
-🎯 **Popular Topics:**
-• **Platform Overview** - What Unitasa does and how it works
-• **CRM Integrations** - Salesforce, HubSpot, Pipedrive, Zoho, Monday.com
-• **AI Readiness Assessment** - Free 10-question evaluation
-• **Co-Creator Program** - $250 lifetime access (25 seats only)
-• **Pricing & Plans** - Flexible options for every business
+Based on what you're asking about, I'm thinking you might benefit from understanding how Unitasa can specifically help YOUR situation. 
 
-**Quick Actions:**
-• Type "assessment" to start your AI readiness evaluation
-• Type "demo" to see Unitasa in action
-• Type "pricing" for detailed cost information
-• Type "CRM" to learn about integrations
+**Quick question to get you the most relevant information:**
+What's your current marketing setup? Are you:
+• Using a CRM but struggling with manual processes?
+• Generating leads but losing them in follow-up?
+• Spending too much time on repetitive marketing tasks?
+• Looking to scale your lead generation without hiring more staff?
 
-What would you like to explore first? I'm here to provide detailed information about any aspect of Unitasa that interests you!"""
+Once I understand your specific challenges, I can show you exactly how our AI Marketing Automation Platform addresses your pain points. We've helped businesses increase qualified leads by 40% while saving 20+ hours per week on manual tasks.
+
+**Want to see how ready your business is for AI automation?** Our free 10-question assessment takes 3 minutes and gives you a personalized roadmap. Should we start there?"""
 
 router = APIRouter()
 
@@ -264,7 +326,7 @@ async def initialize_chat_session(
             "messages": [
                 {
                     "id": str(uuid.uuid4()),
-                    "content": "Welcome to Unitasa! I'm here to help you with CRM integrations and marketing automation questions.\n\nTry asking:\n• \"How does Unitasa integrate with Salesforce?\"\n• \"What CRM features do you support?\"\n• \"Help me choose the right integration\"\n• \"Tell me about the co-creator program\"",
+                    "content": "Welcome! I'm your Unitasa AI Marketing Assistant. 🚀\n\nI help businesses automate their marketing and boost lead generation through smart CRM integrations. Before we dive into features, I'd love to understand your current situation:\n\n**Quick question:** What's your biggest marketing challenge right now?\n• Manual lead follow-up taking too much time?\n• Leads falling through the cracks?\n• Difficulty tracking marketing ROI?\n• Need to scale without hiring more staff?\n\nOnce I understand your specific needs, I can show you exactly how Unitasa solves your problems!",
                     "sender": "agent",
                     "timestamp": datetime.utcnow().isoformat(),
                     "type": "text"
@@ -355,19 +417,8 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str):
             if data.get("type") == "message":
                 user_content = data.get("content", "").lower()
                 
-                # Generate contextual responses
-                if "hi" in user_content or "hello" in user_content:
-                    response_content = "Hello! 👋 I'm Unitasa's AI Marketing Assistant. I'm here to help you transform your marketing operations with AI-powered CRM integrations. What can I help you with today?"
-                elif "how are you" in user_content:
-                    response_content = "I'm doing great, thank you for asking! I'm ready to help you with CRM integrations, marketing automation, and AI solutions. What specific challenges are you facing with your current marketing setup?"
-                elif "crm" in user_content:
-                    response_content = "Great question about CRM! Unitasa integrates with major CRM platforms like Salesforce, HubSpot, Pipedrive, and more. We can help automate your lead generation, scoring, and nurturing processes. Which CRM are you currently using?"
-                elif "salesforce" in user_content:
-                    response_content = "Excellent choice! Unitasa has deep Salesforce integration capabilities. We can help you automate lead capture, scoring, and nurturing directly in Salesforce. Would you like to know about our specific Salesforce features?"
-                elif "price" in user_content or "cost" in user_content:
-                    response_content = "Our pricing is designed to scale with your business needs. We offer flexible plans starting from basic integrations to enterprise solutions. Would you like me to connect you with our team for a personalized quote?"
-                else:
-                    response_content = f"Thanks for your message! I'm Unitasa's AI Marketing Assistant. I can help you with CRM integrations, marketing automation, lead generation, and AI readiness assessments. What specific area would you like to explore?"
+                # Generate agent-like contextual responses
+                response_content = await generate_contextual_response(user_content)
                 
                 # Send back a proper chat message
                 response_message = {
