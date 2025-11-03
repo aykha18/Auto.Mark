@@ -225,8 +225,15 @@ try:
         print(f"Traceback: {traceback.format_exc()}")
     
     print("Including chat router...")
-    app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
-    print("Chat router included successfully")
+    try:
+        app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
+        print("Chat router included successfully")
+    except Exception as e:
+        print(f"ERROR including chat router: {e}")
+        print("Using standalone chat router...")
+        from app.api.v1 import chat_standalone
+        app.include_router(chat_standalone.router, prefix="/api/v1/chat", tags=["chat"])
+        print("Standalone chat router included successfully")
     
     print("Including analytics router...")
     app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
