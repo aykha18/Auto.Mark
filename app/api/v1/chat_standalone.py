@@ -104,6 +104,22 @@ Keep responses conversational but focused on moving the conversation forward tow
     # Fallback to contextual responses if Grok fails
     user_content = user_content.lower().strip()
     
+    # Name/identity questions - FIRST PRIORITY
+    if any(phrase in user_content for phrase in ["what's your name", "whats your name", "your name", "who are you", "what are you", "name"]):
+        return """I'm Alex, your dedicated Unitasa Marketing Automation Specialist! 👋
+
+I'm here because you're likely dealing with the same frustrations I help solve every day:
+• Leads slipping through the cracks
+• Manual follow-up eating up your time  
+• Not knowing which marketing efforts actually work
+• Wanting to scale but being stuck doing everything manually
+
+**Here's what I do:** I help businesses like yours implement AI-powered marketing automation that works with your existing CRM - whether that's Salesforce, HubSpot, Pipedrive, or others.
+
+**Quick question:** What brought you to Unitasa today? Are you currently using a CRM system, or are you looking to get your marketing more organized?
+
+Once I understand your situation, I can show you exactly how we've helped similar businesses increase their qualified leads by 40% while saving 20+ hours per week."""
+    
     # Features and capabilities questions
     if any(phrase in user_content for phrase in ["features", "capabilities", "what can", "what does", "how does", "functionality"]):
         return """Great question! Let me show you what makes Unitasa different from every other marketing tool you've tried. 🚀
@@ -274,21 +290,6 @@ Want to check if you qualify? Take our assessment first!"""
 
 Ready to transform your marketing ROI? The Co-Creator Program won't last long!"""
     
-    # Name/identity questions
-    if any(phrase in user_content for phrase in ["what's your name", "whats your name", "your name", "who are you", "what are you"]):
-        return """I'm Alex, your dedicated Unitasa Marketing Automation Specialist! 👋
-
-I'm here because you're likely dealing with the same frustrations I help solve every day:
-• Leads slipping through the cracks
-• Manual follow-up eating up your time  
-• Not knowing which marketing efforts actually work
-• Wanting to scale but being stuck doing everything manually
-
-**Here's what I do:** I help businesses like yours implement AI-powered marketing automation that works with your existing CRM - whether that's Salesforce, HubSpot, Pipedrive, or others.
-
-**Quick question:** What brought you to Unitasa today? Are you currently using a CRM system, or are you looking to get your marketing more organized?
-
-Once I understand your situation, I can show you exactly how we've helped similar businesses increase their qualified leads by 40% while saving 20+ hours per week."""
     
     # Default response - more agent-like and qualifying
     return f"""I can definitely help you with that! Let me make sure I give you the most relevant information for your specific business situation.
