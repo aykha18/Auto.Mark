@@ -40,6 +40,10 @@ try:
     from app.api.v1 import analytics
     print("Analytics module imported successfully")
     
+    print("Importing working assessment module...")
+    from app.api.v1 import assessment_working
+    print("Working assessment module imported successfully")
+    
     print("Importing crm_marketplace module...")
     from app.api.v1 import crm_marketplace
     print("CRM marketplace module imported successfully")
@@ -234,6 +238,10 @@ try:
     print("Including crm_marketplace router...")
     app.include_router(crm_marketplace.router, prefix="/api/v1", tags=["crm"])
     print("CRM marketplace router included successfully")
+    
+    print("Including working assessment router...")
+    app.include_router(assessment_working.router, prefix="/api/v1/landing/assessment", tags=["assessment"])
+    print("Working assessment router included successfully")
     
     print("All API routers included successfully")
 except Exception as e:
