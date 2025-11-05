@@ -82,7 +82,7 @@ async def start_assessment(request: AssessmentStartRequest, db: AsyncSession = D
         lead = result.scalar_one_or_none()
         
         if not lead:
-            # Create new lead
+            # Create new lead with comprehensive initial data
             lead = Lead(
                 lead_id=assessment_id,
                 campaign_id=campaign.id,
@@ -91,7 +91,22 @@ async def start_assessment(request: AssessmentStartRequest, db: AsyncSession = D
                 last_name=" ".join(request.name.split()[1:]) if request.name and len(request.name.split()) > 1 else None,
                 company=request.company,
                 preferred_crm=request.preferred_crm,
-                source="assessment_flow"
+                source="assessment_flow",
+                status="new",
+                # Initialize scoring fields
+                score=0.0,
+                crm_integration_readiness=0.0,
+                technical_capability_score=0.0,
+                business_maturity_score=0.0,
+                investment_capacity_score=0.0,
+                automation_gaps_score=0.0,
+                data_quality_score=0.0,
+                segment_confidence=0.0,
+                # Set initial tags and metadata
+                tags=["assessment_started", "new_lead"],
+                pain_points=[],
+                interests=[],
+                custom_fields={}
             )
             db.add(lead)
             await db.flush()
@@ -151,28 +166,98 @@ async def submit_assessment(data: Dict[str, Any], db: AsyncSession = Depends(get
                 "automation_readiness": 65.0
             }
             
-            # Update assessment
+            # Update assessment with comprehensive data
             assessment.responses = responses_dict
             assessment.overall_score = overall_score
             assessment.category_scores = category_scores
             assessment.readiness_level = "warm"
-            assessment.segment = "warm"
+            assessment.segment = "co_creator_qualified"  # More specific segment
             assessment.is_completed = True
             assessment.completed_at = datetime.utcnow()
             
             # Get CRM from responses
             crm_system = responses_dict.get("crm_system", "other")
             assessment.current_crm = crm_system
+            assessment.crm_usage_level = "intermediate"  # Default assumption
+            assessment.crm_data_quality = "good"  # Default assumption
             
-            # Update lead
+            # Add comprehensive recommendations
+            assessment.integration_recommendations = [
+                f"Integrate with {crm_system} for automated lead capture",
+                "Set up real-time data synchronization",
+                "Configure custom field mapping",
+                "Implement lead scoring automation"
+            ]
+            assessment.automation_opportunities = [
+                "Automate lead scoring and qualification",
+                "Set up email nurturing sequences", 
+                "Implement behavior-based triggers",
+                "Create automated follow-up workflows"
+            ]
+            assessment.technical_requirements = [
+                "API access to your CRM system",
+                "Webhook configuration for real-time updates",
+                "Data validation and cleanup",
+                "Integration testing and monitoring"
+            ]
+            assessment.next_steps = [
+                "Schedule integration consultation",
+                "Review CRM data quality",
+                "Plan automation workflow",
+                "Set up tracking and analytics"
+            ]
+            
+            # Update lead with comprehensive data
             result = await db.execute(select(Lead).where(Lead.id == assessment.lead_id))
             lead = result.scalar_one_or_none()
             
             if lead:
+                # Basic lead info
                 lead.score = 0.75  # 75% as 0-1 scale
                 lead.readiness_segment = "warm"
                 lead.current_crm_system = crm_system
                 lead.crm_integration_readiness = overall_score
+                lead.last_scored_at = datetime.utcnow()
+                
+                # Detailed scoring
+                lead.technical_capability_score = category_scores.get("technical_capability", 70.0)
+                lead.business_maturity_score = category_scores.get("business_maturity", 80.0)
+                lead.investment_capacity_score = category_scores.get("automation_readiness", 65.0)
+                lead.automation_gaps_score = category_scores.get("crm_integration", 75.0)
+                lead.data_quality_score = 75.0  # Default
+                lead.segment_confidence = 0.85  # High confidence
+                
+                # Business context from responses
+                if "monthly_leads" in responses_dict:
+                    lead.monthly_lead_volume = responses_dict["monthly_leads"]
+                
+                # Set status and engagement
+                lead.status = "qualified"
+                lead.first_contacted = datetime.utcnow()
+                lead.last_contacted = datetime.utcnow()
+                
+                # Add relevant tags
+                if not lead.tags:
+                    lead.tags = []
+                lead.tags.extend([
+                    "assessment_completed",
+                    f"crm_{crm_system}",
+                    "warm_lead",
+                    "co_creator_qualified"
+                ])
+                
+                # Set pain points and interests based on assessment
+                lead.pain_points = [
+                    "Manual lead follow-up processes",
+                    "CRM data synchronization issues",
+                    "Lead scoring inefficiencies"
+                ]
+                lead.interests = [
+                    "Marketing automation",
+                    "CRM integration",
+                    "Lead scoring",
+                    "AI-powered workflows"
+                ]
             
             await db.commit()
             print(f"✅ Updated assessment {assessment_id} and lead {assessment.lead_id}")
