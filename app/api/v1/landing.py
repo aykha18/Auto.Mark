@@ -13,8 +13,8 @@ from pydantic import BaseModel, Field
 
 from app.core.database import get_db
 from app.core.config import get_settings
-from app.core.assessment_engine import assessment_engine, CRMSystem
-from app.core.lead_scoring import lead_scoring_engine, LeadSegment
+from app.core.assessment_engine import assessment_engine
+from app.core.lead_scoring import lead_scoring_engine
 from app.models.assessment import Assessment
 from app.models.lead import Lead
 from app.models.campaign import Campaign
@@ -331,9 +331,19 @@ async def submit_assessment_responses(
 
         # Identify CRM system
         crm_response = responses_dict.get("crm_system", "")
-        crm_system = assessment_engine.identify_crm_system(crm_response)
-        assessment.current_crm = crm_system.value
-        print(f"[ASSESSMENT SUBMIT] Identified CRM system: {crm_system.value}")
+        # Simple CRM system identification
+        crm_system_map = {
+            "salesforce": "salesforce",
+            "hubspot": "hubspot", 
+            "pipedrive": "pipedrive",
+            "zoho": "zoho",
+            "monday": "monday",
+            "other": "other",
+            "none": "none"
+        }
+        crm_system_value = crm_system_map.get(crm_response.lower(), "other")
+        assessment.current_crm = crm_system_value
+        print(f"[ASSESSMENT SUBMIT] Identified CRM system: {crm_system_value}")
 
         # Calculate scores using assessment engine
         category_scores = assessment_engine.calculate_category_scores(responses_dict)
@@ -345,38 +355,59 @@ async def submit_assessment_responses(
         
         print(f"[ASSESSMENT SUBMIT] Calculated scores - Overall: {overall_score}, Categories: {category_scores}")
 
-        # Calculate advanced lead score using lead scoring engine
-        lead_score = lead_scoring_engine.calculate_lead_score(
-            responses_dict, category_scores
-        )
+        # Simple lead scoring based on overall score
+        lead_score_value = round(overall_score, 1)
+        confidence = 0.85
         
-        # Round lead score to 1 decimal place
-        lead_score.overall_score = round(lead_score.overall_score, 1)
-        lead_score.confidence = round(lead_score.confidence, 2)
+        # Determine segment based on score
+        if lead_score_value >= 71:
+            segment = "hot"
+        elif lead_score_value >= 41:
+            segment = "warm"
+        else:
+            segment = "cold"
         
-        print(f"[ASSESSMENT SUBMIT] Lead score calculated - Overall: {lead_score.overall_score}, Segment: {lead_score.segment.value}")
+        print(f"[ASSESSMENT SUBMIT] Lead score calculated - Overall: {lead_score_value}, Segment: {segment}")
 
         # Update assessment with scores
         assessment.overall_score = overall_score
         assessment.category_scores = category_scores
-        assessment.readiness_level = lead_score.segment.value
-        assessment.segment = lead_score.segment.value
+        assessment.readiness_level = segment
+        assessment.segment = segment
         assessment.is_completed = True
         assessment.completed_at = datetime.utcnow()
         if request.completion_time_seconds:
             assessment.completion_time_seconds = request.completion_time_seconds
 
-        # Generate personalized recommendations
-        personalized_recommendations = lead_scoring_engine.generate_personalized_recommendations(
-            lead_score, responses_dict
-        )
-        print(f"[ASSESSMENT SUBMIT] Generated {len(personalized_recommendations)} personalized recommendations")
+        # Generate simple recommendations
+        integration_recommendations = [
+            f"Integrate with {crm_system_value} for automated lead capture",
+            "Set up real-time data synchronization",
+            "Configure custom field mapping"
+        ]
+        automation_opportunities = [
+            "Automate lead scoring and qualification",
+            "Set up email nurturing sequences",
+            "Implement behavior-based triggers"
+        ]
+        technical_requirements = [
+            "API access to your CRM system",
+            "Webhook configuration for real-time updates",
+            "Data validation and cleanup"
+        ]
+        next_steps = [
+            "Schedule integration consultation",
+            "Review CRM data quality",
+            "Plan automation workflow"
+        ]
+        
+        print(f"[ASSESSMENT SUBMIT] Generated recommendations for {segment} segment")
 
-        # Convert personalized recommendations to assessment format
-        assessment.integration_recommendations = [r.description for r in personalized_recommendations if r.category == "integration"]
-        assessment.automation_opportunities = [r.description for r in personalized_recommendations if r.category == "automation"]
-        assessment.technical_requirements = [r.description for r in personalized_recommendations if r.category == "technical"]
-        assessment.next_steps = lead_scoring_engine.get_segment_next_steps(lead_score.segment, crm_system.value)
+        # Set assessment recommendations
+        assessment.integration_recommendations = integration_recommendations
+        assessment.automation_opportunities = automation_opportunities
+        assessment.technical_requirements = technical_requirements
+        assessment.next_steps = next_steps
 
         # Update lead with assessment data
         print(f"[ASSESSMENT SUBMIT] Loading lead {assessment.lead_id} for update")
@@ -386,11 +417,11 @@ async def submit_assessment_responses(
         if lead:
             print(f"[ASSESSMENT SUBMIT] Updating lead {lead.id} with assessment data")
             # Update lead score (0-1 scale for compatibility)
-            lead.score = round(lead_score.overall_score / 100.0, 3)  # Round to 3 decimal places for 0-1 scale
-            lead.readiness_segment = lead_score.segment.value
-            lead.current_crm_system = crm_system.value
-            lead.crm_integration_readiness = round(lead_score.overall_score, 1)
-            lead.segment_confidence = round(lead_score.confidence, 2)
+            lead.score = round(lead_score_value / 100.0, 3)  # Round to 3 decimal places for 0-1 scale
+            lead.readiness_segment = segment
+            lead.current_crm_system = crm_system_value
+            lead.crm_integration_readiness = round(lead_score_value, 1)
+            lead.segment_confidence = round(confidence, 2)
             lead.last_scored_at = datetime.utcnow()
 
         await db.commit()
@@ -413,7 +444,7 @@ async def submit_assessment_responses(
         }
 
         # Add personalized co-creator invitation for qualified leads
-        if lead_score.overall_score >= 70:
+        if lead_score_value >= 70:
             print(f"[ASSESSMENT SUBMIT] Adding co-creator invitation for qualified lead")
             response_data["co_creator_invitation"] = {
                 "message": "🎉 Congratulations! Based on your assessment results, you're qualified for our exclusive Co-Creator Program!",

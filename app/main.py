@@ -213,16 +213,8 @@ try:
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
     print("Health router included successfully")
     
-    print("Including landing router...")
-    try:
-        print(f"Landing router routes before inclusion: {[route.path for route in landing.router.routes]}")
-        app.include_router(landing.router, prefix="/api/v1/landing", tags=["landing"])
-        print("Landing router included successfully")
-        print(f"App routes after inclusion: {[route.path for route in app.routes if '/landing' in route.path]}")
-    except Exception as e:
-        print(f"ERROR including landing router: {e}")
-        import traceback
-        print(f"Traceback: {traceback.format_exc()}")
+    # Landing router is already included via api_router above
+    print("Landing router already included via api_router")
     
     print("Including chat router...")
     try:

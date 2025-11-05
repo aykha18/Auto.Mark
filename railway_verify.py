@@ -13,7 +13,7 @@ def verify_railway_deployment():
     # Get Railway URL from environment or use default
     base_url = os.getenv("RAILWAY_URL", "https://your-app.railway.app")
     if base_url == "https://your-app.railway.app":
-        print("⚠️  Please set RAILWAY_URL environment variable or update the script with your Railway URL")
+        print("WARNING: Please set RAILWAY_URL environment variable or update the script with your Railway URL")
         return False
     
     print("Verifying Railway Deployment")
