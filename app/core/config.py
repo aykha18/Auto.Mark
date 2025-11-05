@@ -26,10 +26,13 @@ class SecuritySettings(BaseSettings):
 
 class WiseSettings(BaseSettings):
     """Wise payment configuration"""
-    api_key: str = Field(default_factory=lambda: os.getenv("WISE_API_KEY", ""))
-    profile_id: str = Field(default_factory=lambda: os.getenv("WISE_PROFILE_ID", ""))
-    webhook_secret: str = Field(default_factory=lambda: os.getenv("WISE_WEBHOOK_SECRET", ""))
-    environment: str = Field(default_factory=lambda: os.getenv("WISE_ENVIRONMENT", "sandbox"))  # sandbox or live
+    api_key: str = ""
+    profile_id: str = ""
+    webhook_secret: str = ""
+    environment: str = "sandbox"  # sandbox or live
+    
+    class Config:
+        env_prefix = "WISE_"
 
 
 class OpenAISettings(BaseSettings):

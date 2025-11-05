@@ -48,6 +48,10 @@ try:
     from app.api.v1 import crm_marketplace
     print("CRM marketplace module imported successfully")
     
+    print("Importing wise_payments module...")
+    from app.api.v1 import wise_payments
+    print("Wise payments module imported successfully")
+    
     print("All API modules imported successfully")
 except Exception as e:
     print(f"Error importing API modules: {e}")
@@ -242,6 +246,10 @@ try:
     print("Including working assessment router...")
     app.include_router(assessment_working.router, prefix="/api/v1/landing/assessment", tags=["assessment"])
     print("Working assessment router included successfully")
+    
+    print("Including wise payments router...")
+    app.include_router(wise_payments.router, prefix="/api/v1/payments/wise", tags=["payments"])
+    print("Wise payments router included successfully")
     
     print("All API routers included successfully")
 except Exception as e:
