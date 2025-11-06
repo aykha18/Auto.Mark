@@ -9,9 +9,10 @@ import CRMSpecificRecommendations from './CRMSpecificRecommendations';
 import IndustryBenchmark from './IndustryBenchmark';
 import AutomationOpportunityCard from './AutomationOpportunityCard';
 import ResultsSummaryCard from './ResultsSummaryCard';
+import RazorpayCheckout from '../payment/RazorpayCheckout';
 import Button from '../ui/Button';
 import LandingPageAPI from '../../services/landingPageApi';
-import { X, Download, Share2, Target, Zap, Settings } from 'lucide-react';
+import { X, Download, Share2, Target, Zap, Settings, CheckCircle } from 'lucide-react';
 
 interface AssessmentResultsProps {
   result: CRMAssessmentResult;
@@ -24,6 +25,8 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
 }) => {
   const [supportedCRMs, setSupportedCRMs] = useState<CRMIntegration[]>([]);
   const [, setLoading] = useState(true);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   // Normalize property names to handle both camelCase and snake_case
   const normalizedResult = {
@@ -259,6 +262,7 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
           <NextStepsSection
             steps={normalizedResult.nextSteps}
             readinessLevel={normalizedResult.readinessLevel}
+            onStartPayment={() => setShowPaymentModal(true)}
           />
         </div>
       </div>
@@ -277,6 +281,56 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
       <div className="mt-12">
         <ResultsSharing result={result} />
       </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && !paymentSuccess && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="relative">
+            <RazorpayCheckout
+              onSuccess={(paymentData) => {
+                console.log('Payment successful:', paymentData);
+                setPaymentSuccess(true);
+                setShowPaymentModal(false);
+                // Show success message
+                alert(`🎉 Payment successful! Welcome to the Co-Creator Program!\n\nTransaction ID: ${paymentData.transactionId}\n\nYou'll receive onboarding instructions via email shortly.`);
+              }}
+              onError={(error) => {
+                console.error('Payment error:', error);
+                alert(`❌ Payment failed: ${error}\n\nPlease try again or contact support@unitasa.in`);
+              }}
+              onCancel={() => {
+                setShowPaymentModal(false);
+              }}
+              customerEmail=""
+              customerName=""
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Success State */}
+      {paymentSuccess && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md mx-auto text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome to the Co-Creator Program!</h3>
+            <p className="text-gray-600 mb-6">
+              Your payment was successful. You'll receive onboarding instructions via email shortly.
+            </p>
+            <Button
+              onClick={() => {
+                setPaymentSuccess(false);
+                setShowPaymentModal(false);
+              }}
+              className="w-full"
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

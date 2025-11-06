@@ -5,11 +5,13 @@ import Button from '../ui/Button';
 interface NextStepsSectionProps {
   steps: string[];
   readinessLevel: string;
+  onStartPayment?: () => void;
 }
 
 const NextStepsSection: React.FC<NextStepsSectionProps> = ({
   steps,
   readinessLevel,
+  onStartPayment,
 }) => {
   const getActionButton = () => {
     switch (readinessLevel) {
@@ -32,8 +34,11 @@ const NextStepsSection: React.FC<NextStepsSectionProps> = ({
               className="w-full"
               onClick={() => {
                 console.log('Start Integration Setup clicked');
-                // TODO: Implement integration setup flow
-                alert('Integration setup wizard coming soon!');
+                if (onStartPayment) {
+                  onStartPayment();
+                } else {
+                  alert('Priority integration setup is being prepared...');
+                }
               }}
             >
               Start Integration Setup
@@ -53,8 +58,11 @@ const NextStepsSection: React.FC<NextStepsSectionProps> = ({
               className="w-full"
               onClick={() => {
                 console.log('Join Co-Creator Program clicked');
-                // TODO: Implement co-creator program flow
-                alert('Co-Creator Program enrollment coming soon!');
+                if (onStartPayment) {
+                  onStartPayment();
+                } else {
+                  alert('Payment system is being initialized...');
+                }
               }}
             >
               Join Co-Creator Program ($497)
