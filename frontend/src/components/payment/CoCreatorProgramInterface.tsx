@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CoCreatorProgramStatus } from '../../types';
 import LandingPageAPI from '../../services/landingPageApi';
 import Button from '../ui/Button';
+import config from '../../config/environment';
 import {
   Crown,
   Users,
@@ -92,7 +93,8 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
     }
     
     try {
-      const wsUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:8000/ws/co-creator-status';
+      // Use centralized environment configuration
+      const wsUrl = process.env.REACT_APP_WS_URL || `${config.wsBaseUrl}/ws/co-creator-status`;
       const ws = new WebSocket(wsUrl);
       
       ws.onopen = () => {

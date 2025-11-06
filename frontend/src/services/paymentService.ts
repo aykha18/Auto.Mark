@@ -46,8 +46,18 @@ export interface PaymentVerificationResponse {
   message: string;
 }
 
+import config from '../config/environment';
+
 class PaymentService {
-  private baseUrl = 'http://localhost:8000/api/v1/payments/razorpay';
+  private baseUrl: string;
+
+  constructor() {
+    this.baseUrl = `${config.apiBaseUrl}/api/v1/payments/razorpay`;
+    console.log('💳 Payment Service initialized:', {
+      baseUrl: this.baseUrl,
+      environment: config.environment
+    });
+  }
 
   /**
    * Create a secure payment order through backend
