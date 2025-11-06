@@ -48,9 +48,10 @@ try:
     from app.api.v1 import crm_marketplace
     print("CRM marketplace module imported successfully")
     
-    print("Importing wise_payments module...")
-    from app.api.v1 import wise_payments
-    print("Wise payments module imported successfully")
+    # Wise payments temporarily disabled due to dependency issues
+    # print("Importing wise_payments module...")
+    # from app.api.v1 import wise_payments
+    # print("Wise payments module imported successfully")
     
     print("Importing razorpay_payments module...")
     from app.api.v1 import razorpay_payments
@@ -251,9 +252,10 @@ try:
     app.include_router(assessment_working.router, prefix="/api/v1/landing/assessment", tags=["assessment"])
     print("Working assessment router included successfully")
     
-    print("Including wise payments router...")
-    app.include_router(wise_payments.router, prefix="/api/v1/payments/wise", tags=["payments"])
-    print("Wise payments router included successfully")
+    # Wise payments temporarily disabled due to dependency issues
+    # print("Including wise payments router...")
+    # app.include_router(wise_payments.router, prefix="/api/v1/payments/wise", tags=["payments"])
+    # print("Wise payments router included successfully")
     
     print("Including razorpay payments router...")
     app.include_router(razorpay_payments.router, prefix="/api/v1/payments/razorpay", tags=["payments"])
