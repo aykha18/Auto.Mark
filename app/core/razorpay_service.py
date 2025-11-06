@@ -248,15 +248,24 @@ class RazorpayPaymentService:
     
     async def create_co_creator_payment(self, co_creator_id: int, customer_email: str,
                                       customer_name: Optional[str] = None, 
-                                      amount: float = 497.0) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+                                      amount: float = 497.0,
+                                      currency: str = "USD",
+                                      customer_country: str = "US") -> Tuple[bool, str, Optional[Dict[str, Any]]]:
         """Create a Razorpay payment for co-creator program"""
         try:
-            # Convert USD to INR (approximate rate - you should use a real exchange rate API)
-            amount_inr = amount * 83  # Approximate USD to INR conversion
+            # Determine currency and amount based on customer location
+            if customer_country.upper() == "IN" or currency.upper() == "INR":
+                # Indian customers pay in INR
+                final_currency = "INR"
+                final_amount = amount * 83  # USD to INR conversion
+            else:
+                # International customers pay in USD
+                final_currency = "USD"
+                final_amount = amount
             
             order_result = await self.create_payment_order(
-                amount=amount_inr,
-                currency="INR",
+                amount=final_amount,
+                currency=final_currency,
                 customer_email=customer_email,
                 customer_name=customer_name or "Co-Creator",
                 description=f"Unitasa Co-Creator Program - {customer_email}"
@@ -267,13 +276,15 @@ class RazorpayPaymentService:
             
             return True, "Payment order created successfully", {
                 "order_id": order_result["order_id"],
-                "amount": amount_inr,
-                "currency": "INR",
+                "amount": final_amount,
+                "currency": final_currency,
                 "amount_usd": amount,
+                "amount_inr": amount * 83 if final_currency == "USD" else final_amount,
                 "key_id": order_result["key_id"],
                 "customer_email": customer_email,
                 "customer_name": customer_name,
-                "co_creator_id": co_creator_id
+                "co_creator_id": co_creator_id,
+                "customer_country": customer_country
             }
             
         except Exception as e:
@@ -337,22 +348,33 @@ class MockRazorpayPaymentService:
     
     async def create_co_creator_payment(self, co_creator_id: int, customer_email: str,
                                       customer_name: Optional[str] = None, 
-                                      amount: float = 497.0) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+                                      amount: float = 497.0,
+                                      currency: str = "USD",
+                                      customer_country: str = "US") -> Tuple[bool, str, Optional[Dict[str, Any]]]:
         """Mock co-creator payment creation"""
         import uuid
         
-        amount_inr = amount * 83
+        # Determine currency and amount based on customer location
+        if customer_country.upper() == "IN" or currency.upper() == "INR":
+            final_currency = "INR"
+            final_amount = amount * 83
+        else:
+            final_currency = "USD"
+            final_amount = amount
+        
         order_id = f"order_mock_{uuid.uuid4().hex[:10]}"
         
         return True, "Mock payment order created successfully", {
             "order_id": order_id,
-            "amount": amount_inr,
-            "currency": "INR",
+            "amount": final_amount,
+            "currency": final_currency,
             "amount_usd": amount,
+            "amount_inr": amount * 83 if final_currency == "USD" else final_amount,
             "key_id": self.key_id,
             "customer_email": customer_email,
             "customer_name": customer_name,
             "co_creator_id": co_creator_id,
+            "customer_country": customer_country,
             "mock": True
         }
 

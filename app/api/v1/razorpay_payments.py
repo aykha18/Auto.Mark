@@ -23,6 +23,8 @@ class PaymentOrderRequest(BaseModel):
     customer_name: str
     lead_id: Optional[int] = None
     program_type: str = "co_creator"
+    currency: str = "USD"  # USD for international, INR for India
+    customer_country: str = "US"  # Country code for currency determination
 
 class PaymentVerificationRequest(BaseModel):
     razorpay_order_id: str
@@ -43,7 +45,9 @@ async def create_razorpay_order(
             co_creator_id=1,  # This would come from your co-creator logic
             customer_email=request.customer_email,
             customer_name=request.customer_name,
-            amount=request.amount
+            amount=request.amount,
+            currency=request.currency,
+            customer_country=request.customer_country
         )
         
         if not success:
@@ -80,9 +84,11 @@ async def create_razorpay_order(
             "amount": order_data["amount"],
             "currency": order_data["currency"],
             "amount_usd": order_data["amount_usd"],
+            "amount_inr": order_data.get("amount_inr"),
             "key_id": order_data["key_id"],
             "customer_email": request.customer_email,
             "customer_name": request.customer_name,
+            "customer_country": order_data.get("customer_country"),
             "message": "Order created successfully"
         }
         
