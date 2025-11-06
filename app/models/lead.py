@@ -87,6 +87,15 @@ class Lead(Base, TimestampMixin):
     automation_goals = Column(JSON, default=list)  # Primary automation goals
     marketing_automation_level = Column(String(50))  # Current automation level
     
+    # Consultation booking fields
+    consultation_requested = Column(Boolean, default=False)  # Has requested consultation
+    consultation_booked = Column(Boolean, default=False)  # Has booked consultation
+    consultation_completed = Column(Boolean, default=False)  # Has completed consultation
+    consultation_type = Column(String(100))  # Type of consultation requested
+    consultation_challenges = Column(Text)  # Challenges/goals mentioned in booking
+    consultation_scheduled_at = Column(DateTime)  # When consultation is scheduled
+    consultation_completed_at = Column(DateTime)  # When consultation was completed
+    
     # Additional metadata
     tags = Column(JSON, default=list)  # custom tags for segmentation
     custom_fields = Column(JSON, default=dict)  # extensible custom data

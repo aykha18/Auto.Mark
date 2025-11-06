@@ -4,6 +4,7 @@ import Button from '../ui/Button';
 import AIReadinessAssessment from './AIReadinessAssessment';
 import { LeadData } from './LeadCaptureForm';
 import { paymentService } from '../../services/paymentService';
+import ConsultationBooking from '../booking/ConsultationBooking';
 
 interface AssessmentStep {
   id: string;
@@ -27,6 +28,7 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   // Auto-hide success toast after 8 seconds
   useEffect(() => {
@@ -238,7 +240,12 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
                   <p className="text-sm text-gray-600 mb-4">
                     Get a personalized 30-minute consultation to discuss your AI implementation roadmap
                   </p>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => setShowBookingModal(true)}
+                  >
                     Book Free Session
                   </Button>
                 </div>
@@ -383,6 +390,13 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
           </div>
         </div>
       )}
+
+      {/* Consultation Booking Modal */}
+      <ConsultationBooking
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        leadData={leadData}
+      />
     </div>
   );
 };

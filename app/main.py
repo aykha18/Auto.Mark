@@ -64,6 +64,10 @@ try:
     from app.api.v1 import razorpay_payments
     print("Razorpay payments module imported successfully")
     
+    print("Importing consultation module...")
+    from app.api.v1 import consultation
+    print("Consultation module imported successfully")
+    
     print("All API modules imported successfully")
 except Exception as e:
     print(f"Error importing API modules: {e}")
@@ -286,6 +290,10 @@ try:
     print("Including razorpay payments router...")
     app.include_router(razorpay_payments.router, prefix="/api/v1/payments/razorpay", tags=["payments"])
     print("Razorpay payments router included successfully")
+    
+    print("Including consultation router...")
+    app.include_router(consultation.router, prefix="/api/v1/consultation", tags=["consultation"])
+    print("Consultation router included successfully")
     
     print("All API routers included successfully")
 except Exception as e:
