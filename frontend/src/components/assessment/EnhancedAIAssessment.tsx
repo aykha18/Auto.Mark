@@ -180,10 +180,38 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
               <Button 
                 size="sm" 
                 className="w-full bg-purple-600 hover:bg-purple-700"
-                onClick={() => setShowPaymentModal(true)}
+                onClick={() => {
+                  console.log('🎯 EnhancedAIAssessment: Secure Founding Spot clicked!');
+                  console.log('Current showPaymentModal state:', showPaymentModal);
+                  setShowPaymentModal(true);
+                  console.log('Setting showPaymentModal to true');
+                  // Also show an alert for immediate feedback
+                  alert('Button clicked! Payment modal should open...');
+                }}
               >
                 Secure Founding Spot
               </Button>
+              
+              {/* Debug: Native HTML button test */}
+              <button 
+                onClick={() => {
+                  console.log('🧪 Native button clicked!');
+                  setShowPaymentModal(true);
+                  alert('Native button works! Modal should open.');
+                }}
+                style={{
+                  background: '#dc2626',
+                  color: 'white',
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  width: '100%',
+                  marginTop: '8px'
+                }}
+              >
+                🧪 DEBUG: Test Native Button
+              </button>
               <div className="text-xs text-center text-gray-500 mt-2">
                 ⚡ Only 12 spots remaining
               </div>
@@ -251,6 +279,7 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
       )}
 
       {/* Payment Modal */}
+      {console.log('🔍 Rendering check - showPaymentModal:', showPaymentModal, 'paymentSuccess:', paymentSuccess)}
       {showPaymentModal && !paymentSuccess && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="relative">
