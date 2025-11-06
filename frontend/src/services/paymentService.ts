@@ -3,6 +3,8 @@
  * Handles all payment operations through backend APIs
  */
 
+import config from '../config/environment';
+
 export interface PaymentOrderRequest {
   amount: number;
   customer_email: string;
@@ -45,8 +47,6 @@ export interface PaymentVerificationResponse {
   co_creator_created: boolean;
   message: string;
 }
-
-import config from '../config/environment';
 
 class PaymentService {
   private baseUrl: string;
