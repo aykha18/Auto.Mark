@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Brain, Target, Zap, Shield, BarChart3, MessageCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Brain, Target, Zap, Shield, BarChart3, MessageCircle, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react';
 import Button from '../ui/Button';
+import RazorpayCheckout from '../payment/RazorpayCheckout';
 import AIReadinessAssessment from './AIReadinessAssessment';
 import { LeadData } from './LeadCaptureForm';
 
@@ -21,6 +22,8 @@ interface EnhancedAIAssessmentProps {
 const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete, onClose, leadData }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [assessmentData, setAssessmentData] = useState<Record<string, any>>({});
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
   const steps: AssessmentStep[] = [
@@ -174,7 +177,11 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
               <p className="text-sm text-gray-600 mb-4">
                 Lifetime access to AI platform + direct product influence + priority support
               </p>
-              <Button size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
+              <Button 
+                size="sm" 
+                className="w-full bg-purple-600 hover:bg-purple-700"
+                onClick={() => setShowPaymentModal(true)}
+              >
                 Secure Founding Spot
               </Button>
               <div className="text-xs text-center text-gray-500 mt-2">
@@ -240,6 +247,55 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
             {currentStep === steps.length - 1 ? 'Complete Assessment' : 'Continue'}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
+        </div>
+      )}
+
+      {/* Payment Modal */}
+      {showPaymentModal && !paymentSuccess && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="relative">
+            <RazorpayCheckout
+              onSuccess={(paymentData) => {
+                console.log('Payment successful:', paymentData);
+                setPaymentSuccess(true);
+                setShowPaymentModal(false);
+                alert(`🎉 Payment successful! Welcome to the Co-Creator Program!\n\nTransaction ID: ${paymentData.transactionId}\n\nYou'll receive onboarding instructions via email shortly.`);
+              }}
+              onError={(error) => {
+                console.error('Payment error:', error);
+                alert(`❌ Payment failed: ${error}\n\nPlease try again or contact support@unitasa.in`);
+              }}
+              onCancel={() => {
+                setShowPaymentModal(false);
+              }}
+              customerEmail={leadData?.email || ""}
+              customerName={leadData?.name || ""}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Success State */}
+      {paymentSuccess && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md mx-auto text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome to the Co-Creator Program!</h3>
+            <p className="text-gray-600 mb-6">
+              Your payment was successful. You'll receive onboarding instructions via email shortly.
+            </p>
+            <Button
+              onClick={() => {
+                setPaymentSuccess(false);
+                setShowPaymentModal(false);
+              }}
+              className="w-full"
+            >
+              Continue
+            </Button>
+          </div>
         </div>
       )}
     </div>

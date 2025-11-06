@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Brain, Target, MessageCircle, Zap, Shield, BarChart3 } from 'lucide-react';
+import { Brain, Target, MessageCircle, Zap, Shield, BarChart3, CheckCircle } from 'lucide-react';
 import Button from '../ui/Button';
 import AIDemoModal from '../ai-demos/AIDemoModal';
+import RazorpayCheckout from '../payment/RazorpayCheckout';
 
 interface AICapability {
   id: string;
@@ -15,6 +16,8 @@ interface AICapability {
 const AICapabilitiesSection: React.FC = () => {
   const [activeDemo, setActiveDemo] = useState<string | null>(null);
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const capabilities: AICapability[] = [
     {
@@ -195,16 +198,7 @@ const AICapabilitiesSection: React.FC = () => {
             <Button 
               size="lg" 
               className="px-8"
-              onClick={() => {
-                // Scroll to assessment or trigger assessment modal
-                const assessmentSection = document.querySelector('#assessment');
-                if (assessmentSection) {
-                  assessmentSection.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                  // Fallback: trigger assessment modal if no section found
-                  window.dispatchEvent(new CustomEvent('openAssessment'));
-                }
-              }}
+              onClick={() => setShowPaymentModal(true)}
             >
               Secure Founding Spot
             </Button>
@@ -229,6 +223,55 @@ const AICapabilitiesSection: React.FC = () => {
           onClose={() => setIsDemoModalOpen(false)}
           initialDemo={activeDemo || 'agent'}
         />
+
+        {/* Payment Modal */}
+        {showPaymentModal && !paymentSuccess && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="relative">
+              <RazorpayCheckout
+                onSuccess={(paymentData) => {
+                  console.log('Payment successful:', paymentData);
+                  setPaymentSuccess(true);
+                  setShowPaymentModal(false);
+                  alert(`🎉 Payment successful! Welcome to the Co-Creator Program!\n\nTransaction ID: ${paymentData.transactionId}\n\nYou'll receive onboarding instructions via email shortly.`);
+                }}
+                onError={(error) => {
+                  console.error('Payment error:', error);
+                  alert(`❌ Payment failed: ${error}\n\nPlease try again or contact support@unitasa.in`);
+                }}
+                onCancel={() => {
+                  setShowPaymentModal(false);
+                }}
+                customerEmail=""
+                customerName=""
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Success State */}
+        {paymentSuccess && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-md mx-auto text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome to the Co-Creator Program!</h3>
+              <p className="text-gray-600 mb-6">
+                Your payment was successful. You'll receive onboarding instructions via email shortly.
+              </p>
+              <Button
+                onClick={() => {
+                  setPaymentSuccess(false);
+                  setShowPaymentModal(false);
+                }}
+                className="w-full"
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

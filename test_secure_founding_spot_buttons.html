@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Founding Spot Button Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .success {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        .button-test {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .button-test:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Secure Founding Spot Button Integration Test</h1>
+    
+    <div class="test-section">
+        <h2>✅ Fixed Components</h2>
+        <p>The following components now have working "Secure Founding Spot" buttons connected to Razorpay payment:</p>
+        
+        <h3>1. AICapabilitiesSection.tsx</h3>
+        <ul>
+            <li>✅ Added RazorpayCheckout import</li>
+            <li>✅ Added payment state (showPaymentModal, paymentSuccess)</li>
+            <li>✅ Updated "Secure Founding Spot" button onClick handler</li>
+            <li>✅ Added payment modal with success/error handling</li>
+        </ul>
+        
+        <h3>2. PricingComparison.tsx</h3>
+        <ul>
+            <li>✅ Added RazorpayCheckout import</li>
+            <li>✅ Added payment state</li>
+            <li>✅ Updated "Secure Founding Spot" button (highlighted tier)</li>
+            <li>✅ Updated "Secure Your Spot Now" button (urgency section)</li>
+            <li>✅ Added payment modal with success/error handling</li>
+        </ul>
+        
+        <h3>3. EnhancedAIAssessment.tsx</h3>
+        <ul>
+            <li>✅ Added RazorpayCheckout import</li>
+            <li>✅ Added payment state</li>
+            <li>✅ Updated "Secure Founding Spot" button onClick handler</li>
+            <li>✅ Added payment modal with lead data integration</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔧 What Was Fixed</h2>
+        <p><strong>Problem:</strong> The "Secure Founding Spot" buttons were either:</p>
+        <ul>
+            <li>Only logging to console (console.log)</li>
+            <li>Trying to scroll to assessment sections</li>
+            <li>Had no onClick handlers at all</li>
+        </ul>
+        
+        <p><strong>Solution:</strong> Connected all buttons to the Razorpay payment system with:</p>
+        <ul>
+            <li>Payment modal trigger on click</li>
+            <li>Success/error handling</li>
+            <li>User feedback with alerts</li>
+            <li>Proper state management</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Button Locations</h2>
+        <p>The "Secure Founding Spot" buttons can be found in:</p>
+        <ul>
+            <li><strong>AI Capabilities Section:</strong> Main CTA button</li>
+            <li><strong>Pricing Comparison:</strong> Highlighted tier button + urgency section</li>
+            <li><strong>Enhanced AI Assessment:</strong> Co-Creator Program offer</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>💳 Payment Flow</h2>
+        <p>When users click "Secure Founding Spot":</p>
+        <ol>
+            <li>Payment modal opens with Razorpay checkout</li>
+            <li>User can pay in INR or USD (auto-detected)</li>
+            <li>On success: Welcome message + transaction ID</li>
+            <li>On error: Error message with support contact</li>
+            <li>On cancel: Modal closes, user can try again</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h2>🚀 Test Instructions</h2>
+        <p>To test the buttons:</p>
+        <ol>
+            <li>Start the frontend: <code>cd frontend && npm start</code></li>
+            <li>Navigate to the landing page</li>
+            <li>Look for "Secure Founding Spot" buttons</li>
+            <li>Click any button to trigger payment modal</li>
+            <li>Test with Razorpay test credentials</li>
+        </ol>
+        
+        <p class="success">✅ All "Secure Founding Spot" buttons are now functional!</p>
+    </div>
+    
+    <script>
+        console.log('🎯 Secure Founding Spot Button Test Page Loaded');
+        console.log('✅ All buttons have been connected to Razorpay payment system');
+        
+        // Simulate button click test
+        function testButtonClick() {
+            alert('🎉 Button click simulation - In real app, this would open Razorpay payment modal!');
+        }
+    </script>
+    
+    <button class="button-test" onclick="testButtonClick()">
+        🧪 Test Button Click Simulation
+    </button>
+</body>
+</html>

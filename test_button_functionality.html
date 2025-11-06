@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Functionality Test</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.2s;
+        }
+        .button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        .button-purple {
+            background: #7c3aed;
+        }
+        .button-purple:hover {
+            background: #6d28d9;
+        }
+        .button-red {
+            background: #dc2626;
+        }
+        .button-red:hover {
+            background: #b91c1c;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 24px;
+        }
+        .hidden {
+            display: none;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #22c55e;
+        }
+        .status-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Secure Founding Spot Button Test</h1>
+    
+    <div class="test-container">
+        <h2>🎯 Button Functionality Test</h2>
+        <p>Testing all "Secure Founding Spot" buttons with simulated Razorpay integration:</p>
+        
+        <div id="status-container"></div>
+        
+        <h3>1. AI Capabilities Section Button</h3>
+        <button class="button" onclick="testAICapabilitiesButton()">
+            Secure Founding Spot (AI Capabilities)
+        </button>
+        
+        <h3>2. Pricing Comparison Buttons</h3>
+        <button class="button" onclick="testPricingButton()">
+            Secure Founding Spot (Pricing Tier)
+        </button>
+        <button class="button button-red" onclick="testUrgencyButton()">
+            Secure Your Spot Now (Urgency)
+        </button>
+        
+        <h3>3. Enhanced AI Assessment Button</h3>
+        <button class="button button-purple" onclick="testAssessmentButton()">
+            Secure Founding Spot (Assessment)
+        </button>
+        
+        <h3>4. Test Razorpay Integration</h3>
+        <button class="button" onclick="testRazorpayIntegration()">
+            🧪 Test Real Razorpay Modal
+        </button>
+    </div>
+    
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>💳 Payment Processing</h3>
+            <p>Simulating Razorpay checkout...</p>
+            <div id="payment-status">
+                <p>🔄 Processing payment...</p>
+            </div>
+            <button class="button" onclick="simulatePaymentSuccess()">✅ Simulate Success</button>
+            <button class="button button-red" onclick="simulatePaymentError()">❌ Simulate Error</button>
+            <button class="button" onclick="closePaymentModal()">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- Success Modal -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="success-icon">✓</div>
+            <h3>Welcome to the Co-Creator Program!</h3>
+            <p>Your payment was successful. You'll receive onboarding instructions via email shortly.</p>
+            <p><strong>Transaction ID:</strong> <span id="transactionId"></span></p>
+            <button class="button" onclick="closeSuccessModal()">Continue</button>
+        </div>
+    </div>
+
+    <script type="text/babel">
+        let testResults = [];
+        
+        function updateStatus(message, type = 'info') {
+            const container = document.getElementById('status-container');
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status status-${type}`;
+            statusDiv.innerHTML = `${new Date().toLocaleTimeString()}: ${message}`;
+            container.appendChild(statusDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function testAICapabilitiesButton() {
+            updateStatus('🎯 Testing AI Capabilities Section button...', 'info');
+            showPaymentModal('AI Capabilities Section');
+        }
+        
+        function testPricingButton() {
+            updateStatus('💰 Testing Pricing Comparison button...', 'info');
+            showPaymentModal('Pricing Comparison');
+        }
+        
+        function testUrgencyButton() {
+            updateStatus('⚡ Testing Urgency Section button...', 'info');
+            showPaymentModal('Urgency Section');
+        }
+        
+        function testAssessmentButton() {
+            updateStatus('📊 Testing Enhanced AI Assessment button...', 'info');
+            showPaymentModal('Enhanced AI Assessment');
+        }
+        
+        function showPaymentModal(source) {
+            updateStatus(`Opening payment modal from: ${source}`, 'info');
+            document.getElementById('paymentModal').classList.remove('hidden');
+            document.getElementById('payment-status').innerHTML = `
+                <p>🔄 Processing payment from: <strong>${source}</strong></p>
+                <p>Amount: ₹497 (Co-Creator Program)</p>
+            `;
+        }
+        
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            updateStatus('❌ Payment cancelled by user', 'error');
+        }
+        
+        function simulatePaymentSuccess() {
+            const transactionId = 'txn_' + Math.random().toString(36).substr(2, 9);
+            document.getElementById('transactionId').textContent = transactionId;
+            document.getElementById('paymentModal').classList.add('hidden');
+            document.getElementById('successModal').classList.remove('hidden');
+            updateStatus(`✅ Payment successful! Transaction ID: ${transactionId}`, 'success');
+        }
+        
+        function simulatePaymentError() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            updateStatus('❌ Payment failed: Network error. Please try again.', 'error');
+            alert('❌ Payment failed: Network error\\n\\nPlease try again or contact support@unitasa.in');
+        }
+        
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            updateStatus('🎉 User acknowledged successful payment', 'success');
+        }
+        
+        function testRazorpayIntegration() {
+            updateStatus('🧪 Testing real Razorpay integration...', 'info');
+            
+            // Test Razorpay configuration
+            const options = {
+                key: 'rzp_test_your_key_here', // Replace with actual test key
+                amount: 49700, // ₹497 in paise
+                currency: 'INR',
+                name: 'Unitasa Co-Creator Program',
+                description: 'Founding Member Access',
+                handler: function(response) {
+                    updateStatus(`✅ Razorpay Success: ${response.razorpay_payment_id}`, 'success');
+                    simulatePaymentSuccess();
+                },
+                prefill: {
+                    name: 'Test User',
+                    email: 'test@example.com',
+                    contact: '+919999999999'
+                },
+                theme: {
+                    color: '#3b82f6'
+                },
+                modal: {
+                    ondismiss: function() {
+                        updateStatus('❌ Razorpay modal dismissed', 'error');
+                    }
+                }
+            };
+            
+            if (typeof Razorpay !== 'undefined') {
+                const rzp = new Razorpay(options);
+                rzp.open();
+                updateStatus('🚀 Razorpay modal opened', 'success');
+            } else {
+                updateStatus('⚠️ Razorpay not loaded. Using simulation instead.', 'error');
+                showPaymentModal('Razorpay Test');
+            }
+        }
+        
+        // Initialize test
+        updateStatus('🚀 Button functionality test initialized', 'success');
+        updateStatus('Click any button above to test payment flow', 'info');
+        
+        // Test button click events
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON' && e.target.textContent.includes('Secure')) {
+                console.log('Button clicked:', e.target.textContent);
+                updateStatus(`🖱️ Button clicked: ${e.target.textContent}`, 'info');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Button Clicks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .debug-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .log-entry {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .log-info { background: #e3f2fd; color: #1565c0; }
+        .log-success { background: #e8f5e8; color: #2e7d32; }
+        .log-error { background: #ffebee; color: #c62828; }
+        .log-warning { background: #fff3e0; color: #ef6c00; }
+        
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .test-button:hover {
+            background: #2563eb;
+        }
+        .test-button:active {
+            transform: scale(0.98);
+        }
+        
+        #console-output {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Button Clicks - Secure Founding Spot</h1>
+    
+    <div class="debug-panel">
+        <h2>🎯 Instructions</h2>
+        <ol>
+            <li>Open your React app at <strong>http://localhost:3001</strong></li>
+            <li>Open browser DevTools (F12)</li>
+            <li>Copy and paste the debug script below into the console</li>
+            <li>Look for "Secure Founding Spot" buttons and test them</li>
+            <li>Check the console output for any errors or issues</li>
+        </ol>
+    </div>
+    
+    <div class="debug-panel">
+        <h2>📋 Debug Script</h2>
+        <p>Copy this script and paste it into your browser console on localhost:3001:</p>
+        <textarea id="debug-script" style="width: 100%; height: 200px; font-family: monospace; font-size: 12px;" readonly>
+// 🔍 Secure Founding Spot Button Debug Script
+console.log('🚀 Starting button debug...');
+
+// Override console methods to capture all logs
+const originalLog = console.log;
+const originalError = console.error;
+const logs = [];
+
+function captureLog(type, ...args) {
+    const timestamp = new Date().toLocaleTimeString();
+    logs.push({ type, timestamp, args });
+    if (type === 'log') originalLog(`[${timestamp}]`, ...args);
+    if (type === 'error') originalError(`[${timestamp}]`, ...args);
+}
+
+console.log = (...args) => captureLog('log', ...args);
+console.error = (...args) => captureLog('error', ...args);
+
+// Find all buttons
+function findButtons() {
+    const allButtons = document.querySelectorAll('button');
+    const secureButtons = Array.from(allButtons).filter(btn => 
+        btn.textContent.toLowerCase().includes('secure') || 
+        btn.textContent.toLowerCase().includes('founding')
+    );
+    
+    console.log(`Found ${allButtons.length} total buttons, ${secureButtons.length} with "secure" or "founding"`);
+    
+    secureButtons.forEach((btn, index) => {
+        console.log(`Button ${index + 1}:`, {
+            text: btn.textContent.trim(),
+            className: btn.className,
+            disabled: btn.disabled,
+            onclick: !!btn.onclick,
+            parentElement: btn.parentElement?.tagName
+        });
+    });
+    
+    return secureButtons;
+}
+
+// Test button clicks
+function testButtonClicks() {
+    const buttons = findButtons();
+    
+    buttons.forEach((btn, index) => {
+        // Add click listener to monitor
+        btn.addEventListener('click', function(e) {
+            console.log(`🖱️ CLICK DETECTED on button ${index + 1}:`, {
+                text: btn.textContent.trim(),
+                event: e,
+                target: e.target,
+                currentTarget: e.currentTarget,
+                defaultPrevented: e.defaultPrevented,
+                propagationStopped: e.cancelBubble
+            });
+        }, true); // Use capture phase
+        
+        // Test programmatic click
+        setTimeout(() => {
+            console.log(`🧪 Testing programmatic click on: "${btn.textContent.trim()}"`);
+            try {
+                btn.click();
+            } catch (error) {
+                console.error('Error clicking button:', error);
+            }
+        }, (index + 1) * 2000);
+    });
+}
+
+// Check for React components
+function checkReactComponents() {
+    console.log('🔍 Checking React components...');
+    
+    // Look for React fiber nodes
+    const reactElements = document.querySelectorAll('[data-reactroot], [data-react-*]');
+    console.log(`Found ${reactElements.length} React elements`);
+    
+    // Check for component state
+    const stateElements = document.querySelectorAll('*');
+    let reactComponents = 0;
+    
+    Array.from(stateElements).forEach(el => {
+        const keys = Object.keys(el);
+        const hasReactFiber = keys.some(key => key.startsWith('__reactFiber') || key.startsWith('__reactInternalInstance'));
+        if (hasReactFiber) reactComponents++;
+    });
+    
+    console.log(`Found ${reactComponents} elements with React fiber`);
+}
+
+// Check for modals
+function checkModals() {
+    console.log('💳 Checking for payment modals...');
+    
+    const modals = document.querySelectorAll('.fixed, [class*="modal"], [class*="Modal"]');
+    console.log(`Found ${modals.length} potential modal elements`);
+    
+    modals.forEach((modal, index) => {
+        const isVisible = !modal.classList.contains('hidden') && 
+                         getComputedStyle(modal).display !== 'none' &&
+                         getComputedStyle(modal).visibility !== 'hidden';
+        
+        console.log(`Modal ${index + 1}:`, {
+            visible: isVisible,
+            className: modal.className,
+            hasRazorpay: modal.textContent.includes('Razorpay'),
+            hasPayment: modal.textContent.includes('Payment') || modal.textContent.includes('payment')
+        });
+    });
+}
+
+// Monitor DOM changes
+function monitorDOMChanges() {
+    console.log('👀 Starting DOM change monitoring...');
+    
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) { // Element node
+                        if (node.textContent && node.textContent.includes('Razorpay')) {
+                            console.log('🎉 Razorpay modal detected!', node);
+                        }
+                        if (node.classList && (node.classList.contains('fixed') || node.classList.contains('modal'))) {
+                            console.log('📱 Modal element added!', node);
+                        }
+                    }
+                });
+            }
+        });
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
+
+// Run all checks
+function runAllChecks() {
+    console.log('🚀 Running comprehensive button debug...');
+    
+    checkReactComponents();
+    findButtons();
+    checkModals();
+    monitorDOMChanges();
+    
+    setTimeout(() => {
+        console.log('🧪 Starting button click tests...');
+        testButtonClicks();
+    }, 2000);
+    
+    // Show summary after 10 seconds
+    setTimeout(() => {
+        console.log('📊 Debug Summary:');
+        console.log(`Total logs captured: ${logs.length}`);
+        logs.forEach(log => {
+            console.log(`[${log.timestamp}] ${log.type.toUpperCase()}:`, ...log.args);
+        });
+    }, 10000);
+}
+
+// Auto-run
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runAllChecks);
+} else {
+    runAllChecks();
+}
+
+// Export for manual use
+window.buttonDebug = {
+    findButtons,
+    testButtonClicks,
+    checkModals,
+    runAllChecks
+};
+
+console.log('✅ Debug script loaded! Functions available in window.buttonDebug');
+        </textarea>
+        <button onclick="copyScript()" class="test-button">📋 Copy Script</button>
+    </div>
+    
+    <div class="debug-panel">
+        <h2>🔧 Manual Test Buttons</h2>
+        <p>Test these buttons to verify click functionality:</p>
+        
+        <button class="test-button" onclick="testClick(1)">
+            🎯 Test Button 1 - Basic Click
+        </button>
+        
+        <button class="test-button" onclick="testClick(2)">
+            💳 Test Button 2 - Payment Modal
+        </button>
+        
+        <button class="test-button" onclick="testClick(3)">
+            🚀 Test Button 3 - Secure Founding Spot
+        </button>
+    </div>
+    
+    <div class="debug-panel">
+        <h2>📊 Console Output</h2>
+        <div id="console-output"></div>
+    </div>
+
+    <script>
+        function copyScript() {
+            const script = document.getElementById('debug-script');
+            script.select();
+            document.execCommand('copy');
+            alert('Debug script copied to clipboard! Paste it in your browser console on localhost:3001');
+        }
+        
+        function testClick(buttonNum) {
+            const output = document.getElementById('console-output');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry log-success';
+            logEntry.textContent = `✅ Test Button ${buttonNum} clicked at ${new Date().toLocaleTimeString()}`;
+            output.appendChild(logEntry);
+            output.scrollTop = output.scrollHeight;
+            
+            console.log(`Test button ${buttonNum} clicked successfully`);
+            
+            if (buttonNum === 2) {
+                // Simulate payment modal
+                setTimeout(() => {
+                    const modalEntry = document.createElement('div');
+                    modalEntry.className = 'log-entry log-info';
+                    modalEntry.textContent = '💳 Payment modal would open here';
+                    output.appendChild(modalEntry);
+                }, 500);
+            }
+        }
+        
+        // Capture console logs
+        const originalConsoleLog = console.log;
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            
+            const output = document.getElementById('console-output');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry log-info';
+            logEntry.textContent = args.join(' ');
+            output.appendChild(logEntry);
+            output.scrollTop = output.scrollHeight;
+        };
+        
+        console.log('🔍 Debug page loaded - ready for testing');
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
-import React from 'react';
-import { Check, X, Crown, Zap, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, X, Crown, Zap, Star, CheckCircle } from 'lucide-react';
 import Button from '../ui/Button';
+import RazorpayCheckout from '../payment/RazorpayCheckout';
 
 interface PricingTier {
   name: string;
@@ -16,6 +17,8 @@ interface PricingTier {
 }
 
 const PricingComparison: React.FC = () => {
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const pricingTiers: PricingTier[] = [
     {
       name: 'Standard Access',
@@ -181,6 +184,13 @@ const PricingComparison: React.FC = () => {
                       : 'bg-gray-800 hover:bg-gray-900'
                   }`}
                   size="lg"
+                  onClick={() => {
+                    if (tier.highlighted) {
+                      setShowPaymentModal(true);
+                    } else {
+                      console.log(`${tier.name} button clicked`);
+                    }
+                  }}
                 >
                   {tier.highlighted ? 'Secure Founding Spot' : 
                    tier.name === 'Standard Access' ? 'Start Free Trial' : 'Contact Sales'}
@@ -243,11 +253,63 @@ const PricingComparison: React.FC = () => {
             <p className="text-red-700 text-sm mb-4">
               Only 12 founding spots remaining. Price increases to $2,000+ after founding phase.
             </p>
-            <Button className="bg-red-600 hover:bg-red-700">
+            <Button 
+              className="bg-red-600 hover:bg-red-700"
+              onClick={() => setShowPaymentModal(true)}
+            >
               Secure Your Spot Now
             </Button>
           </div>
         </div>
+
+        {/* Payment Modal */}
+        {showPaymentModal && !paymentSuccess && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="relative">
+              <RazorpayCheckout
+                onSuccess={(paymentData) => {
+                  console.log('Payment successful:', paymentData);
+                  setPaymentSuccess(true);
+                  setShowPaymentModal(false);
+                  alert(`🎉 Payment successful! Welcome to the Co-Creator Program!\n\nTransaction ID: ${paymentData.transactionId}\n\nYou'll receive onboarding instructions via email shortly.`);
+                }}
+                onError={(error) => {
+                  console.error('Payment error:', error);
+                  alert(`❌ Payment failed: ${error}\n\nPlease try again or contact support@unitasa.in`);
+                }}
+                onCancel={() => {
+                  setShowPaymentModal(false);
+                }}
+                customerEmail=""
+                customerName=""
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Success State */}
+        {paymentSuccess && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-md mx-auto text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome to the Co-Creator Program!</h3>
+              <p className="text-gray-600 mb-6">
+                Your payment was successful. You'll receive onboarding instructions via email shortly.
+              </p>
+              <Button
+                onClick={() => {
+                  setPaymentSuccess(false);
+                  setShowPaymentModal(false);
+                }}
+                className="w-full"
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

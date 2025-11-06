@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import LandingPage from './pages/LandingPage';
 import PerformanceDashboard from './components/dev/PerformanceDashboard';
+
 import { initializeSecurity } from './utils/security';
 import './App.css';
 import './styles/ai-animations.css';
@@ -115,6 +116,7 @@ function App() {
 
   return (
     <div className="App">
+      
       <LandingPage />
       {process.env.NODE_ENV === 'development' && (
         <PerformanceDashboard
