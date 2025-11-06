@@ -58,7 +58,7 @@ class ConsultationService {
         success: true,
         message: "Consultation booking successful",
         bookingId: `booking-${Date.now()}`,
-        calendlyUrl: "https://calendly.com/unitasa/ai-strategy-session"
+        calendlyUrl: "https://calendly.com/khanayubchand/ai-strategy-session"
       };
     }
   }
@@ -76,7 +76,7 @@ class ConsultationService {
       console.error('Failed to get consultation status:', error);
       return {
         status: 'active',
-        calendlyUrl: 'https://calendly.com/unitasa/ai-strategy-session',
+        calendlyUrl: 'https://calendly.com/khanayubchand/ai-strategy-session',
         availableSlots: 'Monday-Friday, 9 AM - 6 PM EST'
       };
     }

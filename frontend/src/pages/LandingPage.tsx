@@ -8,6 +8,7 @@ import { CRMAssessmentResult } from '../types';
 import { trackPageView } from '../utils/analytics';
 import LeadCaptureForm, { LeadData } from '../components/assessment/LeadCaptureForm';
 import CRMSelectorStep from '../components/assessment/CRMSelectorStep';
+import ConsultationTest from '../components/test/ConsultationTest';
 
 // Lazy load heavy components
 const AICapabilitiesSection = lazy(() => import('../components/sections/AICapabilitiesSection'));

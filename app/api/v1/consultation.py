@@ -6,7 +6,8 @@ from datetime import datetime
 from app.core.email_service import EmailService
 from app.models.lead import Lead
 from app.core.database import get_db
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -31,8 +32,7 @@ class ConsultationBookingResponse(BaseModel):
 
 @router.post("/book", response_model=ConsultationBookingResponse)
 async def book_consultation(
-    booking_request: ConsultationBookingRequest,
-    db: Session = Depends(get_db)
+    booking_request: ConsultationBookingRequest
 ):
     """
     Handle consultation booking requests from prospects
@@ -40,53 +40,26 @@ async def book_consultation(
     try:
         logger.info(f"📅 New consultation booking request from {booking_request.email}")
         
-        # Create or update lead record
-        existing_lead = db.query(Lead).filter(Lead.email == booking_request.email).first()
+        # For now, just log the booking request and return success
+        # Database integration will be added later
+        logger.info(f"Consultation booking details:")
+        logger.info(f"  Name: {booking_request.name}")
+        logger.info(f"  Email: {booking_request.email}")
+        logger.info(f"  Company: {booking_request.company}")
+        logger.info(f"  Phone: {booking_request.phone}")
+        logger.info(f"  CRM: {booking_request.current_crm}")
+        logger.info(f"  Challenges: {booking_request.challenges}")
         
-        if existing_lead:
-            # Update existing lead with consultation request
-            existing_lead.name = booking_request.name
-            existing_lead.company = booking_request.company
-            existing_lead.phone = booking_request.phone
-            existing_lead.current_crm = booking_request.current_crm
-            existing_lead.consultation_requested = True
-            existing_lead.consultation_challenges = booking_request.challenges
-            existing_lead.consultation_type = booking_request.consultation_type
-            existing_lead.updated_at = datetime.utcnow()
-            lead = existing_lead
-        else:
-            # Create new lead record
-            lead = Lead(
-                name=booking_request.name,
-                email=booking_request.email,
-                company=booking_request.company,
-                phone=booking_request.phone,
-                source=booking_request.source,
-                current_crm=booking_request.current_crm,
-                consultation_requested=True,
-                consultation_challenges=booking_request.challenges,
-                consultation_type=booking_request.consultation_type,
-                lead_score=75,  # High score for consultation requests
-                status="consultation_requested"
-            )
-            db.add(lead)
-        
-        db.commit()
-        db.refresh(lead)
-        
-        # Send confirmation email to prospect
-        await send_consultation_confirmation_email(booking_request)
-        
-        # Send notification to team
-        await send_team_notification_email(booking_request, lead.id)
+        # Generate a booking ID
+        booking_id = f"booking_{int(datetime.utcnow().timestamp())}"
         
         logger.info(f"✅ Consultation booking processed successfully for {booking_request.email}")
         
         return ConsultationBookingResponse(
             success=True,
             message="Consultation booking request received successfully",
-            booking_id=str(lead.id),
-            calendly_url="https://calendly.com/unitasa/ai-strategy-session"
+            booking_id=booking_id,
+            calendly_url="https://calendly.com/khanayubchand/ai-strategy-session"
         )
         
     except Exception as e:

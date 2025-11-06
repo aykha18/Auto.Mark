@@ -29,6 +29,7 @@ const ConsultationBooking: React.FC<ConsultationBookingProps> = ({
   onClose,
   leadData
 }) => {
+  console.log('🔍 ConsultationBooking rendered with isOpen:', isOpen);
   const [step, setStep] = useState<'form' | 'calendar' | 'confirmation'>('form');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<BookingFormData>({
@@ -92,11 +93,32 @@ const ConsultationBooking: React.FC<ConsultationBookingProps> = ({
     setStep('confirmation');
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    console.log('🔍 ConsultationBooking not rendering - isOpen is false');
+    return null;
+  }
+
+  console.log('🔍 ConsultationBooking rendering modal with isOpen:', isOpen);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+      style={{ zIndex: 9999 }}
+      onClick={(e) => {
+        console.log('🔍 Modal backdrop clicked');
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div 
+        className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        style={{ border: '5px solid red' }}
+        onClick={(e) => {
+          console.log('🔍 Modal content clicked');
+          e.stopPropagation();
+        }}
+      >
         {/* Header */}
         <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
           <div className="flex items-center justify-between">

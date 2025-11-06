@@ -236,22 +236,69 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
               
               <div className="space-y-6">
                 {/* Schedule Session */}
-                <div className="bg-blue-50 rounded-lg p-6 text-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <MessageCircle className="w-6 h-6 text-blue-600" />
+                <div className="bg-blue-50 rounded-lg p-6">
+                  <div className="text-center mb-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <MessageCircle className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Schedule AI Strategy Session</h4>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Get a personalized 30-minute consultation to discuss your AI implementation roadmap
+                    </p>
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Schedule AI Strategy Session</h4>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Get a personalized 30-minute consultation to discuss your AI implementation roadmap
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full"
-                    onClick={() => setShowBookingModal(true)}
-                  >
-                    Book Free Session
-                  </Button>
+                  
+                  {!showBookingModal ? (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => {
+                        console.log('🔍 Book Free Session clicked');
+                        setShowBookingModal(true);
+                      }}
+                    >
+                      Book Free Session
+                    </Button>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-gray-900 mb-4">
+                          📅 Ready to book your AI Strategy Session?
+                        </p>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                        <Button
+                          size="sm"
+                          className="bg-blue-600 hover:bg-blue-700"
+                          onClick={() => {
+                            console.log('🔍 Opening Calendly...');
+                            // Open your AI Strategy Session booking page
+                            window.open('https://calendly.com/khanayubchand/ai-strategy-session', '_blank', 'width=800,height=600');
+                          }}
+                        >
+                          📅 Book Now
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            console.log('🔍 Closing booking form');
+                            setShowBookingModal(false);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                      
+                      <div className="text-center">
+                        <p className="text-xs text-gray-500">
+                          Free 30-minute consultation • No commitment required
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
