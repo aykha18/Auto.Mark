@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Brain, Target, Zap, Shield, BarChart3, MessageCircle, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Brain, MessageCircle, ArrowRight, ArrowLeft, CheckCircle, X } from 'lucide-react';
 import Button from '../ui/Button';
 import AIReadinessAssessment from './AIReadinessAssessment';
 import { LeadData } from './LeadCaptureForm';
@@ -25,6 +25,18 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // Auto-hide success toast after 8 seconds
+  useEffect(() => {
+    if (showSuccessToast) {
+      const timer = setTimeout(() => {
+        setShowSuccessToast(false);
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessToast]);
 
   const steps: AssessmentStep[] = [
     {
@@ -113,8 +125,9 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
               setPaymentSuccess(true);
               setPaymentLoading(false);
               
-              // Show success message
-              alert(`🎉 Payment successful! Welcome to the Co-Creator Program!\n\nPayment ID: ${response.razorpay_payment_id}\n\nYou will receive onboarding instructions via email shortly.`);
+              // Show success message with modern toast
+              setSuccessMessage(`🎉 Payment successful! Welcome to the Co-Creator Program!\n\nPayment ID: ${response.razorpay_payment_id}\n\nYou will receive onboarding instructions via email shortly.`);
+              setShowSuccessToast(true);
             } else {
               throw new Error('Payment verification failed');
             }
@@ -339,6 +352,35 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
             {currentStep === steps.length - 1 ? 'Complete Assessment' : 'Continue'}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
+        </div>
+      )}
+
+      {/* Modern Success Toast */}
+      {showSuccessToast && (
+        <div className="fixed top-4 right-4 z-50 max-w-md">
+          <div className="bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 transform transition-all duration-300 ease-in-out">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <CheckCircle className="w-6 h-6 text-green-500" />
+              </div>
+              <div className="ml-3 flex-1">
+                <h3 className="text-sm font-medium text-gray-900">
+                  Payment Successful!
+                </h3>
+                <p className="mt-1 text-sm text-gray-600 whitespace-pre-line">
+                  {successMessage}
+                </p>
+              </div>
+              <div className="ml-4 flex-shrink-0">
+                <button
+                  onClick={() => setShowSuccessToast(false)}
+                  className="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 rounded"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
