@@ -23,6 +23,7 @@ const CRMSelectorStep: React.FC<CRMSelectorStepProps> = ({
   onBack
 }) => {
   const [selectedCRM, setSelectedCRM] = useState<string>('');
+  const [customCrmName, setCustomCrmName] = useState<string>('');
 
   const crmOptions: CRMOption[] = [
     { id: 'pipedrive', name: 'Pipedrive', icon: '🔧', color: 'bg-green-500' },
@@ -33,7 +34,9 @@ const CRMSelectorStep: React.FC<CRMSelectorStepProps> = ({
     { id: 'salesforce', name: 'Salesforce', icon: '☁️', color: 'bg-blue-600' },
     { id: 'agilecrm', name: 'AgileCRM', icon: '⚡', color: 'bg-purple-500' },
     { id: 'copper', name: 'Copper CRM', icon: '🔶', color: 'bg-orange-700' },
-    { id: 'jetpack', name: 'Jetpack CRM', icon: '✈️', color: 'bg-gray-600' }
+    { id: 'jetpack', name: 'Jetpack CRM', icon: '✈️', color: 'bg-gray-600' },
+    { id: 'other', name: 'Other CRM', icon: '❓', color: 'bg-gray-500' },
+    { id: 'none', name: 'No CRM Yet', icon: '❌', color: 'bg-red-500' }
   ];
 
   const handleCRMSelect = (crmId: string) => {
@@ -42,10 +45,16 @@ const CRMSelectorStep: React.FC<CRMSelectorStepProps> = ({
 
   const handleNext = () => {
     console.log('CRM selector next clicked, selected:', selectedCRM);
+    console.log('Custom CRM name:', customCrmName);
+    
     if (selectedCRM) {
-      onNext(selectedCRM);
+      // If "other" is selected, pass the custom name, otherwise pass the selected CRM
+      const crmValue = selectedCRM === 'other' ? `other:${customCrmName}` : selectedCRM;
+      onNext(crmValue);
     }
   };
+
+  const isNextDisabled = !selectedCRM || (selectedCRM === 'other' && !customCrmName.trim());
 
   if (!isOpen) return null;
 
@@ -107,10 +116,27 @@ const CRMSelectorStep: React.FC<CRMSelectorStepProps> = ({
             ))}
           </div>
 
+          {/* Custom CRM Name Input - Show when "other" is selected */}
+          {selectedCRM === 'other' && (
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Please specify your CRM system:
+              </label>
+              <input
+                type="text"
+                value={customCrmName}
+                onChange={(e) => setCustomCrmName(e.target.value)}
+                placeholder="Enter your CRM system name (e.g., Custom CRM, In-house system, etc.)"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                autoFocus
+              />
+            </div>
+          )}
+
           {/* Help Text */}
           <div className="bg-blue-50 rounded-lg p-4 mb-6">
             <p className="text-sm text-blue-800">
-              <strong>Don't see your CRM?</strong> Select "Other CRM" and we'll provide general integration guidance that works with most systems.
+              <strong>Don't see your CRM?</strong> Select "Other CRM" and specify your system name. We'll provide general integration guidance that works with most systems.
             </p>
           </div>
 
@@ -128,7 +154,7 @@ const CRMSelectorStep: React.FC<CRMSelectorStepProps> = ({
             <Button
               variant="primary"
               onClick={handleNext}
-              disabled={!selectedCRM}
+              disabled={isNextDisabled}
               icon={ArrowRight}
               iconPosition="right"
             >

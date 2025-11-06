@@ -175,19 +175,40 @@ async def submit_assessment(data: Dict[str, Any], db: AsyncSession = Depends(get
             assessment.is_completed = True
             assessment.completed_at = datetime.utcnow()
             
-            # Get CRM from responses
+            # Get CRM from responses and handle custom CRM names
             crm_system = responses_dict.get("crm_system", "other")
-            assessment.current_crm = crm_system
+            
+            # Handle custom CRM names (format: "other:Custom CRM Name")
+            if crm_system.startswith("other:"):
+                custom_crm_name = crm_system.split(":", 1)[1].strip()
+                assessment.current_crm = custom_crm_name
+                assessment.custom_crm_name = custom_crm_name  # Store separately for analytics
+                crm_system_for_processing = "other"  # Use "other" for logic processing
+            else:
+                assessment.current_crm = crm_system
+                assessment.custom_crm_name = None
+                crm_system_for_processing = crm_system
+            
             assessment.crm_usage_level = "intermediate"  # Default assumption
             assessment.crm_data_quality = "good"  # Default assumption
             
             # Add comprehensive recommendations
-            assessment.integration_recommendations = [
-                f"Integrate with {crm_system} for automated lead capture",
-                "Set up real-time data synchronization",
-                "Configure custom field mapping",
-                "Implement lead scoring automation"
-            ]
+            # Generate CRM-specific recommendations
+            crm_display_name = assessment.current_crm
+            if crm_system_for_processing == "other":
+                assessment.integration_recommendations = [
+                    f"Integrate with {crm_display_name} using API or webhooks",
+                    "Set up custom data synchronization workflows",
+                    "Configure field mapping for your specific CRM structure",
+                    "Implement lead scoring automation with custom triggers"
+                ]
+            else:
+                assessment.integration_recommendations = [
+                    f"Integrate with {crm_display_name} for automated lead capture",
+                    "Set up real-time data synchronization",
+                    "Configure custom field mapping",
+                    "Implement lead scoring automation"
+                ]
             assessment.automation_opportunities = [
                 "Automate lead scoring and qualification",
                 "Set up email nurturing sequences", 
@@ -215,9 +236,16 @@ async def submit_assessment(data: Dict[str, Any], db: AsyncSession = Depends(get
                 # Basic lead info
                 lead.score = 0.75  # 75% as 0-1 scale
                 lead.readiness_segment = "warm"
-                lead.current_crm_system = crm_system
+                lead.current_crm_system = assessment.current_crm  # Use the processed CRM name
                 lead.crm_integration_readiness = overall_score
                 lead.last_scored_at = datetime.utcnow()
+                
+                # Store custom CRM info in custom_fields for analytics
+                if assessment.custom_crm_name:
+                    if not lead.custom_fields:
+                        lead.custom_fields = {}
+                    lead.custom_fields["custom_crm_name"] = assessment.custom_crm_name
+                    lead.custom_fields["crm_type"] = "custom"
                 
                 # Detailed scoring
                 lead.technical_capability_score = category_scores.get("technical_capability", 70.0)
@@ -239,9 +267,11 @@ async def submit_assessment(data: Dict[str, Any], db: AsyncSession = Depends(get
                 # Add relevant tags
                 if not lead.tags:
                     lead.tags = []
+                # Add tags based on CRM type
+                crm_tag = f"crm_{crm_system_for_processing}" if crm_system_for_processing != "other" else "crm_custom"
                 lead.tags.extend([
                     "assessment_completed",
-                    f"crm_{crm_system}",
+                    crm_tag,
                     "warm_lead",
                     "co_creator_qualified"
                 ])

@@ -4,6 +4,8 @@ import { Search, ChevronDown } from 'lucide-react';
 interface CRMSelectorProps {
   value: string;
   onChange: (crm: string) => void;
+  customCrmName?: string;
+  onCustomCrmChange?: (name: string) => void;
 }
 
 const CRM_OPTIONS = [
@@ -19,7 +21,12 @@ const CRM_OPTIONS = [
   { id: 'none', name: 'No CRM Currently', logo: '❌' },
 ];
 
-export const CRMSelector: React.FC<CRMSelectorProps> = ({ value, onChange }) => {
+export const CRMSelector: React.FC<CRMSelectorProps> = ({ 
+  value, 
+  onChange, 
+  customCrmName = '', 
+  onCustomCrmChange 
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -89,6 +96,22 @@ export const CRMSelector: React.FC<CRMSelectorProps> = ({ value, onChange }) => 
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Custom CRM Name Input - Show when "other" is selected */}
+      {value === 'other' && (
+        <div className="mt-3">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Please specify your CRM system:
+          </label>
+          <input
+            type="text"
+            value={customCrmName}
+            onChange={(e) => onCustomCrmChange?.(e.target.value)}
+            placeholder="Enter your CRM system name..."
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          />
         </div>
       )}
     </div>

@@ -29,6 +29,7 @@ class Assessment(Base, TimestampMixin):
     
     # Current CRM information
     current_crm = Column(String(100), index=True)  # Pipedrive, Zoho, HubSpot, Monday, Salesforce, etc.
+    custom_crm_name = Column(String(200))  # Custom CRM name when "other" is selected
     crm_usage_level = Column(String(50))  # basic, intermediate, advanced
     crm_data_quality = Column(String(50))  # poor, fair, good, excellent
     
