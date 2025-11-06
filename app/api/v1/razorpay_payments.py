@@ -135,16 +135,16 @@ async def verify_razorpay_payment(
             payment_transaction.amount_paid = verification_result["amount"]
             
             # Update metadata with payment details
-            if not payment_transaction.metadata:
-                payment_transaction.metadata = {}
-            payment_transaction.metadata.update({
+            if not payment_transaction.payment_metadata:
+                payment_transaction.payment_metadata = {}
+            payment_transaction.payment_metadata.update({
                 "razorpay_payment_id": request.razorpay_payment_id,
                 "payment_method": verification_result.get("method", "unknown"),
                 "verification_status": "verified"
             })
             
             # Create Co-Creator record if payment is successful
-            if payment_transaction.metadata.get("program_type") == "co_creator":
+            if payment_transaction.payment_metadata.get("program_type") == "co_creator":
                 # Check if co-creator already exists
                 result = await db.execute(
                     select(CoCreator).where(
@@ -194,7 +194,7 @@ async def verify_razorpay_payment(
                 })
                 
                 # Send welcome email if co-creator was created
-                if payment_transaction.metadata.get("program_type") == "co_creator":
+                if payment_transaction.payment_metadata.get("program_type") == "co_creator":
                     await support_service.send_co_creator_welcome_email({
                         "email": payment_transaction.customer_email,
                         "name": payment_transaction.customer_name
