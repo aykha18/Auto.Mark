@@ -11,6 +11,7 @@ from sqlalchemy import select
 
 from app.core.database import get_db
 from app.core.razorpay_service import get_razorpay_service
+from app.core.payment_support_service import get_payment_support_service
 from app.models.payment_transaction import PaymentTransaction
 from app.models.co_creator_program import CoCreator
 from app.models.lead import Lead
@@ -178,6 +179,30 @@ async def verify_razorpay_payment(
                             lead.tags.append("co_creator_member")
             
             await db.commit()
+            
+            # Send payment confirmation and welcome emails
+            try:
+                support_service = get_payment_support_service()
+                
+                # Send payment confirmation
+                await support_service.send_payment_confirmation({
+                    "customer_email": payment_transaction.customer_email,
+                    "customer_name": payment_transaction.customer_name,
+                    "amount": verification_result["amount"],
+                    "currency": verification_result["currency"],
+                    "order_id": request.razorpay_order_id
+                })
+                
+                # Send welcome email if co-creator was created
+                if payment_transaction.metadata.get("program_type") == "co_creator":
+                    await support_service.send_co_creator_welcome_email({
+                        "email": payment_transaction.customer_email,
+                        "name": payment_transaction.customer_name
+                    })
+                    
+            except Exception as email_error:
+                print(f"Email notification error: {email_error}")
+                # Don't fail the payment verification if email fails
             
             return {
                 "success": True,

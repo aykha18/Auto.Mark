@@ -45,7 +45,8 @@ class OpenAISettings(BaseSettings):
 class EmailSettings(BaseSettings):
     """Email configuration"""
     sendgrid_api_key: str = Field(default_factory=lambda: os.getenv("SENDGRID_API_KEY", ""))
-    from_email: str = Field(default_factory=lambda: os.getenv("FROM_EMAIL", "hello@unitasa.in"))
+    from_email: str = Field(default_factory=lambda: os.getenv("FROM_EMAIL", "support@unitasa.in"))
+    support_email: str = Field(default_factory=lambda: os.getenv("SUPPORT_EMAIL", "support@unitasa.in"))
     from_name: str = "Unitasa"
 
 
