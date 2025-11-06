@@ -6,6 +6,10 @@ Main FastAPI application entry point
 import os
 import warnings
 import asyncio
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Suppress asyncpg connection termination warnings on Windows
 warnings.filterwarnings("ignore", category=RuntimeWarning, message=".*coroutine.*was never awaited.*")
@@ -294,6 +298,14 @@ try:
     print("Including consultation router...")
     app.include_router(consultation.router, prefix="/api/v1/consultation", tags=["consultation"])
     print("Consultation router included successfully")
+    
+    print("Importing ai_report module...")
+    from app.api.v1 import ai_report
+    print("AI report module imported successfully")
+    
+    print("Including ai_report router...")
+    app.include_router(ai_report.router, prefix="/api/v1/ai-report", tags=["ai_report"])
+    print("AI report router included successfully")
     
     print("All API routers included successfully")
 except Exception as e:

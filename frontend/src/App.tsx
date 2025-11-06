@@ -116,8 +116,8 @@ function App() {
 
   return (
     <div className="App">
-      
       <LandingPage />
+      
       {process.env.NODE_ENV === 'development' && (
         <PerformanceDashboard
           isVisible={showPerformanceDashboard}

@@ -405,7 +405,10 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
           <Button onClick={onClose} variant="outline" className="mr-4">
             Close Assessment
           </Button>
-          <Button onClick={() => onComplete?.(assessmentData)}>
+          <Button onClick={() => {
+            // For now, just call onComplete - you can add AI Report Modal here too if needed
+            onComplete?.(assessmentData);
+          }}>
             Get Full AI Report
           </Button>
         </div>

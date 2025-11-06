@@ -5,6 +5,7 @@ import AIReadinessAssessment from './AIReadinessAssessment';
 import { LeadData } from './LeadCaptureForm';
 import { paymentService } from '../../services/paymentService';
 import ConsultationBooking from '../booking/ConsultationBooking';
+import SimpleAIReportModal from '../reports/SimpleAIReportModal';
 
 interface AssessmentStep {
   id: string;
@@ -29,6 +30,7 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // Auto-hide success toast after 8 seconds
   useEffect(() => {
@@ -39,6 +41,8 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
       return () => clearTimeout(timer);
     }
   }, [showSuccessToast]);
+
+
 
   const steps: AssessmentStep[] = [
     {
@@ -309,7 +313,7 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
           <Button onClick={onClose} variant="outline">
             Close Assessment
           </Button>
-          <Button onClick={() => onComplete?.(assessmentData)}>
+          <Button onClick={() => setShowReportModal(true)}>
             Get Full AI Report
           </Button>
         </div>
@@ -395,7 +399,15 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
       <ConsultationBooking
         isOpen={showBookingModal}
         onClose={() => setShowBookingModal(false)}
-        leadData={leadData}
+        leadData={leadData || undefined}
+      />
+
+      {/* AI Report Modal */}
+      <SimpleAIReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        assessmentData={assessmentData}
+        leadData={leadData || undefined}
       />
     </div>
   );

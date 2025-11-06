@@ -96,6 +96,13 @@ class Lead(Base, TimestampMixin):
     consultation_scheduled_at = Column(DateTime)  # When consultation is scheduled
     consultation_completed_at = Column(DateTime)  # When consultation was completed
     
+    # AI Report fields
+    ai_report_requested = Column(Boolean, default=False)  # Has requested AI report
+    ai_report_generated = Column(Boolean, default=False)  # Has AI report been generated
+    ai_report_sent = Column(Boolean, default=False)  # Has AI report been sent via email
+    ai_report_id = Column(String(255))  # Unique AI report identifier
+    ai_report_generated_at = Column(DateTime)  # When AI report was generated
+    
     # Additional metadata
     tags = Column(JSON, default=list)  # custom tags for segmentation
     custom_fields = Column(JSON, default=dict)  # extensible custom data
