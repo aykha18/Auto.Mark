@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { CoCreatorProgramStatus } from '../../types';
 import LandingPageAPI from '../../services/landingPageApi';
 import Button from '../ui/Button';
-import PaymentFlow from '../payment/PaymentFlow';
-import { Crown, Users, Zap, Clock, CheckCircle } from 'lucide-react';
+import RazorpayCheckout from '../payment/RazorpayCheckout';
+import { Crown, Users, Zap, Clock, CheckCircle, X } from 'lucide-react';
 
 interface CoCreatorProgramOfferProps {
   readinessLevel: string;
@@ -17,6 +17,7 @@ const CoCreatorProgramOffer: React.FC<CoCreatorProgramOfferProps> = ({
   const [programStatus, setProgramStatus] = useState<CoCreatorProgramStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPaymentFlow, setShowPaymentFlow] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   useEffect(() => {
     loadProgramStatus();
@@ -175,24 +176,52 @@ const CoCreatorProgramOffer: React.FC<CoCreatorProgramOfferProps> = ({
         </div>
       </div>
 
-      {/* Payment Flow Modal */}
-      {showPaymentFlow && (
+      {/* Razorpay Payment Modal */}
+      {showPaymentFlow && !paymentSuccess && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-6xl max-h-[90vh] overflow-y-auto">
-            <PaymentFlow
-              onComplete={() => {
+          <div className="relative">
+            <RazorpayCheckout
+              onSuccess={(paymentData) => {
+                console.log('Payment successful:', paymentData);
+                setPaymentSuccess(true);
                 setShowPaymentFlow(false);
-                // Optionally redirect to dashboard or show success message
+                // Show success message or redirect
+                alert(`Payment successful! Welcome to the Co-Creator Program!\n\nTransaction ID: ${paymentData.transactionId}\n\nYou'll receive a confirmation email shortly.`);
               }}
+              onError={(error) => {
+                console.error('Payment error:', error);
+                alert(`Payment failed: ${error}\n\nPlease try again or contact support@unitasa.in`);
+              }}
+              onCancel={() => {
+                setShowPaymentFlow(false);
+              }}
+              customerEmail=""
+              customerName=""
             />
-            
-            {/* Close button */}
-            <button
-              onClick={() => setShowPaymentFlow(false)}
-              className="absolute top-4 right-4 w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
+          </div>
+        </div>
+      )}
+
+      {/* Success State */}
+      {paymentSuccess && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md mx-auto text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome to the Co-Creator Program!</h3>
+            <p className="text-gray-600 mb-6">
+              Your payment was successful. You'll receive onboarding instructions via email shortly.
+            </p>
+            <Button
+              onClick={() => {
+                setPaymentSuccess(false);
+                setShowPaymentFlow(false);
+              }}
+              className="w-full"
             >
-              ×
-            </button>
+              Continue
+            </Button>
           </div>
         </div>
       )}
