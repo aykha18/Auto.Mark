@@ -145,25 +145,55 @@ async def verify_razorpay_payment(
             
             # Create Co-Creator record if payment is successful
             if payment_transaction.payment_metadata.get("program_type") == "co_creator":
-                # Check if co-creator already exists
-                result = await db.execute(
-                    select(CoCreator).where(
-                        CoCreator.email == payment_transaction.customer_email
-                    )
+                # Get or create active co-creator program
+                from app.models.co_creator_program import CoCreatorProgram
+                program_result = await db.execute(
+                    select(CoCreatorProgram).where(CoCreatorProgram.is_active == True)
                 )
-                existing_co_creator = result.scalar_one_or_none()
+                program = program_result.scalar_one_or_none()
                 
-                if not existing_co_creator:
-                    co_creator = CoCreator(
-                        email=payment_transaction.customer_email,
-                        name=payment_transaction.customer_name,
-                        lead_id=payment_transaction.lead_id,
-                        payment_transaction_id=payment_transaction.id,
-                        status="active",
-                        program_type="co_creator",
-                        access_level="full",
-                        onboarding_completed=False
+                if not program:
+                    # Create default program if none exists
+                    program = CoCreatorProgram(
+                        program_name="Founding Users Co-Creator Program",
+                        total_seats=25,
+                        seats_filled=0,
+                        program_price=497.0,
+                        is_active=True
                     )
+                    db.add(program)
+                    await db.flush()
+                
+                # Check if co-creator already exists for this user
+                # We'll use customer_email to find existing user or create association
+                existing_co_creator = None
+                if payment_transaction.lead_id:
+                    result = await db.execute(
+                        select(CoCreator).where(CoCreator.lead_id == payment_transaction.lead_id)
+                    )
+                    existing_co_creator = result.scalar_one_or_none()
+                
+                if not existing_co_creator and program.seats_remaining > 0:
+                    # Reserve a seat in the program
+                    program.reserve_seat()
+                    
+                    co_creator = CoCreator(
+                        program_id=program.id,
+                        user_id=1,  # Default system user - should be updated when user registers
+                        lead_id=payment_transaction.lead_id,
+                        seat_number=program.seats_filled,
+                        status="active",
+                        access_level="co_creator",
+                        lifetime_access=True
+                    )
+                    
+                    # Add metadata with payment info
+                    co_creator.add_metadata("customer_email", payment_transaction.customer_email)
+                    co_creator.add_metadata("customer_name", payment_transaction.customer_name)
+                    co_creator.add_metadata("payment_transaction_id", payment_transaction.id)
+                    co_creator.add_metadata("program_type", "co_creator")
+                    co_creator.add_metadata("onboarding_completed", False)
+                    
                     db.add(co_creator)
                     
                     # Update lead status if exists
