@@ -1,0 +1,348 @@
+import React, { useState } from 'react';
+import { Brain, Target, Zap, Shield, BarChart3, MessageCircle, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react';
+import Button from '../ui/Button';
+import AIReadinessAssessment from './AIReadinessAssessment';
+import { LeadData } from './LeadCaptureForm';
+import { paymentService } from '../../services/paymentService';
+
+interface AssessmentStep {
+  id: string;
+  title: string;
+  description: string;
+  component: React.ReactNode;
+}
+
+interface EnhancedAIAssessmentProps {
+  onComplete?: (results: any) => void;
+  onClose?: () => void;
+  leadData?: LeadData | null;
+}
+
+const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete, onClose, leadData }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [assessmentData, setAssessmentData] = useState<Record<string, any>>({});
+  const [showResults, setShowResults] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  const steps: AssessmentStep[] = [
+    {
+      id: 'welcome',
+      title: 'Welcome to AI Assessment',
+      description: 'Discover your AI readiness and unlock growth opportunities',
+      component: (
+        <div className="text-center py-8">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Brain className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            AI Marketing Intelligence Assessment
+          </h2>
+          <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            Get personalized insights on how AI can transform your marketing operations and drive growth.
+          </p>
+          <Button 
+            size="lg" 
+            onClick={() => setCurrentStep(1)}
+            className="px-8 py-4 text-lg"
+          >
+            Start Assessment
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
+      )
+    },
+    {
+      id: 'assessment',
+      title: 'AI Readiness Assessment',
+      description: 'Answer questions about your current marketing setup',
+      component: (
+        <AIReadinessAssessment 
+          leadData={leadData}
+        />
+      )
+    }
+  ];
+
+  const handleSecurePayment = async () => {
+    setPaymentLoading(true);
+    setPaymentError(null);
+
+    try {
+      // Detect user currency and country
+      const { currency, country } = paymentService.detectUserCurrency();
+      
+      // Create secure payment order through backend
+      const orderData = await paymentService.createPaymentOrder({
+        amount: 497.0,
+        customer_email: leadData?.email || 'member@unitasa.in',
+        customer_name: leadData?.name || 'Co-Creator Member',
+        lead_id: undefined, // You can add lead ID if available
+        program_type: 'co_creator',
+        currency: currency,
+        customer_country: country
+      });
+
+      console.log('✅ Secure order created:', orderData);
+
+      // Load Razorpay script
+      await paymentService.loadRazorpayScript();
+
+      // Open Razorpay checkout with secure parameters
+      const options = {
+        key: orderData.key_id, // Secure key from backend
+        amount: orderData.amount * 100, // Amount in paise from backend
+        currency: orderData.currency, // Currency from backend
+        name: 'Unitasa Co-Creator Program',
+        description: `Founding Member Access - $${orderData.amount_usd} / ₹${orderData.amount_inr}`,
+        order_id: orderData.order_id, // Secure order ID from backend
+        handler: async (response: any) => {
+          console.log('💳 Payment completed, verifying...');
+          
+          try {
+            // Verify payment signature on backend
+            const verifyData = await paymentService.verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+
+            if (verifyData.success && verifyData.verified) {
+              console.log('✅ Payment verified successfully');
+              setPaymentSuccess(true);
+              setPaymentLoading(false);
+              
+              // Show success message
+              alert(`🎉 Payment successful! Welcome to the Co-Creator Program!\n\nPayment ID: ${response.razorpay_payment_id}\n\nYou will receive onboarding instructions via email shortly.`);
+            } else {
+              throw new Error('Payment verification failed');
+            }
+            
+          } catch (verifyError) {
+            console.error('❌ Payment verification failed:', verifyError);
+            setPaymentError('Payment completed but verification failed. Please contact support.');
+            setPaymentLoading(false);
+          }
+        },
+        prefill: {
+          name: orderData.customer_name,
+          email: orderData.customer_email,
+          contact: '+919999999999'
+        },
+        theme: {
+          color: '#7c3aed'
+        },
+        method: {
+          netbanking: true,
+          card: true,
+          upi: true,
+          wallet: true,
+          emi: false,
+          paylater: false
+        },
+        modal: {
+          ondismiss: () => {
+            console.log('❌ Payment cancelled by user');
+            setPaymentLoading(false);
+          }
+        }
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+
+    } catch (error) {
+      console.error('❌ Payment initiation failed:', error);
+      setPaymentError(error instanceof Error ? error.message : 'Payment failed. Please try again.');
+      setPaymentLoading(false);
+    }
+  };
+
+  const currentStepData = steps[currentStep];
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      // Assessment completed, show results
+      const mockResults = {
+        aiReadinessScore: 85,
+        automationMaturity: 78,
+        dataIntelligence: 82,
+        integrationReadiness: 90,
+        overallScore: 84,
+        recommendations: [
+          'Implement AI-powered lead scoring',
+          'Automate email marketing workflows',
+          'Integrate predictive analytics'
+        ],
+        predictedROI: 340,
+        automationOpportunities: 12,
+        co_creator_qualified: true
+      };
+      setAssessmentData(mockResults);
+      setShowResults(true);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  if (showResults) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg border border-gray-200 max-w-4xl mx-auto">
+        {/* Results Header */}
+        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Assessment Complete!</h2>
+            <p className="text-gray-600">Your AI Marketing Intelligence Report is ready</p>
+          </div>
+        </div>
+
+        {/* Results Content */}
+        <div className="p-6">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Left Column - Assessment Results */}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Next Steps: Activate Your AI Marketing Team
+              </h3>
+              
+              <div className="space-y-6">
+                {/* Schedule Session */}
+                <div className="bg-blue-50 rounded-lg p-6 text-center">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <MessageCircle className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Schedule AI Strategy Session</h4>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Get a personalized 30-minute consultation to discuss your AI implementation roadmap
+                  </p>
+                  <Button variant="outline" size="sm" className="w-full">
+                    Book Free Session
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Co-Creator Program */}
+            <div>
+              <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6 border border-purple-200">
+                <div className="text-center mb-4">
+                  <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mb-3">
+                    LIMITED TIME
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Join 25 Founding Co-Creators</h4>
+                </div>
+                
+                <div className="text-center mb-4">
+                  <div className="text-3xl font-bold text-purple-600">$497 USD</div>
+                  <div className="text-lg font-bold text-purple-600">₹41,500 INR</div>
+                  <div className="text-sm text-gray-500 line-through">Regular: $2,000+ / ₹1,67,000+</div>
+                  <div className="text-sm text-green-600 font-medium mt-1">
+                    🚀 Founding Member Price • ⚡ Only 12 spots left
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-600 mb-4 text-center">
+                  Lifetime access to AI platform + direct product influence + priority support
+                </p>
+                
+                <Button 
+                  size="sm" 
+                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  onClick={handleSecurePayment}
+                  disabled={paymentLoading}
+                >
+                  {paymentLoading ? 'Processing...' : 'Secure Founding Spot'}
+                </Button>
+                
+                {paymentError && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                    {paymentError}
+                  </div>
+                )}
+                
+                {paymentSuccess && (
+                  <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
+                    🎉 Payment successful! Welcome to the Co-Creator Program!
+                  </div>
+                )}
+                
+                <div className="text-xs text-center text-gray-500 mt-2">
+                  ⚡ Only 12 spots remaining
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="p-6 border-t border-gray-200 flex justify-between">
+          <Button onClick={onClose} variant="outline">
+            Close Assessment
+          </Button>
+          <Button onClick={() => onComplete?.(assessmentData)}>
+            Get Full AI Report
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 max-w-4xl mx-auto">
+      {/* Progress Header */}
+      {currentStep > 0 && (
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              {currentStepData.title}
+            </h2>
+            <span className="text-sm text-gray-500">
+              Step {currentStep} of {steps.length - 1}
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-purple-500 to-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Step Content */}
+      <div className="p-6">
+        {currentStepData.component}
+      </div>
+
+      {/* Navigation */}
+      {currentStep > 0 && !showResults && (
+        <div className="p-6 border-t border-gray-200 flex justify-between">
+          <Button
+            variant="outline"
+            onClick={handlePrevious}
+            disabled={currentStep === 0}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Previous
+          </Button>
+          <Button onClick={handleNext}>
+            {currentStep === steps.length - 1 ? 'Complete Assessment' : 'Continue'}
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default EnhancedAIAssessment;

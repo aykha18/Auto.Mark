@@ -4,6 +4,13 @@ Main FastAPI application entry point
 """
 
 import os
+import warnings
+import asyncio
+
+# Suppress asyncpg connection termination warnings on Windows
+warnings.filterwarnings("ignore", category=RuntimeWarning, message=".*coroutine.*was never awaited.*")
+warnings.filterwarnings("ignore", message=".*Event loop is closed.*")
+warnings.filterwarnings("ignore", message=".*Exception terminating connection.*")
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -88,10 +95,10 @@ async def create_default_data(engine):
                 user = User(
                     id=1,
                     email="system@unitasa.com",
-                    username="system",
+                    hashed_password="system_password_hash",  # Required field
                     full_name="System User",
                     is_active=True,
-                    is_superuser=True
+                    role="admin"
                 )
                 session.add(user)
                 await session.flush()
@@ -135,23 +142,29 @@ async def lifespan(app: FastAPI):
     """Application lifespan events"""
     # Startup
     print("Starting Unitasa application...")
+    engine = None
     try:
         print("Attempting database connection...")
         engine, _ = init_database()
         print(f"Database URL: {engine.url}")
-        async with engine.begin() as conn:
-            print("Creating database tables...")
-            await conn.run_sync(Base.metadata.create_all)
-            print(f"Created tables: {list(Base.metadata.tables.keys())}")
         
-        # Create default data
-        print("Creating default user and campaign...")
-        await create_default_data(engine)
-        print("Database tables initialized successfully")
+        # Test connection with proper cleanup
+        try:
+            async with engine.begin() as conn:
+                print("Creating database tables...")
+                await conn.run_sync(Base.metadata.create_all)
+                print(f"Created tables: {list(Base.metadata.tables.keys())}")
+            
+            # Create default data
+            print("Creating default user and campaign...")
+            await create_default_data(engine)
+            print("Database initialized successfully")
+        except Exception as conn_error:
+            print(f"Database connection error: {conn_error}")
+            # Don't fail startup, just continue without database
+            
     except Exception as e:
-        print(f"Database connection failed during startup: {e}")
-        import traceback
-        print(f"Full traceback: {traceback.format_exc()}")
+        print(f"Database initialization failed: {e}")
         print("Application will continue without database initialization")
 
     print("Application startup complete")
@@ -159,12 +172,23 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     print("Shutting down application...")
-    try:
-        engine, _ = init_database()
-        await engine.dispose()
-        print("Database connection disposed successfully")
-    except Exception as e:
-        print(f"Error disposing database connection: {e}")
+    if engine:
+        try:
+            # Suppress asyncpg warnings during shutdown
+            import warnings
+            import asyncio
+            
+            # Filter out asyncpg connection termination warnings
+            warnings.filterwarnings("ignore", category=RuntimeWarning, message=".*coroutine.*was never awaited.*")
+            warnings.filterwarnings("ignore", message=".*Event loop is closed.*")
+            
+            # Give connections time to close gracefully
+            await asyncio.sleep(0.1)
+            await engine.dispose()
+            print("Database connection disposed successfully")
+        except Exception as e:
+            print(f"Error disposing database connection: {e}")
+            # Suppress the error to avoid startup issues
 
 
 # Create FastAPI application
@@ -188,6 +212,8 @@ def get_allowed_origins():
     origins = [
         "http://localhost:3000",  # Local development
         "http://localhost:3001",  # Alternative local port
+        "https://www.unitasa.in",  # Production website
+        "https://unitasa.in",      # Production website (without www)
         "https://unitas.up.railway.app",  # Railway frontend
     ]
     

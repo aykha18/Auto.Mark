@@ -56,18 +56,18 @@ async def create_razorpay_order(
         
         # Create payment transaction record
         payment_transaction = PaymentTransaction(
-            transaction_id=order_data["order_id"],
+            razorpay_order_id=order_data["order_id"],
             lead_id=request.lead_id,
             amount=order_data["amount_usd"],
             currency="USD",
             payment_method="razorpay",
-            status="pending",
-            payment_provider="razorpay",
-            provider_payment_id=order_data["order_id"],
+            status="created",
             customer_email=request.customer_email,
             customer_name=request.customer_name,
+            customer_country=request.customer_country,
+            program_type=request.program_type,
             description=f"Unitasa {request.program_type.replace('_', ' ').title()} Program",
-            metadata={
+            payment_metadata={
                 "program_type": request.program_type,
                 "razorpay_order_id": order_data["order_id"],
                 "amount_inr": order_data["amount"],

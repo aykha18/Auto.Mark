@@ -227,3 +227,19 @@ validate-*.js
 *.1761*.log
 swark-output/
 0.*
+# Security - Environment files
+.env
+.env.local
+.env.production
+
+# Security - Sensitive files
+*.pem
+*.key
+*.crt
+secrets/
+private/
+
+# Security - Logs that might contain sensitive data
+*.log
+logs/
+audit.log

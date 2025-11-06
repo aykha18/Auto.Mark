@@ -48,14 +48,21 @@ def init_database():
                 echo=False,  # Set to True for SQL logging in development
             )
         else:
-            # PostgreSQL with connection pooling
+            # PostgreSQL with connection pooling - Windows-friendly settings
             engine = create_async_engine(
                 DATABASE_URL,
                 echo=False,  # Set to True for SQL logging in development
-                pool_size=10,
-                max_overflow=20,
-                pool_pre_ping=True,
-                pool_recycle=3600,
+                pool_size=1,  # Minimal pool size for Windows
+                max_overflow=0,  # No overflow to avoid connection issues
+                pool_pre_ping=False,  # Disable pre-ping to avoid connection issues
+                pool_recycle=300,  # Short recycle time
+                pool_timeout=10,  # Quick timeout
+                connect_args={
+                    "server_settings": {
+                        "application_name": "unitasa_app",
+                    },
+                    "command_timeout": 5
+                }
             )
 
         # Create async session factory

@@ -1,5 +1,5 @@
 import React from 'react';
-import EnhancedAIAssessment from './EnhancedAIAssessment';
+import EnhancedAIAssessment from './SecureEnhancedAIAssessment';
 import { CRMAssessmentResult } from '../../types';
 import { LeadData } from './LeadCaptureForm';
 import { X } from 'lucide-react';

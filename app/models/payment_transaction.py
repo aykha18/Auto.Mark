@@ -17,15 +17,15 @@ class PaymentTransaction(Base, TimestampMixin):
 
     id = Column(Integer, primary_key=True, index=True)
     
-    # External payment provider IDs (Wise)
-    wise_transfer_id = Column(String(255), unique=True, index=True)
-    wise_quote_id = Column(String(255), index=True)
-    wise_recipient_id = Column(String(255), index=True)
-
-    # Legacy Stripe fields (deprecated)
+    # Stripe fields
     stripe_payment_intent_id = Column(String(255), index=True)
     stripe_charge_id = Column(String(255), index=True)
     stripe_customer_id = Column(String(255), index=True)
+    
+    # Razorpay fields
+    razorpay_order_id = Column(String(255), index=True)
+    razorpay_payment_id = Column(String(255), index=True)
+    razorpay_signature = Column(String(255))
     
     # User and lead associations
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
@@ -36,6 +36,13 @@ class PaymentTransaction(Base, TimestampMixin):
     amount = Column(Float, nullable=False)  # Amount in dollars (e.g., 250.00)
     currency = Column(String(3), default="USD", nullable=False)
     description = Column(Text)
+    
+    # Razorpay specific fields
+    customer_email = Column(String(255))
+    customer_name = Column(String(255))
+    customer_country = Column(String(10))
+    program_type = Column(String(100))
+    verified = Column(Boolean, default=False)
     
     # Payment status
     status = Column(String(50), nullable=False, index=True)  # pending, succeeded, failed, cancelled, refunded
@@ -81,7 +88,7 @@ class PaymentTransaction(Base, TimestampMixin):
     co_creator = relationship("CoCreator")
 
     def __repr__(self):
-        return f"<PaymentTransaction(id={self.id}, amount=${self.amount:.2f}, status='{self.status}', wise_id='{self.wise_transfer_id}')>"
+        return f"<PaymentTransaction(id={self.id}, amount=${self.amount:.2f}, status='{self.status}', razorpay_order_id='{self.razorpay_order_id}')>"
 
     @property
     def is_successful(self) -> bool:
@@ -116,13 +123,14 @@ class PaymentTransaction(Base, TimestampMixin):
             return int(delta.total_seconds())
         return None
 
-    def mark_succeeded(self, stripe_charge_id: str = None, processed_at: datetime = None):
+    def mark_succeeded(self, razorpay_payment_id: str = None, processed_at: datetime = None):
         """Mark payment as succeeded"""
         self.status = "succeeded"
         self.processed_at = processed_at or datetime.utcnow()
+        self.verified = True
         
-        if stripe_charge_id:
-            self.stripe_charge_id = stripe_charge_id
+        if razorpay_payment_id:
+            self.razorpay_payment_id = razorpay_payment_id
         
         self.updated_at = datetime.utcnow()
 
@@ -204,32 +212,35 @@ class PaymentTransaction(Base, TimestampMixin):
         return self.retry_count < max_retries and self.status == "failed"
 
     @classmethod
-    def create_from_wise_transfer(cls, wise_transfer: Dict[str, Any],
-                                 user_id: int = None, lead_id: int = None,
-                                 co_creator_id: int = None) -> 'PaymentTransaction':
-        """Create transaction from Wise transfer"""
+    def create_from_razorpay_order(cls, razorpay_order: Dict[str, Any],
+                                  customer_email: str, customer_name: str,
+                                  customer_country: str = "US", program_type: str = "co_creator",
+                                  user_id: int = None, lead_id: int = None,
+                                  co_creator_id: int = None) -> 'PaymentTransaction':
+        """Create transaction from Razorpay order"""
         transaction = cls(
-            wise_transfer_id=wise_transfer.get("id"),
-            amount=wise_transfer.get("targetValue", 0),
-            currency=wise_transfer.get("targetCurrency", "USD"),
-            status="processing",  # Wise transfers start as processing
-            description=wise_transfer.get("details", {}).get("referenceText", "Wise Payment"),
+            razorpay_order_id=razorpay_order.get("id"),
+            amount=razorpay_order.get("amount", 0) / 100,  # Convert from paise to rupees/dollars
+            currency=razorpay_order.get("currency", "USD"),
+            status="created",  # Razorpay orders start as created
+            description=f"Co-Creator Program Payment - {customer_name}",
+            customer_email=customer_email,
+            customer_name=customer_name,
+            customer_country=customer_country,
+            program_type=program_type,
             user_id=user_id,
             lead_id=lead_id,
             co_creator_id=co_creator_id,
-            payment_metadata={
-                "wise_quote_id": wise_transfer.get("quoteUuid"),
-                "wise_recipient_id": wise_transfer.get("targetAccount")
-            }
+            payment_metadata=razorpay_order
         )
 
         return transaction
 
     @classmethod
-    def find_by_stripe_intent_id(cls, db_session, stripe_intent_id: str) -> Optional['PaymentTransaction']:
-        """Find transaction by Stripe PaymentIntent ID"""
+    def find_by_razorpay_order_id(cls, db_session, razorpay_order_id: str) -> Optional['PaymentTransaction']:
+        """Find transaction by Razorpay Order ID"""
         return db_session.query(cls).filter(
-            cls.stripe_payment_intent_id == stripe_intent_id
+            cls.razorpay_order_id == razorpay_order_id
         ).first()
 
     def to_dict(self) -> Dict[str, Any]:

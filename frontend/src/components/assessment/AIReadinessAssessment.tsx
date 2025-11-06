@@ -125,7 +125,42 @@ const AIReadinessAssessment: React.FC<AIReadinessAssessmentProps> = ({ leadData 
   const submitAssessment = async () => {
     setIsSubmitting(true);
     try {
-      // Start assessment with real lead data including preferred CRM
+      // Development bypass for testing buttons
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🚀 Development mode: Bypassing backend call for button testing');
+        
+        // Simulate successful assessment with correct type structure
+        const mockResults: AssessmentResult = {
+          aiReadinessScore: 75,
+          automationMaturity: 70,
+          dataIntelligence: 80,
+          integrationReadiness: 75,
+          overallScore: 75,
+          recommendations: [
+            'Implement data quality monitoring',
+            'Set up automated lead scoring',
+            'Integrate CRM with marketing tools'
+          ],
+          predictedROI: 150000,
+          automationOpportunities: 5,
+          co_creator_qualified: true,
+          co_creator_invitation: {
+            price: 497,
+            originalPrice: 2000,
+            spotsRemaining: 12
+          }
+        };
+        
+        setTimeout(() => {
+          setResults(mockResults);
+          setIsSubmitting(false);
+          // Note: onComplete is not available in this component's props
+        }, 1000);
+        
+        return;
+      }
+      
+      // Production code - Start assessment with real lead data including preferred CRM
       const startResponse = await apiClient.post('/api/v1/landing/assessment/start', {
         email: leadData?.email || `test_${new Date().toISOString().slice(2,10).replace(/-/g,'')}@example.com`,
         name: leadData?.name || 'Assessment User',

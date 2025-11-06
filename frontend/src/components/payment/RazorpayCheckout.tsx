@@ -56,12 +56,20 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.onload = () => setRazorpayLoaded(true);
-    script.onerror = () => onError('Failed to load Razorpay. Please refresh and try again.');
+    script.onload = () => {
+      setRazorpayLoaded(true);
+      console.log('✅ Razorpay script loaded successfully');
+    };
+    script.onerror = () => {
+      console.error('❌ Failed to load Razorpay script');
+      onError('Failed to load Razorpay. Please refresh and try again.');
+    };
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, [onError]);
 
@@ -157,7 +165,22 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
         }
       };
 
+      console.log('🔑 Razorpay options:', {
+        key: options.key,
+        amount: options.amount,
+        currency: options.currency,
+        order_id: options.order_id
+      });
+
       const rzp = new window.Razorpay(options);
+      
+      // Add error handling for Razorpay initialization
+      rzp.on('payment.failed', function (response: any) {
+        console.error('❌ Razorpay payment failed:', response.error);
+        setIsProcessing(false);
+        onError(`Payment failed: ${response.error.description || 'Unknown error'}`);
+      });
+
       rzp.open();
     } catch (error) {
       setIsProcessing(false);
@@ -369,6 +392,12 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
           <p className="text-xs text-gray-500 mt-1">
             30-day money-back guarantee • Support: support@unitasa.in
           </p>
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
+              <p>🧪 Development Mode: If payment fails with 401 error, the Razorpay test keys may need domain configuration.</p>
+              <p>Contact support@unitasa.in for payment assistance.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
