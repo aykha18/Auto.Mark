@@ -109,7 +109,7 @@ async def verify_razorpay_payment(
         # Get payment transaction
         result = await db.execute(
             select(PaymentTransaction).where(
-                PaymentTransaction.provider_payment_id == request.razorpay_order_id
+                PaymentTransaction.razorpay_order_id == request.razorpay_order_id
             )
         )
         payment_transaction = result.scalar_one_or_none()
@@ -130,7 +130,7 @@ async def verify_razorpay_payment(
         if verification_result["verified"]:
             # Update payment transaction
             payment_transaction.status = "completed"
-            payment_transaction.provider_payment_id = request.razorpay_payment_id
+            payment_transaction.razorpay_payment_id = request.razorpay_payment_id
             payment_transaction.paid_at = datetime.utcnow()
             payment_transaction.amount_paid = verification_result["amount"]
             
@@ -253,14 +253,14 @@ async def razorpay_webhook(
             # Update payment transaction
             result = await db.execute(
                 select(PaymentTransaction).where(
-                    PaymentTransaction.provider_payment_id == order_id
+                    PaymentTransaction.razorpay_order_id == order_id
                 )
             )
             payment_transaction = result.scalar_one_or_none()
             
             if payment_transaction:
                 payment_transaction.status = "completed"
-                payment_transaction.provider_payment_id = payment_id
+                payment_transaction.razorpay_payment_id = payment_id
                 payment_transaction.amount_paid = webhook_result.get("amount", payment_transaction.amount)
                 await db.commit()
         
@@ -288,7 +288,7 @@ async def get_payment_status(
         # Also get local transaction record
         result = await db.execute(
             select(PaymentTransaction).where(
-                PaymentTransaction.provider_payment_id == payment_id
+                PaymentTransaction.razorpay_payment_id == payment_id
             )
         )
         payment_transaction = result.scalar_one_or_none()
