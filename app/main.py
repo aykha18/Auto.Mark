@@ -52,6 +52,10 @@ try:
     from app.api.v1 import wise_payments
     print("Wise payments module imported successfully")
     
+    print("Importing razorpay_payments module...")
+    from app.api.v1 import razorpay_payments
+    print("Razorpay payments module imported successfully")
+    
     print("All API modules imported successfully")
 except Exception as e:
     print(f"Error importing API modules: {e}")
@@ -250,6 +254,10 @@ try:
     print("Including wise payments router...")
     app.include_router(wise_payments.router, prefix="/api/v1/payments/wise", tags=["payments"])
     print("Wise payments router included successfully")
+    
+    print("Including razorpay payments router...")
+    app.include_router(razorpay_payments.router, prefix="/api/v1/payments/razorpay", tags=["payments"])
+    print("Razorpay payments router included successfully")
     
     print("All API routers included successfully")
 except Exception as e:

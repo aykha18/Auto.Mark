@@ -157,7 +157,7 @@ class MockWisePaymentService:
             print(f"🧪 Mock: Created recipient {recipient['id']}")
             
             # Create mock quote
-            quote = await self.create_payment_quote(amount=250.0)
+            quote = await self.create_payment_quote(amount=497.0)
             print(f"🧪 Mock: Created quote {quote['id']}")
             
             # Create mock transfer
@@ -176,7 +176,7 @@ class MockWisePaymentService:
                 "transfer_id": transfer["id"],
                 "quote_id": quote["id"],
                 "recipient_id": recipient["id"],
-                "amount": 250.0,
+                "amount": 497.0,
                 "currency": "USD",
                 "status": "processing",
                 "mock": True

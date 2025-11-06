@@ -31,6 +31,7 @@ aiosqlite>=0.19.0
 
 # Payment Processing
 stripe==7.8.0
+razorpay==1.4.2
 
 # Email
 sendgrid==6.10.0

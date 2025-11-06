@@ -177,8 +177,8 @@ class WisePaymentService:
             # Create recipient
             recipient = await self.create_recipient(recipient_data)
 
-            # Create quote for $250 payment
-            quote = await self.create_payment_quote(amount=250.0)
+            # Create quote for $497 payment
+            quote = await self.create_payment_quote(amount=497.0)
 
             # Create transfer
             transfer = await self.create_transfer(
@@ -193,7 +193,7 @@ class WisePaymentService:
             # Create local transaction record
             transaction = PaymentTransaction(
                 wise_transfer_id=transfer["id"],
-                amount=250.0,
+                amount=497.0,
                 currency="USD",
                 status="processing",
                 description="Co-Creator Program Payment",
@@ -213,7 +213,7 @@ class WisePaymentService:
                 "transfer_id": transfer["id"],
                 "quote_id": quote["id"],
                 "recipient_id": recipient["id"],
-                "amount": 250.0,
+                "amount": 497.0,
                 "currency": "USD"
             }
 
