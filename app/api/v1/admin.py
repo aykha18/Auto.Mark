@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
-from sqlalchemy.orm import Session
-from sqlalchemy import func, desc
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import func, desc, select
 from typing import Optional
 from datetime import datetime, timedelta
 
@@ -26,37 +26,43 @@ def verify_admin(authorization: Optional[str] = Header(None)):
 
 @router.get("/stats")
 async def get_dashboard_stats(
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     _: bool = Depends(verify_admin)
 ):
     """Get dashboard statistics"""
     
     # Total leads
-    total_leads = db.query(Lead).count()
+    total_leads_result = await db.execute(select(func.count()).select_from(Lead))
+    total_leads = total_leads_result.scalar() or 0
     
     # Assessments completed
-    assessments_completed = db.query(Assessment).filter(
-        Assessment.completed == True
-    ).count()
+    assessments_result = await db.execute(
+        select(func.count()).select_from(Assessment).where(Assessment.completed == True)
+    )
+    assessments_completed = assessments_result.scalar() or 0
     
     # Consultations booked
-    consultations_booked = db.query(Lead).filter(
-        Lead.consultation_booked == True
-    ).count()
+    consultations_result = await db.execute(
+        select(func.count()).select_from(Lead).where(Lead.consultation_booked == True)
+    )
+    consultations_booked = consultations_result.scalar() or 0
     
     # Payments completed
-    payments_completed = db.query(PaymentTransaction).filter(
-        PaymentTransaction.status == 'completed'
-    ).count()
+    payments_result = await db.execute(
+        select(func.count()).select_from(PaymentTransaction).where(
+            PaymentTransaction.status == 'completed'
+        )
+    )
+    payments_completed = payments_result.scalar() or 0
     
     # Total revenue
-    total_revenue_result = db.query(
-        func.sum(PaymentTransaction.amount)
-    ).filter(
-        PaymentTransaction.status == 'completed'
-    ).scalar()
-    
-    total_revenue = float(total_revenue_result) if total_revenue_result else 0.0
+    revenue_result = await db.execute(
+        select(func.sum(PaymentTransaction.amount)).where(
+            PaymentTransaction.status == 'completed'
+        )
+    )
+    total_revenue_value = revenue_result.scalar()
+    total_revenue = float(total_revenue_value) if total_revenue_value else 0.0
     
     # Conversion rate (payments / total leads)
     conversion_rate = (payments_completed / total_leads * 100) if total_leads > 0 else 0.0
@@ -74,26 +80,36 @@ async def get_dashboard_stats(
 async def get_leads(
     limit: int = 50,
     offset: int = 0,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     _: bool = Depends(verify_admin)
 ):
     """Get all leads with details"""
     
-    leads = db.query(Lead).order_by(desc(Lead.created_at)).limit(limit).offset(offset).all()
+    # Get leads
+    leads_result = await db.execute(
+        select(Lead).order_by(desc(Lead.created_at)).limit(limit).offset(offset)
+    )
+    leads = leads_result.scalars().all()
     
     leads_data = []
     for lead in leads:
         # Get assessment score if exists
-        assessment = db.query(Assessment).filter(
-            Assessment.lead_id == lead.id,
-            Assessment.completed == True
-        ).first()
+        assessment_result = await db.execute(
+            select(Assessment).where(
+                Assessment.lead_id == lead.id,
+                Assessment.completed == True
+            )
+        )
+        assessment = assessment_result.scalar_one_or_none()
         
         # Check payment status
-        payment = db.query(PaymentTransaction).filter(
-            PaymentTransaction.customer_email == lead.email,
-            PaymentTransaction.status == 'completed'
-        ).first()
+        payment_result = await db.execute(
+            select(PaymentTransaction).where(
+                PaymentTransaction.customer_email == lead.email,
+                PaymentTransaction.status == 'completed'
+            )
+        )
+        payment = payment_result.scalar_one_or_none()
         
         leads_data.append({
             "id": lead.id,
@@ -108,15 +124,19 @@ async def get_leads(
             "created_at": lead.created_at.isoformat() if lead.created_at else None
         })
     
+    # Get total count
+    total_result = await db.execute(select(func.count()).select_from(Lead))
+    total = total_result.scalar() or 0
+    
     return {
         "leads": leads_data,
-        "total": db.query(Lead).count()
+        "total": total
     }
 
 @router.get("/recent-activity")
 async def get_recent_activity(
     days: int = 7,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     _: bool = Depends(verify_admin)
 ):
     """Get recent activity for the last N days"""
@@ -124,31 +144,38 @@ async def get_recent_activity(
     since_date = datetime.utcnow() - timedelta(days=days)
     
     # New leads
-    new_leads = db.query(Lead).filter(
-        Lead.created_at >= since_date
-    ).count()
+    new_leads_result = await db.execute(
+        select(func.count()).select_from(Lead).where(Lead.created_at >= since_date)
+    )
+    new_leads = new_leads_result.scalar() or 0
     
     # New assessments
-    new_assessments = db.query(Assessment).filter(
-        Assessment.created_at >= since_date,
-        Assessment.completed == True
-    ).count()
+    new_assessments_result = await db.execute(
+        select(func.count()).select_from(Assessment).where(
+            Assessment.created_at >= since_date,
+            Assessment.completed == True
+        )
+    )
+    new_assessments = new_assessments_result.scalar() or 0
     
     # New payments
-    new_payments = db.query(PaymentTransaction).filter(
-        PaymentTransaction.created_at >= since_date,
-        PaymentTransaction.status == 'completed'
-    ).count()
+    new_payments_result = await db.execute(
+        select(func.count()).select_from(PaymentTransaction).where(
+            PaymentTransaction.created_at >= since_date,
+            PaymentTransaction.status == 'completed'
+        )
+    )
+    new_payments = new_payments_result.scalar() or 0
     
     # Revenue in period
-    revenue_result = db.query(
-        func.sum(PaymentTransaction.amount)
-    ).filter(
-        PaymentTransaction.created_at >= since_date,
-        PaymentTransaction.status == 'completed'
-    ).scalar()
-    
-    revenue = float(revenue_result) if revenue_result else 0.0
+    revenue_result = await db.execute(
+        select(func.sum(PaymentTransaction.amount)).where(
+            PaymentTransaction.created_at >= since_date,
+            PaymentTransaction.status == 'completed'
+        )
+    )
+    revenue_value = revenue_result.scalar()
+    revenue = float(revenue_value) if revenue_value else 0.0
     
     return {
         "period_days": days,
@@ -161,25 +188,34 @@ async def get_recent_activity(
 @router.get("/lead/{lead_id}")
 async def get_lead_details(
     lead_id: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     _: bool = Depends(verify_admin)
 ):
     """Get detailed information about a specific lead"""
     
-    lead = db.query(Lead).filter(Lead.id == lead_id).first()
+    # Get lead
+    lead_result = await db.execute(select(Lead).where(Lead.id == lead_id))
+    lead = lead_result.scalar_one_or_none()
+    
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
     # Get assessment
-    assessment = db.query(Assessment).filter(
-        Assessment.lead_id == lead_id,
-        Assessment.completed == True
-    ).first()
+    assessment_result = await db.execute(
+        select(Assessment).where(
+            Assessment.lead_id == lead_id,
+            Assessment.completed == True
+        )
+    )
+    assessment = assessment_result.scalar_one_or_none()
     
     # Get payment
-    payment = db.query(PaymentTransaction).filter(
-        PaymentTransaction.customer_email == lead.email
-    ).first()
+    payment_result = await db.execute(
+        select(PaymentTransaction).where(
+            PaymentTransaction.customer_email == lead.email
+        )
+    )
+    payment = payment_result.scalar_one_or_none()
     
     return {
         "lead": {
