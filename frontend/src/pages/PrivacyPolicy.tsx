@@ -1,10 +1,21 @@
 import React from 'react';
-import { Shield } from 'lucide-react';
+import { Shield, ArrowLeft } from 'lucide-react';
 
 const PrivacyPolicy: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <button
+          onClick={() => {
+            window.history.pushState({}, '', '/');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }}
+          className="flex items-center text-blue-600 hover:text-blue-700 mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back to Home
+        </button>
+        
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="flex items-center mb-6">
             <Shield className="w-8 h-8 text-blue-600 mr-3" />

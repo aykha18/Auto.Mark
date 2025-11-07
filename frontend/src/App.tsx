@@ -34,6 +34,21 @@ import { runTask11_2Validation } from './utils/performanceValidator';
 
 function App() {
   const [showPerformanceDashboard, setShowPerformanceDashboard] = useState(false);
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    // Handle browser back/forward and programmatic navigation
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+      window.scrollTo(0, 0); // Scroll to top on navigation
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
     // Initialize security measures
@@ -120,9 +135,7 @@ function App() {
 
   // Simple routing based on pathname
   const getPageComponent = () => {
-    const path = window.location.pathname;
-    
-    switch (path) {
+    switch (currentPath) {
       case '/privacy-policy':
         return <PrivacyPolicy />;
       case '/terms-of-service':

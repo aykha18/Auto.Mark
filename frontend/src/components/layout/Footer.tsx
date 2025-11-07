@@ -104,10 +104,34 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="/contact" className="hover:text-white transition-colors">Contact Us</a></li>
+              <li>
+                <a 
+                  href="/contact" 
+                  className="hover:text-white transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.history.pushState({}, '', '/contact');
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
+                >
+                  Contact Us
+                </a>
+              </li>
               <li><a href="mailto:support@unitasa.com" className="hover:text-white transition-colors">Email Support</a></li>
               <li><a href="tel:+919768584622" className="hover:text-white transition-colors">Phone Support</a></li>
-              <li><a href="/refund-policy" className="hover:text-white transition-colors">Refund Policy</a></li>
+              <li>
+                <a 
+                  href="/refund-policy" 
+                  className="hover:text-white transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.history.pushState({}, '', '/refund-policy');
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
+                >
+                  Refund Policy
+                </a>
+              </li>
             </ul>
           </div>
         </div>
@@ -117,13 +141,37 @@ const Footer: React.FC = () => {
             © 2025 Unitasa. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="/privacy-policy" className="text-gray-400 hover:text-white text-sm transition-colors">
+            <a 
+              href="/privacy-policy" 
+              className="text-gray-400 hover:text-white text-sm transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/privacy-policy');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
+            >
               Privacy Policy
             </a>
-            <a href="/terms-of-service" className="text-gray-400 hover:text-white text-sm transition-colors">
+            <a 
+              href="/terms-of-service" 
+              className="text-gray-400 hover:text-white text-sm transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/terms-of-service');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
+            >
               Terms of Service
             </a>
-            <a href="/refund-policy" className="text-gray-400 hover:text-white text-sm transition-colors">
+            <a 
+              href="/refund-policy" 
+              className="text-gray-400 hover:text-white text-sm transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/refund-policy');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
+            >
               Refund Policy
             </a>
           </div>
