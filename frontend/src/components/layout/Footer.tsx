@@ -137,9 +137,21 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
-            © 2025 Unitasa. All rights reserved.
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-gray-400 text-sm">
+              © 2025 Unitasa. All rights reserved.
+            </p>
+            <button
+              onClick={() => {
+                window.history.pushState({}, '', '/admin');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
+              className="text-gray-600 hover:text-gray-400 text-xs transition-colors"
+              title="Admin Dashboard"
+            >
+              •
+            </button>
+          </div>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a 
               href="/privacy-policy" 

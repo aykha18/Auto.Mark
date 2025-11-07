@@ -415,8 +415,22 @@ def get_conversion_stage(path: str) -> str:
 
 # Root endpoint removed - now handled by StaticFiles mount above
 
-
-# TODO: Add catch-all route for React app after API testing is complete
+# Catch-all route for SPA - serves index.html for all non-API routes
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    """Serve React app for all non-API routes (SPA routing)"""
+    # If path starts with /api, let it 404 naturally
+    if full_path.startswith("api/"):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="API endpoint not found")
+    
+    # For all other paths, serve index.html (React will handle routing)
+    index_path = "frontend/build/index.html"
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    else:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Frontend not built")
 
 
 if __name__ == "__main__":
