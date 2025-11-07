@@ -325,13 +325,10 @@ except Exception as e:
 print("Checking for frontend build...")
 if os.path.exists("frontend/build"):
     print("Frontend build found, mounting static files")
+    # Only mount /static directory, not root (root is handled by catch-all route)
     app.mount("/static", StaticFiles(directory="frontend/build/static"), name="static")
-
-    # Mount the entire frontend build directory to serve logo.svg and other assets
-    app.mount("/", StaticFiles(directory="frontend/build", html=True), name="frontend")
-
-    # Note: This catch-all route will be defined at the end of the file
-    # to avoid intercepting API routes
+    print("Static files mounted at /static")
+    # Note: Root path "/" is handled by catch-all route at the end of the file
 else:
     print("Frontend build not found!")
 
@@ -413,8 +410,6 @@ def get_conversion_stage(path: str) -> str:
     else:
         return "other"
 
-# Root endpoint removed - now handled by StaticFiles mount above
-
 # Catch-all route for SPA - serves index.html for all non-API routes
 @app.get("/{full_path:path}")
 async def serve_spa(full_path: str):
@@ -424,7 +419,14 @@ async def serve_spa(full_path: str):
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="API endpoint not found")
     
-    # For all other paths, serve index.html (React will handle routing)
+    # Check if it's a static file request (has file extension)
+    if "." in full_path.split("/")[-1]:
+        # Try to serve the actual file from build directory
+        file_path = f"frontend/build/{full_path}"
+        if os.path.exists(file_path):
+            return FileResponse(file_path)
+    
+    # For all other paths (routes), serve index.html (React will handle routing)
     index_path = "frontend/build/index.html"
     if os.path.exists(index_path):
         return FileResponse(index_path)
