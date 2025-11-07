@@ -1,2 +1,1 @@
-# Redirect API calls to the backend
-/api/*  /api/:splat  200
+/*    /index.html   200
