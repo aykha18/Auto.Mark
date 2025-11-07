@@ -56,23 +56,29 @@ const AdminDashboard: React.FC = () => {
       
       // Use the same API URL logic as the rest of the app
       const getApiUrl = () => {
-        // If REACT_APP_API_URL is set and it's not the placeholder, use it
-        if (process.env.REACT_APP_API_URL && 
-            !process.env.REACT_APP_API_URL.includes('your-backend-service.railway.app')) {
-          return process.env.REACT_APP_API_URL;
-        }
-        
-        // If we're in production, use relative URLs (same domain)
-        if (process.env.NODE_ENV === 'production' || window.location.hostname !== 'localhost') {
+        // In production (not localhost), always use relative URLs
+        if (window.location.hostname !== 'localhost' && 
+            window.location.hostname !== '127.0.0.1') {
+          console.log('Production detected, using relative URLs');
           return ''; // Relative URLs will use the same domain
         }
         
+        // If REACT_APP_API_URL is set and it's not the placeholder, use it
+        if (process.env.REACT_APP_API_URL && 
+            !process.env.REACT_APP_API_URL.includes('your-backend-service.railway.app') &&
+            !process.env.REACT_APP_API_URL.includes('railway.app')) {
+          console.log('Using REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+          return process.env.REACT_APP_API_URL;
+        }
+        
         // Development default
+        console.log('Using localhost default');
         return 'http://localhost:8000';
       };
       
       const apiUrl = getApiUrl();
       console.log('Admin Dashboard API URL:', apiUrl);
+      console.log('Current hostname:', window.location.hostname);
       
       // Fetch stats
       const statsResponse = await fetch(`${apiUrl}/api/v1/admin/stats`, {
