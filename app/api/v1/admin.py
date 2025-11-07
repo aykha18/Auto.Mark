@@ -37,7 +37,7 @@ async def get_dashboard_stats(
     
     # Assessments completed
     assessments_result = await db.execute(
-        select(func.count()).select_from(Assessment).where(Assessment.completed == True)
+        select(func.count()).select_from(Assessment).where(Assessment.is_completed == True)
     )
     assessments_completed = assessments_result.scalar() or 0
     
@@ -97,7 +97,7 @@ async def get_leads(
         assessment_result = await db.execute(
             select(Assessment).where(
                 Assessment.lead_id == lead.id,
-                Assessment.completed == True
+                Assessment.is_completed == True
             )
         )
         assessment = assessment_result.scalar_one_or_none()
@@ -153,7 +153,7 @@ async def get_recent_activity(
     new_assessments_result = await db.execute(
         select(func.count()).select_from(Assessment).where(
             Assessment.created_at >= since_date,
-            Assessment.completed == True
+            Assessment.is_completed == True
         )
     )
     new_assessments = new_assessments_result.scalar() or 0
@@ -204,7 +204,7 @@ async def get_lead_details(
     assessment_result = await db.execute(
         select(Assessment).where(
             Assessment.lead_id == lead_id,
-            Assessment.completed == True
+            Assessment.is_completed == True
         )
     )
     assessment = assessment_result.scalar_one_or_none()
