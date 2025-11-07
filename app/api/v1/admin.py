@@ -55,14 +55,26 @@ async def get_dashboard_stats(
     )
     payments_completed = payments_result.scalar() or 0
     
-    # Total revenue
-    revenue_result = await db.execute(
+    # Total revenue by currency
+    # Get USD revenue
+    usd_revenue_result = await db.execute(
         select(func.sum(PaymentTransaction.amount)).where(
-            PaymentTransaction.status == 'completed'
+            PaymentTransaction.status == 'completed',
+            PaymentTransaction.currency == 'USD'
         )
     )
-    total_revenue_value = revenue_result.scalar()
-    total_revenue = float(total_revenue_value) if total_revenue_value else 0.0
+    usd_revenue_value = usd_revenue_result.scalar()
+    usd_revenue = float(usd_revenue_value) if usd_revenue_value else 0.0
+    
+    # Get INR revenue
+    inr_revenue_result = await db.execute(
+        select(func.sum(PaymentTransaction.amount)).where(
+            PaymentTransaction.status == 'completed',
+            PaymentTransaction.currency == 'INR'
+        )
+    )
+    inr_revenue_value = inr_revenue_result.scalar()
+    inr_revenue = float(inr_revenue_value) if inr_revenue_value else 0.0
     
     # Conversion rate (payments / total leads)
     conversion_rate = (payments_completed / total_leads * 100) if total_leads > 0 else 0.0
@@ -72,7 +84,8 @@ async def get_dashboard_stats(
         "assessmentsCompleted": assessments_completed,
         "consultationsBooked": consultations_booked,
         "paymentsCompleted": payments_completed,
-        "totalRevenue": total_revenue,
+        "totalRevenueUSD": usd_revenue,
+        "totalRevenueINR": inr_revenue,
         "conversionRate": conversion_rate
     }
 

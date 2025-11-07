@@ -6,7 +6,8 @@ interface DashboardStats {
   assessmentsCompleted: number;
   consultationsBooked: number;
   paymentsCompleted: number;
-  totalRevenue: number;
+  totalRevenueUSD: number;
+  totalRevenueINR: number;
   conversionRate: number;
 }
 
@@ -29,7 +30,8 @@ const AdminDashboard: React.FC = () => {
     assessmentsCompleted: 0,
     consultationsBooked: 0,
     paymentsCompleted: 0,
-    totalRevenue: 0,
+    totalRevenueUSD: 0,
+    totalRevenueINR: 0,
     conversionRate: 0,
   });
   
@@ -182,13 +184,25 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Revenue & Conversion */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Revenue</p>
+                <p className="text-gray-600 text-sm">Revenue (USD)</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">
-                  ₹{stats.totalRevenue.toLocaleString('en-IN')}
+                  ${stats.totalRevenueUSD.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                </p>
+              </div>
+              <TrendingUp className="w-12 h-12 text-green-600" />
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm">Revenue (INR)</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">
+                  ₹{stats.totalRevenueINR.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                 </p>
               </div>
               <TrendingUp className="w-12 h-12 text-green-600" />
