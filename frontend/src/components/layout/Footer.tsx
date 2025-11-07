@@ -38,21 +38,65 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-              <li><a href="#integrations" className="hover:text-white transition-colors">Integrations</a></li>
+              <li>
+                <a 
+                  href="/" 
+                  className="hover:text-white transition-colors"
+                  onClick={(e) => {
+                    if (window.location.pathname === '/') {
+                      e.preventDefault();
+                      document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  Features
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="/" 
+                  className="hover:text-white transition-colors"
+                  onClick={(e) => {
+                    if (window.location.pathname === '/') {
+                      e.preventDefault();
+                      document.getElementById('integrations')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  Integrations
+                </a>
+              </li>
               <li>
                 <a
-                  href="#assessment"
+                  href="/"
                   className="hover:text-white transition-colors cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
-                    window.dispatchEvent(new CustomEvent('openLeadCapture'));
+                    if (window.location.pathname !== '/') {
+                      window.location.href = '/';
+                    }
+                    setTimeout(() => {
+                      window.dispatchEvent(new CustomEvent('openLeadCapture'));
+                    }, 100);
                   }}
                 >
                   AI Assessment
                 </a>
               </li>
-              <li><a href="#pricing" className="hover:text-white transition-colors">Co-Creator Program</a></li>
+              <li>
+                <a 
+                  href="/" 
+                  className="hover:text-white transition-colors"
+                  onClick={(e) => {
+                    if (window.location.pathname === '/') {
+                      e.preventDefault();
+                      document.getElementById('co-creator')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  Co-Creator Program
+                </a>
+              </li>
             </ul>
           </div>
 
