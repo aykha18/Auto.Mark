@@ -88,7 +88,8 @@ async def get_leads(
     # Get leads using raw SQL to avoid ORM schema mismatch
     from sqlalchemy import text
     query = text("""
-        SELECT id, name, email, company, preferred_crm, consultation_booked, created_at
+        SELECT id, email, company, preferred_crm, consultation_booked, created_at,
+               COALESCE(first_name || ' ' || last_name, email) as name
         FROM leads
         ORDER BY created_at DESC
         LIMIT :limit OFFSET :offset
@@ -99,12 +100,12 @@ async def get_leads(
     leads_data = []
     for row in leads:
         lead_id = row[0]
-        lead_name = row[1]
-        lead_email = row[2]
-        lead_company = row[3]
-        lead_crm = row[4]
-        lead_consultation_booked = row[5]
-        lead_created_at = row[6]
+        lead_email = row[1]
+        lead_company = row[2]
+        lead_crm = row[3]
+        lead_consultation_booked = row[4]
+        lead_created_at = row[5]
+        lead_name = row[6]
         
         # Get assessment score if exists
         assessment_result = await db.execute(

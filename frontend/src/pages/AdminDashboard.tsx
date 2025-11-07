@@ -54,8 +54,27 @@ const AdminDashboard: React.FC = () => {
     try {
       setLoading(true);
       
+      // Use the same API URL logic as the rest of the app
+      const getApiUrl = () => {
+        // If REACT_APP_API_URL is set and it's not the placeholder, use it
+        if (process.env.REACT_APP_API_URL && 
+            !process.env.REACT_APP_API_URL.includes('your-backend-service.railway.app')) {
+          return process.env.REACT_APP_API_URL;
+        }
+        
+        // If we're in production, use relative URLs (same domain)
+        if (process.env.NODE_ENV === 'production' || window.location.hostname !== 'localhost') {
+          return ''; // Relative URLs will use the same domain
+        }
+        
+        // Development default
+        return 'http://localhost:8000';
+      };
+      
+      const apiUrl = getApiUrl();
+      console.log('Admin Dashboard API URL:', apiUrl);
+      
       // Fetch stats
-      const apiUrl = process.env.REACT_APP_API_URL || '';
       const statsResponse = await fetch(`${apiUrl}/api/v1/admin/stats`, {
         headers: {
           'Authorization': `Bearer ${password}`, // Simple auth
@@ -65,6 +84,8 @@ const AdminDashboard: React.FC = () => {
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setStats(statsData);
+      } else {
+        console.error('Stats fetch failed:', statsResponse.status, statsResponse.statusText);
       }
 
       // Fetch leads
@@ -77,6 +98,8 @@ const AdminDashboard: React.FC = () => {
       if (leadsResponse.ok) {
         const leadsData = await leadsResponse.json();
         setLeads(leadsData.leads || []);
+      } else {
+        console.error('Leads fetch failed:', leadsResponse.status, leadsResponse.statusText);
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
