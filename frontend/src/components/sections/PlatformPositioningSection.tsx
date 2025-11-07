@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Zap, Link, Brain, BarChart3, Shield, Clock } from 'lucide-react';
 import { Card } from '../ui';
+import ConsultationBooking from '../booking/ConsultationBooking';
 
 const PlatformPositioningSection: React.FC = () => {
+  const [showConsultation, setShowConsultation] = useState(false);
   const features = [
     {
       icon: Link,
@@ -168,11 +170,20 @@ const PlatformPositioningSection: React.FC = () => {
             >
               Start Free Assessment
             </button>
-            <button className="border-2 border-unitasa-electric text-unitasa-electric px-8 py-4 rounded-lg text-lg font-semibold hover:bg-unitasa-electric hover:text-white transition-all duration-200">
+            <button 
+              onClick={() => setShowConsultation(true)}
+              className="border-2 border-unitasa-electric text-unitasa-electric px-8 py-4 rounded-lg text-lg font-semibold hover:bg-unitasa-electric hover:text-white transition-all duration-200"
+            >
               Schedule Demo
             </button>
           </div>
         </div>
+
+        {/* Consultation Booking Modal */}
+        <ConsultationBooking 
+          isOpen={showConsultation}
+          onClose={() => setShowConsultation(false)} 
+        />
       </div>
     </section>
   );

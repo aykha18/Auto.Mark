@@ -7,6 +7,7 @@ import {
   SupporterCommunicationSystem,
   InteractiveFounderTimeline
 } from '../thought-leadership';
+import ConsultationBooking from '../booking/ConsultationBooking';
 
 // Mock data - in a real app, this would come from props or API
 const mockTechnicalDemoSteps = [
@@ -248,6 +249,7 @@ const ThoughtLeadershipSection: React.FC<ThoughtLeadershipSectionProps> = ({
   isCoCreator = false
 }) => {
   const [activeDemo, setActiveDemo] = useState<'technical' | 'roadmap' | 'cases' | 'status' | 'communication' | 'timeline'>('technical');
+  const [showConsultation, setShowConsultation] = useState(false);
 
   const demos = [
     { key: 'technical', label: 'Technical Demo', icon: '⚙️' },
@@ -342,15 +344,27 @@ const ThoughtLeadershipSection: React.FC<ThoughtLeadershipSectionProps> = ({
               Your feedback shapes our roadmap and helps build the future of marketing automation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              <button 
+                onClick={() => window.dispatchEvent(new CustomEvent('openLeadCapture'))}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
                 Take Assessment
               </button>
-              <button className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+              <button 
+                onClick={() => setShowConsultation(true)}
+                className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+              >
                 Schedule Demo
               </button>
             </div>
           </div>
         </div>
+
+        {/* Consultation Booking Modal */}
+        <ConsultationBooking 
+          isOpen={showConsultation}
+          onClose={() => setShowConsultation(false)} 
+        />
       </div>
     </section>
   );
