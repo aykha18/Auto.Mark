@@ -39,12 +39,12 @@ export class LandingPageAPI {
 
   // Analytics
   static async trackPageView(pageData: PageViewEvent): Promise<void> {
-    try {
-      await apiClient.post('/api/v1/landing/track-page-view', pageData);
-    } catch (error) {
-      // Silently fail for now - endpoint might not exist yet
-      console.log('Page view tracking not available');
+    // TODO: Implement backend endpoint for page view tracking
+    // For now, just log locally to avoid 405 errors
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Page view tracked (local only):', pageData.page);
     }
+    return Promise.resolve();
   }
 
   // Chat
