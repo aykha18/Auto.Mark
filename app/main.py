@@ -72,6 +72,10 @@ try:
     from app.api.v1 import consultation
     print("Consultation module imported successfully")
     
+    print("Importing admin module...")
+    from app.api.v1 import admin
+    print("Admin module imported successfully")
+    
     print("All API modules imported successfully")
 except Exception as e:
     print(f"Error importing API modules: {e}")
@@ -306,6 +310,10 @@ try:
     print("Including ai_report router...")
     app.include_router(ai_report.router, prefix="/api/v1/ai-report", tags=["ai_report"])
     print("AI report router included successfully")
+    
+    print("Including admin router...")
+    app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
+    print("Admin router included successfully")
     
     print("All API routers included successfully")
 except Exception as e:

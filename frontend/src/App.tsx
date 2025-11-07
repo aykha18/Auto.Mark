@@ -144,6 +144,14 @@ function App() {
         return <RefundPolicy />;
       case '/contact':
         return <Contact />;
+      case '/admin':
+        // Lazy load admin dashboard
+        const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
+        return (
+          <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <AdminDashboard />
+          </React.Suspense>
+        );
       default:
         return <LandingPage />;
     }
