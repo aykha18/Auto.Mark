@@ -6,6 +6,7 @@ import { LeadData } from './LeadCaptureForm';
 import { paymentService } from '../../services/paymentService';
 import ConsultationBooking from '../booking/ConsultationBooking';
 import SimpleAIReportModal from '../reports/SimpleAIReportModal';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface AssessmentStep {
   id: string;
@@ -31,6 +32,9 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
   const [successMessage, setSuccessMessage] = useState('');
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  
+  // Currency detection
+  const currency = useCurrency(497);
 
   // Auto-hide success toast after 8 seconds
   useEffect(() => {
@@ -230,9 +234,26 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
           <div className="grid md:grid-cols-2 gap-8">
             {/* Left Column - Assessment Results */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Next Steps: Activate Your AI Marketing Team
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">
+                Ready to Activate Your AI Marketing Team?
               </h3>
+              
+              {/* Primary CTA - Start AI Implementation */}
+              <div className="mb-6">
+                <Button 
+                  size="lg" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 text-lg"
+                  onClick={() => {
+                    console.log('🚀 Start AI Implementation clicked');
+                    setShowBookingModal(true);
+                  }}
+                >
+                  🚀 Start AI Implementation
+                </Button>
+                <p className="text-center text-sm text-gray-600 mt-2">
+                  Book your personalized implementation strategy session
+                </p>
+              </div>
               
               <div className="space-y-6">
                 {/* Schedule Session */}
@@ -314,9 +335,17 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
                 </div>
                 
                 <div className="text-center mb-4">
-                  <div className="text-3xl font-bold text-purple-600">$497 USD</div>
-                  <div className="text-lg font-bold text-purple-600">₹41,500 INR</div>
-                  <div className="text-sm text-gray-500 line-through">Regular: $2,000+ / ₹1,67,000+</div>
+                  {/* Primary price based on user location */}
+                  <div className="text-3xl font-bold text-purple-600">
+                    {currency.displayText} {currency.currency}
+                  </div>
+                  {/* Show alternate currency as reference */}
+                  <div className="text-sm text-gray-600 mt-1">
+                    {currency.isIndian ? '(~$497 USD)' : '(~₹41,500 INR)'}
+                  </div>
+                  <div className="text-sm text-gray-500 line-through mt-2">
+                    Regular: {currency.isIndian ? '₹1,67,000+' : '$2,000+'}
+                  </div>
                   <div className="text-sm text-green-600 font-medium mt-1">
                     🚀 Founding Member Price • ⚡ Only 12 spots left
                   </div>
@@ -416,9 +445,25 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
                 </Button>
               </div>
               
-              <div className="flex justify-between mt-4">
+              <div className="flex justify-between items-center mt-4">
                 <Button onClick={onClose} variant="outline" size="sm">
                   Close Assessment
+                </Button>
+                <Button 
+                  onClick={() => {
+                    console.log('🔄 Retake Assessment clicked');
+                    // Reset assessment state
+                    setCurrentStep(0);
+                    setAssessmentData({});
+                    setShowResults(false);
+                    setShowBookingModal(false);
+                    setShowReportModal(false);
+                  }}
+                  variant="outline" 
+                  size="sm"
+                  className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                >
+                  🔄 Retake Assessment
                 </Button>
                 <div className="text-xs text-gray-500 self-center">
                   Report delivered within 5 minutes
