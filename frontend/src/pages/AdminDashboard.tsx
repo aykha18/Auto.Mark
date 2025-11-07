@@ -55,7 +55,8 @@ const AdminDashboard: React.FC = () => {
       setLoading(true);
       
       // Fetch stats
-      const statsResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/admin/stats`, {
+      const apiUrl = process.env.REACT_APP_API_URL || '';
+      const statsResponse = await fetch(`${apiUrl}/api/v1/admin/stats`, {
         headers: {
           'Authorization': `Bearer ${password}`, // Simple auth
         },
@@ -67,7 +68,7 @@ const AdminDashboard: React.FC = () => {
       }
 
       // Fetch leads
-      const leadsResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/admin/leads`, {
+      const leadsResponse = await fetch(`${apiUrl}/api/v1/admin/leads`, {
         headers: {
           'Authorization': `Bearer ${password}`,
         },
