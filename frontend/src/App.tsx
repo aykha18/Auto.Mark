@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import LandingPage from './pages/LandingPage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import RefundPolicy from './pages/RefundPolicy';
+import Contact from './pages/Contact';
 import PerformanceDashboard from './components/dev/PerformanceDashboard';
 
 import { initializeSecurity } from './utils/security';
@@ -114,9 +118,27 @@ function App() {
     };
   }, []);
 
+  // Simple routing based on pathname
+  const getPageComponent = () => {
+    const path = window.location.pathname;
+    
+    switch (path) {
+      case '/privacy-policy':
+        return <PrivacyPolicy />;
+      case '/terms-of-service':
+        return <TermsOfService />;
+      case '/refund-policy':
+        return <RefundPolicy />;
+      case '/contact':
+        return <Contact />;
+      default:
+        return <LandingPage />;
+    }
+  };
+
   return (
     <div className="App">
-      <LandingPage />
+      {getPageComponent()}
       
       {process.env.NODE_ENV === 'development' && (
         <PerformanceDashboard
