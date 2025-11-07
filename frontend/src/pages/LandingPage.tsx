@@ -9,6 +9,7 @@ import { trackPageView } from '../utils/analytics';
 import LeadCaptureForm, { LeadData } from '../components/assessment/LeadCaptureForm';
 import CRMSelectorStep from '../components/assessment/CRMSelectorStep';
 import ConsultationTest from '../components/test/ConsultationTest';
+import { useCurrency } from '../hooks/useCurrency';
 
 // Lazy load heavy components
 const AICapabilitiesSection = lazy(() => import('../components/sections/AICapabilitiesSection'));
@@ -43,6 +44,9 @@ const LandingPage: React.FC = () => {
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
   const [assessmentResult, setAssessmentResult] = useState<CRMAssessmentResult | null>(null);
   const [leadData, setLeadData] = useState<LeadData | null>(null);
+  
+  // Currency detection for pricing display
+  const currency = useCurrency(497);
 
   useEffect(() => {
     trackPageView('/');
@@ -160,8 +164,13 @@ const LandingPage: React.FC = () => {
                   </h2>
 
                   <div className="mb-6">
-                    <div className="text-4xl font-bold mb-2 text-white">$497</div>
-                    <div className="text-lg opacity-90 line-through mb-1 text-white">Regular price: $2,000+</div>
+                    <div className="text-4xl font-bold mb-2 text-white">{currency.displayText}</div>
+                    <div className="text-sm text-white/80 mt-1">
+                      {currency.isIndian ? '(~$497 USD)' : '(~₹41,500 INR)'}
+                    </div>
+                    <div className="text-lg opacity-90 line-through mb-1 text-white mt-2">
+                      Regular price: {currency.isIndian ? '₹1,67,000+' : '$2,000+'}
+                    </div>
                     <p className="text-xl opacity-90 text-white">
                       Assessment-Qualified • Lifetime Access • Shape AI Marketing's Future
                     </p>

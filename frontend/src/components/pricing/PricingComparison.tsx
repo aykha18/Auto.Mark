@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { Check, X, Crown, Zap, Star, CheckCircle } from 'lucide-react';
 import Button from '../ui/Button';
 import RazorpayCheckout from '../payment/RazorpayCheckout';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface PricingTier {
   name: string;
   price: string;
+  priceINR?: string;
   originalPrice?: string;
+  originalPriceINR?: string;
   period: string;
   description: string;
   features: string[];
@@ -19,6 +22,7 @@ interface PricingTier {
 const PricingComparison: React.FC = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const currency = useCurrency(497);
   const pricingTiers: PricingTier[] = [
     {
       name: 'Standard Access',
@@ -42,8 +46,10 @@ const PricingComparison: React.FC = () => {
     },
     {
       name: 'Founding Co-Creator',
-      price: '$497',
-      originalPrice: '$2,000+',
+      price: currency.displayText,
+      priceINR: currency.isIndian ? undefined : '₹41,500',
+      originalPrice: currency.isIndian ? '₹1,67,000+' : '$2,000+',
+      originalPriceINR: currency.isIndian ? undefined : '(~₹1,67,000+)',
       period: 'one-time',
       description: 'Lifetime access + direct product influence + priority everything',
       features: [
@@ -154,6 +160,16 @@ const PricingComparison: React.FC = () => {
                       </span>
                       <span className="text-xl text-gray-600 ml-1">{tier.period}</span>
                     </div>
+                    {tier.highlighted && tier.priceINR && (
+                      <div className="text-sm text-gray-500 mt-1">
+                        {tier.priceINR}
+                      </div>
+                    )}
+                    {tier.highlighted && !currency.isIndian && (
+                      <div className="text-sm text-gray-500 mt-1">
+                        (~$497 USD)
+                      </div>
+                    )}
                   </div>
                   
                   <p className="text-gray-600">{tier.description}</p>
