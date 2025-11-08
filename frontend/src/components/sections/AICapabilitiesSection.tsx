@@ -3,6 +3,7 @@ import { Brain, Target, MessageCircle, Zap, Shield, BarChart3, CheckCircle } fro
 import Button from '../ui/Button';
 import AIDemoModal from '../ai-demos/AIDemoModal';
 import RazorpayCheckout from '../payment/RazorpayCheckout';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface AICapability {
   id: string;
@@ -18,6 +19,7 @@ const AICapabilitiesSection: React.FC = () => {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const currency = useCurrency(497);
 
   const capabilities: AICapability[] = [
     {
@@ -187,8 +189,13 @@ const AICapabilitiesSection: React.FC = () => {
                 LIMITED TIME
               </span>
             </div>
-            <div className="text-3xl font-bold text-blue-600 mb-1">$497</div>
-            <div className="text-sm text-gray-500 line-through mb-2">Regular: $2,000+</div>
+            <div className="text-3xl font-bold text-blue-600 mb-1">{currency.displayText}</div>
+            <div className="text-xs text-gray-500 mt-1">
+              {currency.isIndian ? '(~$497 USD)' : '(~₹41,500 INR)'}
+            </div>
+            <div className="text-sm text-gray-500 line-through mb-2">
+              Regular: {currency.isIndian ? '₹1,67,000+' : '$2,000+'}
+            </div>
             <div className="text-sm text-gray-700 font-medium">
               🚀 Founding Member Price • ⚡ Only 12 spots left
             </div>

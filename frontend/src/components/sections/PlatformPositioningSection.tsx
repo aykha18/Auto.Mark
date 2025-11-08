@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Zap, Link, Brain, BarChart3, Shield, Clock } from 'lucide-react';
 import { Card } from '../ui';
 import ConsultationBooking from '../booking/ConsultationBooking';
+import { useCurrency } from '../../hooks/useCurrency';
 
 const PlatformPositioningSection: React.FC = () => {
   const [showConsultation, setShowConsultation] = useState(false);
+  const currency = useCurrency(497);
   const features = [
     {
       icon: Link,
@@ -138,8 +140,13 @@ const PlatformPositioningSection: React.FC = () => {
                 <tr>
                   <td className="py-4 px-4 font-medium">Total Cost</td>
                   <td className="py-4 px-4 text-center">
-                    <span className="text-green-600 font-semibold">$497 lifetime*</span>
-                    <div className="text-xs text-gray-500 line-through">Regular: $2,000+</div>
+                    <span className="text-green-600 font-semibold">{currency.displayText} lifetime*</span>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {currency.isIndian ? '(~$497 USD)' : '(~₹41,500 INR)'}
+                    </div>
+                    <div className="text-xs text-gray-500 line-through">
+                      Regular: {currency.isIndian ? '₹1,67,000+' : '$2,000+'}
+                    </div>
                   </td>
                   <td className="py-4 px-4 text-center text-gray-500">$500+/month</td>
                   <td className="py-4 px-4 text-center text-gray-500">$50,000+</td>
