@@ -86,10 +86,10 @@ const CoCreatorProgramOffer: React.FC<CoCreatorProgramOfferProps> = ({
   };
 
   const benefits = [
-    'Lifetime AI platform access with all future features (Value: $500+/month)',
-    'Personal AI strategy audit and custom setup (Value: $800)',
+    'Lifetime AI platform access with all future features (Value: ₹41,500+/month)',
+    'Personal AI strategy audit and custom setup (Value: ₹66,400)',
     'Direct influence on AI product roadmap and development',
-    'Priority support and integration assistance (Value: $600)',
+    'Priority support and integration assistance (Value: ₹49,800)',
     'Early access to new AI features (3-6 months early)',
     'Exclusive founder mastermind community access',
     'Monthly AI strategy sessions and exclusive webinars',

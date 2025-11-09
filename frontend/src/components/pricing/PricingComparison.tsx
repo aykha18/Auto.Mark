@@ -59,9 +59,9 @@ const PricingComparison: React.FC = () => {
         'Direct founder communication channel',
         'Vote on product roadmap',
         'Beta access (3-6 months early)',
-        'Personal AI strategy audit ($500 value)',
-        'Custom AI agent setup ($300 value)',
-        '6-month priority support ($600 value)',
+        'Personal AI strategy audit (₹41,500 value)',
+        'Custom AI agent setup (₹24,900 value)',
+        '6-month priority support (₹49,800 value)',
         'Exclusive founder mastermind community',
         'Co-creator badge and recognition',
         'Revenue sharing on referrals'
@@ -72,7 +72,7 @@ const PricingComparison: React.FC = () => {
     },
     {
       name: 'Enterprise',
-      price: '$500+',
+      price: '₹41,500+',
       period: '/month',
       description: 'Custom AI solutions for large organizations',
       features: [
@@ -241,7 +241,7 @@ const PricingComparison: React.FC = () => {
             
             <div className="bg-purple-50 rounded-lg p-6">
               <div className="text-3xl font-bold text-purple-600 mb-2">
-                $1,400+
+                ₹1,16,000+
               </div>
               <div className="text-sm text-gray-600">Bonus Value Included</div>
               <div className="text-xs text-gray-500 mt-1">Audit + Setup + Support</div>

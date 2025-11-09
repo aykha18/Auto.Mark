@@ -175,23 +175,23 @@ const LandingPage: React.FC = () => {
                   
                   {/* Value Stack */}
                   <div className="bg-white/10 rounded-lg p-4 mb-6 text-left max-w-md mx-auto">
-                    <div className="text-sm font-semibold mb-2 text-center text-white">What You Get ($1,400+ Value):</div>
+                    <div className="text-sm font-semibold mb-2 text-center text-white">What You Get (₹1,16,000+ Value):</div>
                     <div className="space-y-1 text-sm text-white">
                       <div className="flex justify-between">
                         <span>• Lifetime AI Platform Access</span>
-                        <span>$500+/month</span>
+                        <span>₹41,500+/month</span>
                       </div>
                       <div className="flex justify-between">
                         <span>• Personal AI Strategy Audit</span>
-                        <span>$500</span>
+                        <span>₹41,500</span>
                       </div>
                       <div className="flex justify-between">
                         <span>• Custom AI Agent Setup</span>
-                        <span>$300</span>
+                        <span>₹24,900</span>
                       </div>
                       <div className="flex justify-between">
                         <span>• 6-Month Priority Support</span>
-                        <span>$600</span>
+                        <span>₹49,800</span>
                       </div>
                     </div>
                   </div>

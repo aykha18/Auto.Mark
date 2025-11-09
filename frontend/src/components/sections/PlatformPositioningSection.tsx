@@ -145,8 +145,8 @@ const PlatformPositioningSection: React.FC = () => {
                       Regular: ₹1,67,000+
                     </div>
                   </td>
-                  <td className="py-4 px-4 text-center text-gray-500">$500+/month</td>
-                  <td className="py-4 px-4 text-center text-gray-500">$50,000+</td>
+                  <td className="py-4 px-4 text-center text-gray-500">₹41,500+/month</td>
+                  <td className="py-4 px-4 text-center text-gray-500">₹41,50,000+</td>
                 </tr>
               </tbody>
             </table>
