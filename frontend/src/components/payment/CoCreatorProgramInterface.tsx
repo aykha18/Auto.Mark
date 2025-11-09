@@ -485,12 +485,9 @@ const CoCreatorProgramInterface: React.FC<CoCreatorProgramInterfaceProps> = ({
             </div>
             
             <div className="text-sm opacity-70 line-through mb-1">
-              Regular Price: {currency.isIndian ? '₹1,67,000+' : '$2,000+'}
+              Regular Price: ₹1,67,000+
             </div>
             <div className="text-5xl font-bold mb-2 text-yellow-400">{currency.displayText}</div>
-            <div className="text-xs opacity-75 mt-1">
-              {currency.isIndian ? '(~$497 USD)' : '(~₹41,500 INR)'}
-            </div>
             <div className="text-lg opacity-90 mb-2 mt-2">Founding Member Price</div>
             <div className="text-sm opacity-70 bg-red-500/20 px-3 py-1 rounded-full inline-block">
               🔥 75% Founder Discount

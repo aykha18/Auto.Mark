@@ -55,7 +55,7 @@ const TermsOfService: React.FC = () => {
               <ul className="list-disc pl-6 space-y-2">
                 <li>Lifetime access to the Unitasa platform</li>
                 <li>Priority support and direct product influence</li>
-                <li>Special pricing at ₹41,500 INR / $497 USD (one-time payment)</li>
+                <li>Special pricing at ₹41,251 INR (one-time payment)</li>
                 <li>Early access to new features</li>
               </ul>
               <p className="mt-3">

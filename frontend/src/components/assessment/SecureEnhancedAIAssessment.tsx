@@ -339,12 +339,8 @@ const EnhancedAIAssessment: React.FC<EnhancedAIAssessmentProps> = ({ onComplete,
                   <div className="text-3xl font-bold text-purple-600">
                     {currency.displayText} {currency.currency}
                   </div>
-                  {/* Show alternate currency as reference */}
-                  <div className="text-sm text-gray-600 mt-1">
-                    {currency.isIndian ? '(~$497 USD)' : '(~₹41,500 INR)'}
-                  </div>
                   <div className="text-sm text-gray-500 line-through mt-2">
-                    Regular: {currency.isIndian ? '₹1,67,000+' : '$2,000+'}
+                    Regular: ₹1,67,000+
                   </div>
                   <div className="text-sm text-green-600 font-medium mt-1">
                     🚀 Founding Member Price • ⚡ Only 12 spots left

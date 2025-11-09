@@ -190,11 +190,8 @@ const AICapabilitiesSection: React.FC = () => {
               </span>
             </div>
             <div className="text-3xl font-bold text-blue-600 mb-1">{currency.displayText}</div>
-            <div className="text-xs text-gray-500 mt-1">
-              {currency.isIndian ? '(~$497 USD)' : '(~₹41,500 INR)'}
-            </div>
-            <div className="text-sm text-gray-500 line-through mb-2">
-              Regular: {currency.isIndian ? '₹1,67,000+' : '$2,000+'}
+            <div className="text-sm text-gray-500 line-through mb-2 mt-1">
+              Regular: ₹1,67,000+
             </div>
             <div className="text-sm text-gray-700 font-medium">
               🚀 Founding Member Price • ⚡ Only 12 spots left

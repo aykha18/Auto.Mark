@@ -142,7 +142,7 @@ const Contact: React.FC = () => {
               <h3 className="font-semibold text-gray-900 mb-2">What is the Co-Creator Program?</h3>
               <p className="text-gray-700">
                 The Co-Creator Program offers founding members lifetime access to Unitasa's AI marketing platform
-                at a special price of ₹41,500 INR / $497 USD, with priority support and direct product influence.
+                at a special price of ₹41,251 INR, with priority support and direct product influence.
               </p>
             </div>
 

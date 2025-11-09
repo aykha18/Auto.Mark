@@ -165,11 +165,8 @@ const LandingPage: React.FC = () => {
 
                   <div className="mb-6">
                     <div className="text-4xl font-bold mb-2 text-white">{currency.displayText}</div>
-                    <div className="text-sm text-white/80 mt-1">
-                      {currency.isIndian ? '(~$497 USD)' : '(~₹41,500 INR)'}
-                    </div>
                     <div className="text-lg opacity-90 line-through mb-1 text-white mt-2">
-                      Regular price: {currency.isIndian ? '₹1,67,000+' : '$2,000+'}
+                      Regular price: ₹1,67,000+
                     </div>
                     <p className="text-xl opacity-90 text-white">
                       Assessment-Qualified • Lifetime Access • Shape AI Marketing's Future

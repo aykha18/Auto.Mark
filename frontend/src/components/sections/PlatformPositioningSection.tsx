@@ -141,11 +141,8 @@ const PlatformPositioningSection: React.FC = () => {
                   <td className="py-4 px-4 font-medium">Total Cost</td>
                   <td className="py-4 px-4 text-center">
                     <span className="text-green-600 font-semibold">{currency.displayText} lifetime*</span>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {currency.isIndian ? '(~$497 USD)' : '(~₹41,500 INR)'}
-                    </div>
-                    <div className="text-xs text-gray-500 line-through">
-                      Regular: {currency.isIndian ? '₹1,67,000+' : '$2,000+'}
+                    <div className="text-xs text-gray-500 line-through mt-1">
+                      Regular: ₹1,67,000+
                     </div>
                   </td>
                   <td className="py-4 px-4 text-center text-gray-500">$500+/month</td>
