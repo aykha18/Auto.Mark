@@ -1,7 +1,8 @@
 """
-Advanced RAG Retrievers - MultiQuery, Ensemble, and Contextual Compression
+Advanced RAG Retrievers - MultiQuery, Ensemble, Contextual Compression, and ReRanking
 """
 
+import logging
 from typing import List, Dict, Any, Optional
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
@@ -10,8 +11,11 @@ from langchain_community.retrievers import BM25Retriever
 from langchain_core.vectorstores import VectorStore
 
 from app.rag.vectorstore_manager import get_vector_store
+from app.rag.reranker import get_reranker, CrossEncoderReranker
 from app.core.config import get_settings
+
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 
 class MultiQueryRetriever(BaseRetriever):
@@ -158,10 +162,143 @@ class ContextualCompressionRetriever(BaseRetriever):
         return '. '.join(relevant_sentences)
 
 
+class ReRankingRetriever(BaseRetriever):
+    """
+    Retriever with two-stage ranking: fast retrieval + precise reranking
+    
+    Stage 1: Retrieve more candidates using fast bi-encoder (recall-focused)
+    Stage 2: Rerank with cross-encoder for precision
+    """
+    
+    def __init__(
+        self, 
+        vectorstore: VectorStore, 
+        reranker: Optional[CrossEncoderReranker] = None,
+        initial_k: int = 20,
+        final_k: int = 5
+    ):
+        """
+        Initialize reranking retriever
+        
+        Args:
+            vectorstore: Vector store for initial retrieval
+            reranker: Cross-encoder reranker (will create if None)
+            initial_k: Number of candidates to retrieve initially
+            final_k: Number of documents to return after reranking
+        """
+        super().__init__()
+        self.vectorstore = vectorstore
+        self.reranker = reranker or get_reranker()
+        self.initial_k = initial_k
+        self.final_k = final_k
+    
+    def _get_relevant_documents(
+        self, query: str, *, run_manager: CallbackManagerForRetrieverRun
+    ) -> List[Document]:
+        """Retrieve and rerank documents"""
+        
+        try:
+            # Stage 1: Fast retrieval (recall-focused)
+            logger.info(f"Stage 1: Retrieving {self.initial_k} candidates")
+            candidate_docs = self.vectorstore.similarity_search(query, k=self.initial_k)
+            
+            if not candidate_docs:
+                logger.warning("No candidates retrieved")
+                return []
+            
+            # Stage 2: Precise reranking (precision-focused)
+            logger.info(f"Stage 2: Reranking to top {self.final_k}")
+            reranked_docs = self.reranker.rerank_with_metadata(
+                query, 
+                candidate_docs, 
+                top_k=self.final_k
+            )
+            
+            logger.info(
+                f"✅ Retrieved {len(candidate_docs)} → Reranked to {len(reranked_docs)}"
+            )
+            
+            return reranked_docs
+            
+        except Exception as e:
+            logger.error(f"❌ ReRankingRetriever failed: {e}")
+            # Fallback to simple retrieval
+            return self.vectorstore.similarity_search(query, k=self.final_k)
+
+
+class HybridReRankingRetriever(BaseRetriever):
+    """
+    Combines ensemble retrieval (semantic + BM25) with reranking
+    Best of all worlds: keyword matching + semantic search + precision reranking
+    """
+    
+    def __init__(
+        self,
+        vectorstore: VectorStore,
+        reranker: Optional[CrossEncoderReranker] = None,
+        initial_k: int = 20,
+        final_k: int = 5
+    ):
+        super().__init__()
+        self.vectorstore = vectorstore
+        self.reranker = reranker or get_reranker()
+        self.initial_k = initial_k
+        self.final_k = final_k
+        self.bm25_retriever = None
+    
+    def add_documents(self, documents: List[Document]):
+        """Add documents for BM25 indexing"""
+        self.bm25_retriever = BM25Retriever.from_documents(documents)
+    
+    def _get_relevant_documents(
+        self, query: str, *, run_manager: CallbackManagerForRetrieverRun
+    ) -> List[Document]:
+        """Retrieve using ensemble, then rerank"""
+        
+        try:
+            # Stage 1: Ensemble retrieval (semantic + keyword)
+            semantic_docs = self.vectorstore.similarity_search(query, k=self.initial_k // 2)
+            
+            bm25_docs = []
+            if self.bm25_retriever:
+                bm25_docs = self.bm25_retriever.get_relevant_documents(query)[:self.initial_k // 2]
+            
+            # Combine and deduplicate
+            all_docs = semantic_docs + bm25_docs
+            seen_content = set()
+            unique_docs = []
+            
+            for doc in all_docs:
+                content_hash = hash(doc.page_content[:200])
+                if content_hash not in seen_content:
+                    seen_content.add(content_hash)
+                    unique_docs.append(doc)
+            
+            # Stage 2: Rerank combined results
+            reranked_docs = self.reranker.rerank_with_metadata(
+                query,
+                unique_docs,
+                top_k=self.final_k
+            )
+            
+            logger.info(
+                f"✅ Hybrid: {len(semantic_docs)} semantic + {len(bm25_docs)} BM25 "
+                f"→ {len(unique_docs)} unique → {len(reranked_docs)} reranked"
+            )
+            
+            return reranked_docs
+            
+        except Exception as e:
+            logger.error(f"❌ HybridReRankingRetriever failed: {e}")
+            return self.vectorstore.similarity_search(query, k=self.final_k)
+
+
 # Global retriever instances
 _multi_query_retriever = None
 _ensemble_retriever = None
 _contextual_retriever = None
+_reranking_retriever = None
+_hybrid_reranking_retriever = None
 
 
 def get_multi_query_retriever() -> MultiQueryRetriever:
@@ -191,14 +328,64 @@ def get_contextual_compression_retriever() -> ContextualCompressionRetriever:
     return _contextual_retriever
 
 
-def get_advanced_retriever(strategy: str = "ensemble") -> BaseRetriever:
-    """Get advanced retriever based on strategy"""
-    if strategy == "multi_query":
+def get_reranking_retriever(
+    initial_k: int = 20,
+    final_k: int = 5
+) -> ReRankingRetriever:
+    """Get reranking retriever instance"""
+    global _reranking_retriever
+    if _reranking_retriever is None:
+        vectorstore = get_vector_store()
+        _reranking_retriever = ReRankingRetriever(
+            vectorstore=vectorstore,
+            initial_k=initial_k,
+            final_k=final_k
+        )
+    return _reranking_retriever
+
+
+def get_hybrid_reranking_retriever(
+    initial_k: int = 20,
+    final_k: int = 5
+) -> HybridReRankingRetriever:
+    """Get hybrid reranking retriever instance"""
+    global _hybrid_reranking_retriever
+    if _hybrid_reranking_retriever is None:
+        vectorstore = get_vector_store()
+        _hybrid_reranking_retriever = HybridReRankingRetriever(
+            vectorstore=vectorstore,
+            initial_k=initial_k,
+            final_k=final_k
+        )
+    return _hybrid_reranking_retriever
+
+
+def get_advanced_retriever(strategy: str = "reranking") -> BaseRetriever:
+    """
+    Get advanced retriever based on strategy
+    
+    Args:
+        strategy: Retrieval strategy
+            - "reranking" (NEW DEFAULT): Semantic search + reranking
+            - "hybrid_reranking": Ensemble + reranking (best quality)
+            - "ensemble": Semantic + BM25 (no reranking)
+            - "multi_query": Query expansion
+            - "contextual": Contextual compression
+    
+    Returns:
+        BaseRetriever instance
+    """
+    if strategy == "reranking":
+        return get_reranking_retriever()
+    elif strategy == "hybrid_reranking":
+        return get_hybrid_reranking_retriever()
+    elif strategy == "multi_query":
         return get_multi_query_retriever()
     elif strategy == "ensemble":
         return get_ensemble_retriever()
     elif strategy == "contextual":
         return get_contextual_compression_retriever()
     else:
-        # Default to ensemble
-        return get_ensemble_retriever()
+        # Default to reranking (best balance of quality and speed)
+        logger.info(f"Unknown strategy '{strategy}', defaulting to 'reranking'")
+        return get_reranking_retriever()

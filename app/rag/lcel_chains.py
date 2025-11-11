@@ -18,10 +18,27 @@ from app.llm.router import get_optimal_llm
 
 
 class ConfidenceRAGChain:
-    """RAG chain with confidence scoring and citations"""
+    """RAG chain with confidence scoring, citations, and reranking"""
 
-    def __init__(self):
-        self.retriever = get_advanced_retriever()
+    def __init__(self, use_reranking: bool = True, retrieval_strategy: str = None):
+        """
+        Initialize RAG chain
+        
+        Args:
+            use_reranking: Whether to use reranking (default: True)
+            retrieval_strategy: Override retrieval strategy
+                - None: Auto-select based on use_reranking
+                - "reranking": Semantic + reranking (default if use_reranking=True)
+                - "hybrid_reranking": Ensemble + reranking (best quality)
+                - "ensemble": Semantic + BM25 (no reranking)
+        """
+        # Determine retrieval strategy
+        if retrieval_strategy is None:
+            retrieval_strategy = "reranking" if use_reranking else "ensemble"
+        
+        self.retrieval_strategy = retrieval_strategy
+        self.use_reranking = use_reranking
+        self.retriever = get_advanced_retriever(strategy=retrieval_strategy)
         self.confidence_scorer = ConfidenceScorer()
         self.llm = get_optimal_llm("Generate comprehensive answers with citations")
 
@@ -68,24 +85,55 @@ class ConfidenceRAGChain:
         """Format retrieved documents into context string"""
         question = inputs["question"]
 
-        # Retrieve documents
+        # Retrieve documents (with reranking if enabled)
         docs = self.retriever.get_relevant_documents(question)
+        
+        # Store docs for confidence calculation
+        inputs["retrieved_docs"] = docs
 
-        # Format with citations
+        # Format with citations and rerank scores
         context_parts = []
         for i, doc in enumerate(docs, 1):
             content = doc.page_content
-            source = getattr(doc, 'metadata', {}).get('source', f'doc_{i}')
-            context_parts.append(f"[Source {i}: {source}]\n{content}")
+            source = doc.metadata.get('source', f'doc_{i}')
+            
+            # Add rerank score if available
+            rerank_score = doc.metadata.get('rerank_score')
+            if rerank_score is not None:
+                source_info = f"Source {i}: {source} (relevance: {rerank_score:.2f})"
+            else:
+                source_info = f"Source {i}: {source}"
+            
+            context_parts.append(f"[{source_info}]\n{content}")
 
         return "\n\n".join(context_parts)
 
     def _calculate_confidence(self, inputs: Dict[str, Any]) -> float:
         """Calculate confidence score for the query"""
         question = inputs["question"]
-        docs = self.retriever.get_relevant_documents(question)
-
-        return self.confidence_scorer.calculate_confidence(question, docs)
+        
+        # Use already retrieved docs if available
+        docs = inputs.get("retrieved_docs")
+        if docs is None:
+            docs = self.retriever.get_relevant_documents(question)
+        
+        # Boost confidence if reranking is enabled (more precise results)
+        base_confidence = self.confidence_scorer.calculate_confidence(question, docs)
+        
+        if self.use_reranking and docs:
+            # Check if docs have rerank scores
+            has_rerank_scores = any(doc.metadata.get('rerank_score') is not None for doc in docs)
+            if has_rerank_scores:
+                # Boost confidence by 5-10% for reranked results
+                avg_rerank_score = sum(
+                    doc.metadata.get('rerank_score', 0) for doc in docs
+                ) / len(docs)
+                # Normalize rerank score (typically -10 to 10) to 0-1
+                normalized_score = (avg_rerank_score + 10) / 20
+                confidence_boost = normalized_score * 0.1  # Up to 10% boost
+                base_confidence = min(1.0, base_confidence + confidence_boost)
+        
+        return base_confidence
 
     def _add_metadata(self, response: str) -> Dict[str, Any]:
         """Add metadata to the response"""
@@ -102,6 +150,20 @@ class ConfidenceRAGChain:
         try:
             # Execute chain
             result = await self.chain.ainvoke(inputs)
+            
+            # Extract reranking metrics if available
+            docs = inputs.get("retrieved_docs", [])
+            reranking_enabled = self.use_reranking
+            avg_rerank_score = 0.0
+            
+            if docs and reranking_enabled:
+                rerank_scores = [
+                    doc.metadata.get('rerank_score', 0) 
+                    for doc in docs 
+                    if doc.metadata.get('rerank_score') is not None
+                ]
+                if rerank_scores:
+                    avg_rerank_score = sum(rerank_scores) / len(rerank_scores)
 
             # Record metrics
             await record_rag_query(
@@ -109,7 +171,11 @@ class ConfidenceRAGChain:
                 response=result["answer"],
                 confidence=result.get("confidence", 0.0),
                 execution_time=(datetime.utcnow() - start_time).total_seconds(),
-                success=True
+                success=True,
+                retriever_type=self.retrieval_strategy,
+                num_docs_retrieved=len(docs),
+                reranking_enabled=reranking_enabled,
+                avg_rerank_score=avg_rerank_score
             )
 
             return result
@@ -122,7 +188,9 @@ class ConfidenceRAGChain:
                 confidence=0.0,
                 execution_time=(datetime.utcnow() - start_time).total_seconds(),
                 success=False,
-                error=str(e)
+                error=str(e),
+                retriever_type=self.retrieval_strategy,
+                reranking_enabled=self.use_reranking
             )
             raise e
 
@@ -131,11 +199,26 @@ class ConfidenceRAGChain:
 _confidence_chain = None
 
 
-def get_confidence_rag_chain() -> ConfidenceRAGChain:
-    """Get the global confidence RAG chain instance"""
+def get_confidence_rag_chain(
+    use_reranking: bool = True,
+    retrieval_strategy: str = None
+) -> ConfidenceRAGChain:
+    """
+    Get the global confidence RAG chain instance
+    
+    Args:
+        use_reranking: Whether to use reranking (default: True)
+        retrieval_strategy: Override retrieval strategy (default: auto-select)
+    
+    Returns:
+        ConfidenceRAGChain instance
+    """
     global _confidence_chain
     if _confidence_chain is None:
-        _confidence_chain = ConfidenceRAGChain()
+        _confidence_chain = ConfidenceRAGChain(
+            use_reranking=use_reranking,
+            retrieval_strategy=retrieval_strategy
+        )
     return _confidence_chain
 
 

@@ -34,21 +34,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
               replacing human oversight with <strong className="text-unitasa-electric">autonomous marketing excellence</strong>.
             </p>
 
-            {/* Key Benefits */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8 text-left">
-              <div className="flex items-center">
-                <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-unitasa-gray">10,000+ AI decisions per hour</span>
-              </div>
-              <div className="flex items-center">
-                <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-unitasa-gray">94% prediction accuracy</span>
-              </div>
-              <div className="flex items-center">
-                <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-unitasa-gray">340% average ROI improvement</span>
-              </div>
-            </div>
+            <p className="text-lg text-unitasa-gray mb-8 max-w-2xl mx-auto lg:mx-0">
+              🚀 NOW IN BETA - Join 25 Founding Members Built by a founder frustrated with disconnected marketing tools. Help shape the future of AI marketing automation.
+            </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -74,16 +62,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
               </Button>
             </div>
 
-            {/* Social Proof */}
-            <div className="mt-12 pt-8 border-t border-unitasa-electric/20">
-              <p className="text-sm text-unitasa-gray mb-4">Chosen by marketing leaders who demand enterprise results</p>
-              <div className="flex items-center justify-center lg:justify-start space-x-8 opacity-60">
-                <div className="text-unitasa-gray font-semibold">Enterprise Solutions Inc.</div>
-                <div className="text-unitasa-gray font-semibold">Global Marketing Group</div>
-                <div className="text-unitasa-gray font-semibold">RevenueMax Corp</div>
-                <div className="text-unitasa-gray font-semibold">AI Marketing Labs</div>
-              </div>
-            </div>
+
           </div>
 
           {/* Right Column - Visual */}

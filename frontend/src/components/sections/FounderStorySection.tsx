@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, TrendingUp, Users, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, TrendingUp, Users, Zap, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { Card } from '../ui';
 
 interface Milestone {
@@ -98,13 +98,54 @@ const FounderStorySection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             From Zero to Automated Lead Generation
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            The journey of building Unitasa: How one founder solved the CRM integration nightmare 
-            and created a platform that works with any system.
-          </p>
+          <div className="max-w-4xl mx-auto">
+            <blockquote className="text-2xl text-gray-700 italic mb-8 border-l-4 border-primary-500 pl-6 font-medium">
+              "From Frustration to Solution"
+            </blockquote>
+
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+              <p className="text-lg text-gray-800 mb-4 font-semibold">
+                I spent 6 months building Unitasa because:
+              </p>
+              <ul className="space-y-3 text-left">
+                <li className="flex items-start">
+                  <span className="text-red-500 text-xl mr-3 mt-1">•</span>
+                  <span className="text-gray-700">Managing 5+ marketing tools consumed 15 hours/week</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-red-500 text-xl mr-3 mt-1">•</span>
+                  <span className="text-gray-700">CRM integrations constantly broke</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-red-500 text-xl mr-3 mt-1">•</span>
+                  <span className="text-gray-700">No tool offered true AI-powered automation</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+              <p className="text-lg text-gray-800 mb-4 font-semibold">
+                Now I'm inviting 25 founding members to:
+              </p>
+              <ul className="space-y-3 text-left">
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-600 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Get lifetime access at founder pricing</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-600 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Shape product development with direct input</span>
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-600 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Build case studies together as early adopters</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

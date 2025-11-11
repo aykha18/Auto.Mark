@@ -83,7 +83,7 @@ const SocialProofSection: React.FC = () => {
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        {/* <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Trusted by Growing Businesses Worldwide
           </h2>
@@ -91,7 +91,7 @@ const SocialProofSection: React.FC = () => {
             Join thousands of companies that have transformed their marketing automation 
             and achieved measurable growth with Unitasa.
           </p>
-        </div>
+        </div> */}
 
         {/* Key Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
@@ -110,52 +110,7 @@ const SocialProofSection: React.FC = () => {
           })}
         </div>
 
-        {/* Customer Testimonials */}
-        <div className="mb-16">
-          <h3 className="text-2xl font-bold text-gray-900 text-center mb-12">
-            What Our Customers Say
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="p-6" hover>
-                {/* Rating */}
-                <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
 
-                {/* Quote */}
-                <div className="relative mb-6">
-                  <Quote className="absolute -top-2 -left-2 w-8 h-8 text-primary-200" />
-                  <p className="text-gray-700 italic pl-6">{testimonial.quote}</p>
-                </div>
-
-                {/* Metrics */}
-                <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-                  {Object.entries(testimonial.metrics).map(([key, value]) => (
-                    <div key={key} className="text-center">
-                      <div className="font-bold text-primary-600 text-sm">{value}</div>
-                      <div className="text-xs text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1')}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Author */}
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white font-semibold mr-4">
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-600">{testimonial.role}</div>
-                    <div className="text-sm text-primary-600">{testimonial.company}</div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
 
         {/* Trust Indicators */}
         <div className="bg-white rounded-2xl p-8">
@@ -196,9 +151,6 @@ const SocialProofSection: React.FC = () => {
 
         {/* Social Proof CTA */}
         <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Join 2,500+ Businesses Already Automating Their Growth
-          </h3>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
             Don't take our word for it. See how Unitasa can transform your marketing automation 
             with a personalized assessment of your current setup.

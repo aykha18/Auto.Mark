@@ -30,6 +30,11 @@ class RAGQueryMetrics:
     retriever_type: str = "unknown"
     num_docs_retrieved: int = 0
     llm_provider: str = "unknown"
+    # Reranking metrics
+    reranking_enabled: bool = False
+    reranking_time: float = 0.0
+    avg_rerank_score: float = 0.0
+    initial_candidates: int = 0
 
 
 class RAGMonitor:
@@ -194,7 +199,11 @@ async def record_rag_query(
     error: Optional[str] = None,
     retriever_type: str = "unknown",
     num_docs_retrieved: int = 0,
-    llm_provider: str = "unknown"
+    llm_provider: str = "unknown",
+    reranking_enabled: bool = False,
+    reranking_time: float = 0.0,
+    avg_rerank_score: float = 0.0,
+    initial_candidates: int = 0
 ) -> None:
     """Record a RAG query with metrics"""
 
@@ -207,7 +216,11 @@ async def record_rag_query(
         error=error,
         retriever_type=retriever_type,
         num_docs_retrieved=num_docs_retrieved,
-        llm_provider=llm_provider
+        llm_provider=llm_provider,
+        reranking_enabled=reranking_enabled,
+        reranking_time=reranking_time,
+        avg_rerank_score=avg_rerank_score,
+        initial_candidates=initial_candidates
     )
 
     monitor = get_rag_monitor()
