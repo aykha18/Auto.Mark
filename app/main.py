@@ -263,9 +263,11 @@ try:
     print("Including health router...")
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
     print("Health router included successfully")
-    
-    # Landing router is already included via api_router above
-    print("Landing router already included via api_router")
+
+    print("Including landing router directly...")
+    from app.api.v1 import landing
+    app.include_router(landing.router, prefix="/api/v1/landing", tags=["landing"])
+    print("Landing router included successfully")
     
     print("Including chat router...")
     try:

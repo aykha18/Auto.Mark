@@ -16,10 +16,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Column - Content */}
           <div className="text-center lg:text-left">
-            {/* Badge */}
-            <div className="inline-flex items-center bg-unitasa-electric/10 text-unitasa-blue px-4 py-2 rounded-full text-sm font-medium mb-6 border border-unitasa-electric/20">
-              <span className="w-2 h-2 bg-unitasa-electric rounded-full mr-2 animate-pulse"></span>
-              Built by a founder who went from zero to automated lead generation
+            {/* Transparent Beta Badge */}
+            <div className="inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold mb-6 animate-pulse">
+              <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+              BETA - INVITING 25 FOUNDING MEMBERS
             </div>
 
             {/* Main Headline */}
@@ -78,24 +78,31 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartAssessment }) => {
                 <div className="ml-4 text-white font-medium">Unitasa Dashboard</div>
               </div>
               
-              {/* Dashboard Content */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <div className="text-sm text-unitasa-gray">Active Campaigns</div>
-                  <div className="text-2xl font-bold text-unitasa-electric">24/7</div>
-                </div>
-                <div className="bg-unitasa-light h-2 rounded-full">
-                  <div className="bg-gradient-primary h-2 rounded-full w-3/4"></div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <div className="text-lg font-bold text-green-600">+340%</div>
-                    <div className="text-xs text-unitasa-gray">ROI Improvement</div>
+              {/* Problem Statement */}
+              <div className="space-y-4 p-4">
+                <h3 className="text-lg font-bold text-unitasa-blue mb-3">The Problem Every B2B Founder Faces:</h3>
+                <div className="space-y-2 text-sm text-gray-700">
+                  <div className="flex items-start">
+                    <span className="text-red-500 mr-2">⏰</span>
+                    <span>15+ hours/week managing disconnected marketing tools</span>
                   </div>
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <div className="text-lg font-bold text-unitasa-electric">10K+</div>
-                    <div className="text-xs text-unitasa-gray">AI Decisions/Hour</div>
+                  <div className="flex items-start">
+                    <span className="text-red-500 mr-2">💔</span>
+                    <span>CRM integrations that break constantly</span>
                   </div>
+                  <div className="flex items-start">
+                    <span className="text-red-500 mr-2">🤖</span>
+                    <span>"AI marketing" that's just basic if/then rules</span>
+                  </div>
+                  <div className="flex items-start">
+                    <span className="text-red-500 mr-2">💸</span>
+                    <span>$500+/month on tools that don't talk to each other</span>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 bg-unitasa-light/50 rounded-lg">
+                  <p className="text-sm text-unitasa-blue font-medium">
+                    I built Unitasa because I had this exact problem. Now inviting 25 founders to build it together.
+                  </p>
                 </div>
               </div>
             </div>

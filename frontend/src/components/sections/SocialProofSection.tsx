@@ -3,72 +3,32 @@ import { Star, Quote, TrendingUp, Users, Award, CheckCircle } from 'lucide-react
 import { Card } from '../ui';
 
 const SocialProofSection: React.FC = () => {
-  const testimonials = [
-    {
-      name: 'Sarah Chen',
-      role: 'Marketing Director',
-      company: 'TechFlow Solutions',
-      avatar: 'SC',
-      rating: 5,
-      quote: 'Unitasa connected our HubSpot to AI automation in literally 2 clicks. We\'ve seen 340% increase in qualified leads and saved 25 hours per week on manual tasks.',
-      metrics: {
-        leadIncrease: '340%',
-        timeSaved: '25h/week',
-        roi: '450%'
-      }
-    },
-    {
-      name: 'Marcus Rodriguez',
-      role: 'Founder & CEO',
-      company: 'GrowthLab',
-      avatar: 'MR',
-      rating: 5,
-      quote: 'The Pipedrive integration was seamless. Our lead response time went from hours to seconds, and the AI actually understands our business context. Game changer.',
-      metrics: {
-        responseTime: '< 30 sec',
-        conversionRate: '67%',
-        leadQuality: '89%'
-      }
-    },
-    {
-      name: 'Emily Watson',
-      role: 'Sales Operations',
-      company: 'ScaleUp Ventures',
-      avatar: 'EW',
-      rating: 5,
-      quote: 'We tried 5 different automation tools before Unitasa. This is the first one that actually works with our Zoho CRM without breaking our existing workflows.',
-      metrics: {
-        toolsReplaced: '5',
-        setupTime: '15 min',
-        satisfaction: '98%'
-      }
-    }
-  ];
+  // Removed fake testimonials - will replace with founder credibility section
 
-  const stats = [
+  const honestStats = [
     {
       icon: Users,
-      value: '2,500+',
-      label: 'Businesses Automated',
-      description: 'Growing companies trust Unitasa'
+      value: '25',
+      label: 'Founding Members',
+      description: 'Limited spots available'
     },
     {
       icon: TrendingUp,
-      value: '340%',
-      label: 'Average Lead Increase',
-      description: 'Typical results within 30 days'
+      value: 'BETA',
+      label: 'Currently in Development',
+      description: 'Building with early users'
     },
     {
       icon: CheckCircle,
-      value: '99.9%',
-      label: 'Uptime Guarantee',
-      description: 'Enterprise-grade reliability'
+      value: '100%',
+      label: 'Transparent',
+      description: 'Honest about our stage'
     },
     {
       icon: Award,
-      value: '4.9/5',
-      label: 'Customer Rating',
-      description: 'Based on 500+ reviews'
+      value: '1.0',
+      label: 'Version',
+      description: 'Functional MVP available'
     }
   ];
 
@@ -93,9 +53,9 @@ const SocialProofSection: React.FC = () => {
           </p>
         </div> */}
 
-        {/* Key Statistics */}
+        {/* Honest Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          {stats.map((stat, index) => {
+          {honestStats.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
               <Card key={index} className="p-6 text-center" hover>
@@ -149,15 +109,38 @@ const SocialProofSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Social Proof CTA */}
-        <div className="text-center mt-16">
-          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Don't take our word for it. See how Unitasa can transform your marketing automation 
-            with a personalized assessment of your current setup.
-          </p>
-          <button className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors">
-            Get Your Free Assessment
-          </button>
+        {/* Founder Credibility Section */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mt-16">
+          <div className="max-w-4xl mx-auto text-center">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Built by a Founder Who Lived This Pain</h3>
+
+            <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
+              <div className="flex items-start space-x-4">
+                <div className="w-16 h-16 bg-unitasa-blue rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                  F
+                </div>
+                <div className="text-left">
+                  <h4 className="font-bold text-gray-900 mb-2">"I spent 15 hours every week on manual marketing tasks"</h4>
+                  <p className="text-gray-700 mb-3">
+                    Managing 5 disconnected tools: Pipedrive, Mailchimp, Google Sheets, Calendly, Slack.
+                    Lost leads. Missed follow-ups. Constant manual data entry.
+                  </p>
+                  <p className="text-gray-700 font-medium">
+                    After 6 months of building, Unitasa now handles what took me 15 hours in 15 minutes.
+                    <strong className="text-unitasa-blue"> I'm using it to market Unitasa itself.</strong>
+                  </p>
+                  <p className="text-gray-500 text-sm mt-2">— Founder, Unitasa</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center justify-center text-green-800">
+                <span className="text-2xl mr-2">🤖</span>
+                <span className="font-medium">This website is being marketed by Unitasa's own AI agent</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

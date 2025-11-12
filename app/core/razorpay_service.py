@@ -396,8 +396,8 @@ def get_razorpay_service(db_session=None, use_mock=None):
         )
     
     if use_mock:
-        print("🧪 Using Mock Razorpay Service for testing")
+        print("Using Mock Razorpay Service for testing")
         return MockRazorpayPaymentService(db_session)
     else:
-        print("💳 Using Real Razorpay Service")
+        print("Using Real Razorpay Service")
         return RazorpayPaymentService(db_session)

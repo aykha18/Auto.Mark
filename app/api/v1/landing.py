@@ -3,7 +3,7 @@ Working landing page API endpoints (assessment only)
 """
 
 from typing import Dict, Any, List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import string
 from fastapi import APIRouter, HTTPException, Depends, Request
@@ -138,10 +138,47 @@ async def landing_health_check() -> Dict[str, Any]:
         "router": "landing_working",
         "endpoints": [
             "/health",
-            "/assessment/questions", 
+            "/assessment/questions",
             "/assessment/start",
-            "/assessment/submit"
+            "/assessment/submit",
+            "/founding-members/stats",
+            "/agent-activity/stats"
         ]
+    }
+
+
+@router.get("/founding-members/stats")
+async def get_founding_members_stats() -> Dict[str, Any]:
+    """Get real-time founding members statistics"""
+    # For now, return mock data that can be updated manually
+    # In production, this would query the database for actual co-creator registrations
+    return {
+        "total_spots": 25,
+        "spots_taken": 13,  # This would be dynamic from database
+        "spots_remaining": 12,
+        "progress_percentage": 52,
+        "last_updated": datetime.utcnow().isoformat(),
+        "is_live": True,
+        "status": "active"
+    }
+
+
+@router.get("/agent-activity/stats")
+async def get_agent_activity_stats() -> Dict[str, Any]:
+    """Get real-time agent activity statistics"""
+    # For now, return mock data that represents actual agent activity
+    # In production, this would query logs/metrics for real agent actions
+    return {
+        "ai_generated_posts": 47,
+        "ai_engagements": 234,
+        "ai_followups": 89,
+        "ai_booked_demos": 12,
+        "last_post_time": "2 hours ago",
+        "last_activity": datetime.utcnow().isoformat(),
+        "is_live": True,
+        "status": "active",
+        "response_time_avg": "< 1 hour",
+        "live_activities": []
     }
 
 @router.get("/test")

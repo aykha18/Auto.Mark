@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class MarketingAgentGraph:
-    """LangGraph-based multi-agent orchestration for marketing campaigns"""
+    """Simplified multi-agent orchestration for marketing campaigns (no LangGraph)"""
 
     def __init__(self):
         self.llm = ChatOpenAI(
@@ -43,133 +43,63 @@ class MarketingAgentGraph:
         # Initialize monitoring
         self.monitor = get_agent_monitor()
 
-        # Build the workflow graph
-        self.graph = self.build_graph()
+        logger.info("Marketing Agent Graph initialized (simplified)")
 
-        logger.info("Marketing Agent Graph initialized")
-
-    def build_graph(self) -> StateGraph:
-        """Build the multi-agent workflow graph"""
-
-        workflow = StateGraph(MarketingAgentState)
-
-        # Add agent nodes
-        workflow.add_node("lead_generation", self.agents['lead_gen'].execute)
-        workflow.add_node("content_creation", self.agents['content_creator'].execute)
-        workflow.add_node("ad_management", self.agents['ad_manager'].execute)
-
-        # Define workflow edges
-        workflow.set_entry_point("lead_generation")
-
-        # Conditional routing based on campaign type and results
-        workflow.add_conditional_edges(
-            "lead_generation",
-            self.route_after_lead_gen,
-            {
-                "content_creation": "content_creation",
-                "ad_management": "ad_management",
-                "end": END
-            }
-        )
-
-        workflow.add_edge("content_creation", "ad_management")
-        workflow.add_edge("ad_management", END)  # End after ad management
-
-        # Optional: Add analytics loop for optimization (commented out for simplicity)
-        # workflow.add_conditional_edges(
-        #     "ad_management",
-        #     self.should_optimize,
-        #     {
-        #         "content_creation": "content_creation",  # Loop back for optimization
-        #         "end": END
-        #     }
-        # )
-
-        return workflow.compile()
-
-    def route_after_lead_gen(self, state: MarketingAgentState) -> str:
-        """Decide next step after lead generation"""
-        leads = state.get('qualified_leads', [])
-        campaign_config = state.get('campaign_config', {})
-
-        # If we have qualified leads and need content
-        if leads and campaign_config.get('content_required', True):
-            return "content_creation"
-
-        # If we have leads and ad platforms specified
-        if leads and campaign_config.get('ad_platforms'):
-            return "ad_management"
-
-        # If no qualified leads, end the workflow
-        if not leads:
-            return "end"
-
-        # Default to content creation if we have leads
-        return "content_creation"
-
-    def should_optimize(self, state: MarketingAgentState) -> str:
-        """Decide if campaign needs optimization"""
-        performance = state.get('campaign_performance', {})
-        optimization_attempts = state.get('optimization_attempts', 0)
-
-        # Check if performance is below threshold and we haven't optimized too many times
-        if (performance.get('overall_score', 0) < 0.7 and
-            optimization_attempts < 3):
-            return "content_creation"
-
-        return "end"
-
-    async def run_campaign(self, campaign_config: Dict[str, Any]) -> MarketingAgentState:
-        """Execute complete marketing campaign workflow"""
-
+    async def run_campaign_simple(self, campaign_config: Dict[str, Any]) -> MarketingAgentState:
+        """Run a simplified sequential campaign workflow"""
         # Initialize state
-        initial_state = create_initial_state(campaign_config)
+        state = create_initial_state(campaign_config)
+        state["campaign_id"] = str(uuid.uuid4())
 
-        # Add campaign ID
-        initial_state["campaign_id"] = str(uuid.uuid4())
-
-        logger.info(
-            "Starting marketing campaign",
-            campaign_id=initial_state["campaign_id"],
-            config=campaign_config
-        )
-
-        campaign_start_time = time.time()
+        logger.info(f"Starting simplified marketing campaign: {state['campaign_id']}")
 
         try:
-            # Execute workflow
-            final_state = await self.graph.ainvoke(initial_state)
+            # Step 1: Lead generation
+            logger.info("Running lead generation...")
+            lead_result = await self.agents['lead_gen'].execute(state)
+            state.update(lead_result)
 
-            # Record campaign execution in monitoring
-            campaign_execution_time = time.time() - campaign_start_time
+            # Check if we have leads to continue
+            leads = state.get('qualified_leads', [])
+            if not leads:
+                logger.info("No qualified leads found, ending campaign")
+                return state
+
+            # Step 2: Content creation (if needed)
+            if campaign_config.get('content_required', True):
+                logger.info("Running content creation...")
+                content_result = await self.agents['content_creator'].execute(state)
+                state.update(content_result)
+
+            # Step 3: Ad management (if platforms specified)
+            if campaign_config.get('ad_platforms'):
+                logger.info("Running ad management...")
+                ad_result = await self.agents['ad_manager'].execute(state)
+                state.update(ad_result)
+
+            # Record campaign execution
             await self.monitor.create_campaign_trace(
-                campaign_id=final_state.get("campaign_id"),
+                campaign_id=state.get("campaign_id"),
                 campaign_config=campaign_config,
-                final_state=final_state
+                final_state=state
             )
 
-            # Log completion
-            logger.info(
-                "Marketing campaign completed",
-                campaign_id=final_state.get("campaign_id"),
-                qualified_leads=len(final_state.get("qualified_leads", [])),
-                content_created=len(final_state.get("generated_content", [])),
-                errors=len(final_state.get("errors", [])),
-                execution_time=campaign_execution_time
-            )
-
-            return final_state
+            logger.info(f"Campaign completed: {state['campaign_id']}")
+            return state
 
         except Exception as e:
-            logger.error(f"Campaign execution failed: {e}", campaign_id=initial_state["campaign_id"])
-            # Return state with error
-            initial_state["errors"] = initial_state.get("errors", [])
-            initial_state["errors"].append({
+            logger.error(f"Campaign execution failed: {e}")
+            state["errors"] = state.get("errors", [])
+            state["errors"].append({
                 "agent": "orchestrator",
                 "error": str(e),
                 "timestamp": datetime.utcnow().isoformat()
             })
-            return initial_state
+            return state
+
+    async def run_campaign(self, campaign_config: Dict[str, Any]) -> MarketingAgentState:
+        """Execute simplified marketing campaign workflow"""
+        return await self.run_campaign_simple(campaign_config)
 
     async def get_campaign_status(self, campaign_id: str) -> Optional[Dict[str, Any]]:
         """Get status of a running campaign"""

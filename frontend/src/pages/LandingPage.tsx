@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { Layout } from '../components/layout';
-import { 
-  HeroSection, 
+import {
+  HeroSection,
   PlatformPositioningSection
 } from '../components/sections';
 import { CRMAssessmentResult } from '../types';
@@ -10,11 +10,13 @@ import LeadCaptureForm, { LeadData } from '../components/assessment/LeadCaptureF
 import CRMSelectorStep from '../components/assessment/CRMSelectorStep';
 import ConsultationTest from '../components/test/ConsultationTest';
 import { useCurrency } from '../hooks/useCurrency';
+import { LandingPageAPI } from '../services/landingPageApi';
 
 // Lazy load heavy components
 const AICapabilitiesSection = lazy(() => import('../components/sections/AICapabilitiesSection'));
 const FounderStorySection = lazy(() => import('../components/sections/FounderStorySection'));
 const SocialProofSection = lazy(() => import('../components/sections/SocialProofSection'));
+const MetaProofSection = lazy(() => import('../components/sections/MetaProofSection'));
 const CRMMarketplaceSection = lazy(() => import('../components/sections/CRMMarketplaceSection'));
 const ThoughtLeadershipSection = lazy(() => import('../components/sections/ThoughtLeadershipSection'));
 const AssessmentModal = lazy(() => import('../components/assessment/AssessmentModal'));
@@ -44,12 +46,43 @@ const LandingPage: React.FC = () => {
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
   const [assessmentResult, setAssessmentResult] = useState<CRMAssessmentResult | null>(null);
   const [leadData, setLeadData] = useState<LeadData | null>(null);
-  
+  const [foundingMembersStats, setFoundingMembersStats] = useState<{
+    total_spots: number;
+    spots_taken: number;
+    spots_remaining: number;
+    progress_percentage: number;
+    last_updated: string;
+    is_live: boolean;
+    status: string;
+  } | null>(null);
+
   // Currency detection for pricing display
   const currency = useCurrency(497);
 
   useEffect(() => {
     trackPageView('/');
+
+    // Fetch founding members stats
+    const fetchFoundingMembersStats = async () => {
+      try {
+        const stats = await LandingPageAPI.getFoundingMembersStats();
+        setFoundingMembersStats(stats);
+      } catch (error) {
+        console.error('Failed to fetch founding members stats:', error);
+        // Fallback to default values
+        setFoundingMembersStats({
+          total_spots: 25,
+          spots_taken: 13,
+          spots_remaining: 12,
+          progress_percentage: 52,
+          last_updated: new Date().toISOString(),
+          is_live: true,
+          status: 'active'
+        });
+      }
+    };
+
+    fetchFoundingMembersStats();
 
     // Listen for custom events to open assessment
     const handleOpenAssessment = () => {
@@ -141,7 +174,11 @@ const LandingPage: React.FC = () => {
             <Suspense fallback={<div className="h-64 bg-gray-50 animate-pulse"></div>}>
               <SocialProofSection />
             </Suspense>
-            
+
+            <Suspense fallback={<div className="h-96 bg-gray-50 animate-pulse"></div>}>
+              <MetaProofSection />
+            </Suspense>
+
             <Suspense fallback={<div className="h-96 bg-gray-50 animate-pulse"></div>}>
               <FounderStorySection />
             </Suspense>
@@ -198,8 +235,15 @@ const LandingPage: React.FC = () => {
                   
                   <div className="flex items-center justify-center mb-6">
                     <div className="bg-white/20 rounded-full px-4 py-2">
-                      <span className="font-semibold text-white">⚡ Only 12 visionary spots remaining</span>
+                      <span className="font-semibold text-white">
+                        ⚡ Only {foundingMembersStats?.spots_remaining || 12} visionary spots remaining
+                      </span>
                     </div>
+                    {foundingMembersStats && (
+                      <div className="text-xs text-white/80 mt-1">
+                        {foundingMembersStats.spots_taken}/25 founding members joined
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-3">
@@ -213,6 +257,32 @@ const LandingPage: React.FC = () => {
                       🎯 Assessment determines if you're ready for enterprise AI marketing
                     </div>
                   </div>
+                </div>
+
+                {/* Why Only 25 Founding Members */}
+                <div className="mt-8 bg-white rounded-lg p-6 border border-gray-200 shadow-lg">
+                  <h4 className="font-bold text-lg mb-4 text-gray-900">Why Only 25 Founding Members?</h4>
+                  <div className="space-y-2 text-sm text-gray-700">
+                    <div className="flex items-start">
+                      <span className="text-green-600 mr-2">✅</span>
+                      <span>I personally onboard each member (~1 hour each)</span>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="text-green-600 mr-2">✅</span>
+                      <span>Want meaningful feedback, not mass market</span>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="text-green-600 mr-2">✅</span>
+                      <span>Building case studies together as early adopters</span>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="text-green-600 mr-2">✅</span>
+                      <span>After spot 25, price goes to ₹1,67,000+</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-4 italic">
+                    This isn't fake scarcity. I can't onboard {'>'}25 people while building the product.
+                  </p>
                 </div>
               </div>
             </section>

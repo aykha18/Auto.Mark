@@ -53,7 +53,7 @@ class PaymentService {
 
   constructor() {
     this.baseUrl = `${config.apiBaseUrl}/api/v1/payments/razorpay`;
-    console.log('💳 Payment Service initialized:', {
+    console.log('Payment Service initialized:', {
       baseUrl: this.baseUrl,
       environment: config.environment
     });

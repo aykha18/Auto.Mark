@@ -107,6 +107,41 @@ export class LandingPageAPI {
     return response.data;
   }
 
+  // Founding Members Stats
+  static async getFoundingMembersStats(): Promise<{
+    total_spots: number;
+    spots_taken: number;
+    spots_remaining: number;
+    progress_percentage: number;
+    last_updated: string;
+    is_live: boolean;
+    status: string;
+  }> {
+    const response = await apiClient.get('/api/v1/landing/founding-members/stats');
+    return response.data;
+  }
+
+  // Agent Activity Stats
+  static async getAgentActivityStats(): Promise<{
+    ai_generated_posts: number;
+    ai_engagements: number;
+    ai_followups: number;
+    ai_booked_demos: number;
+    last_post_time: string;
+    last_activity: string;
+    is_live: boolean;
+    status: string;
+    response_time_avg: string;
+    live_activities: Array<{
+      time: string;
+      action: string;
+      type: string;
+    }>;
+  }> {
+    const response = await apiClient.get('/api/v1/landing/agent-activity/stats');
+    return response.data;
+  }
+
   // Health Check
   static async healthCheck(): Promise<{ status: string }> {
     const response = await apiClient.get('/api/v1/landing/health');
