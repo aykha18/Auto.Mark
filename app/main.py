@@ -44,20 +44,36 @@ try:
         raise
     
     print("Importing chat module...")
-    from app.api.v1 import chat
-    print("Chat module imported successfully")
-    
+    try:
+        from app.api.v1 import chat
+        print("Chat module imported successfully")
+    except ImportError as e:
+        print(f"Chat module import failed (AI dependencies missing): {e}")
+        print("Skipping chat module for minimal deployment")
+
     print("Importing analytics module...")
-    from app.api.v1 import analytics
-    print("Analytics module imported successfully")
-    
+    try:
+        from app.api.v1 import analytics
+        print("Analytics module imported successfully")
+    except ImportError as e:
+        print(f"Analytics module import failed: {e}")
+        print("Skipping analytics module")
+
     print("Importing working assessment module...")
-    from app.api.v1 import assessment_working
-    print("Working assessment module imported successfully")
-    
+    try:
+        from app.api.v1 import assessment_working
+        print("Working assessment module imported successfully")
+    except ImportError as e:
+        print(f"Assessment module import failed: {e}")
+        print("Skipping assessment module")
+
     print("Importing crm_marketplace module...")
-    from app.api.v1 import crm_marketplace
-    print("CRM marketplace module imported successfully")
+    try:
+        from app.api.v1 import crm_marketplace
+        print("CRM marketplace module imported successfully")
+    except ImportError as e:
+        print(f"CRM marketplace module import failed: {e}")
+        print("Skipping CRM marketplace module")
     
     # Wise payments temporarily disabled due to dependency issues
     # print("Importing wise_payments module...")
@@ -281,28 +297,50 @@ try:
     app.include_router(landing.router, prefix="/api/v1/landing", tags=["landing"])
     print("Landing router included successfully")
     
-    print("Including chat router...")
-    try:
-        app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
-        print("Chat router included successfully")
-    except Exception as e:
-        print(f"ERROR including chat router: {e}")
-        print("Using standalone chat router...")
-        from app.api.v1 import chat_standalone
-        app.include_router(chat_standalone.router, prefix="/api/v1/chat", tags=["chat"])
-        print("Standalone chat router included successfully")
-    
-    print("Including analytics router...")
-    app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
-    print("Analytics router included successfully")
-    
-    print("Including crm_marketplace router...")
-    app.include_router(crm_marketplace.router, prefix="/api/v1", tags=["crm"])
-    print("CRM marketplace router included successfully")
-    
-    print("Including working assessment router...")
-    app.include_router(assessment_working.router, prefix="/api/v1/landing/assessment", tags=["assessment"])
-    print("Working assessment router included successfully")
+    # Conditionally include routers that may depend on AI packages
+    if 'chat' in globals():
+        print("Including chat router...")
+        try:
+            app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
+            print("Chat router included successfully")
+        except Exception as e:
+            print(f"ERROR including chat router: {e}")
+            print("Skipping chat router")
+    else:
+        print("Chat module not available, skipping router")
+
+    if 'analytics' in globals():
+        print("Including analytics router...")
+        try:
+            app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
+            print("Analytics router included successfully")
+        except Exception as e:
+            print(f"ERROR including analytics router: {e}")
+            print("Skipping analytics router")
+    else:
+        print("Analytics module not available, skipping router")
+
+    if 'crm_marketplace' in globals():
+        print("Including crm_marketplace router...")
+        try:
+            app.include_router(crm_marketplace.router, prefix="/api/v1", tags=["crm"])
+            print("CRM marketplace router included successfully")
+        except Exception as e:
+            print(f"ERROR including CRM marketplace router: {e}")
+            print("Skipping CRM marketplace router")
+    else:
+        print("CRM marketplace module not available, skipping router")
+
+    if 'assessment_working' in globals():
+        print("Including working assessment router...")
+        try:
+            app.include_router(assessment_working.router, prefix="/api/v1/landing/assessment", tags=["assessment"])
+            print("Working assessment router included successfully")
+        except Exception as e:
+            print(f"ERROR including assessment router: {e}")
+            print("Skipping assessment router")
+    else:
+        print("Assessment module not available, skipping router")
     
     # Wise payments temporarily disabled due to dependency issues
     # print("Including wise payments router...")
@@ -318,12 +356,16 @@ try:
     print("Consultation router included successfully")
     
     print("Importing ai_report module...")
-    from app.api.v1 import ai_report
-    print("AI report module imported successfully")
-    
-    print("Including ai_report router...")
-    app.include_router(ai_report.router, prefix="/api/v1/ai-report", tags=["ai_report"])
-    print("AI report router included successfully")
+    try:
+        from app.api.v1 import ai_report
+        print("AI report module imported successfully")
+
+        print("Including ai_report router...")
+        app.include_router(ai_report.router, prefix="/api/v1/ai-report", tags=["ai_report"])
+        print("AI report router included successfully")
+    except ImportError as e:
+        print(f"AI report module import failed: {e}")
+        print("Skipping AI report module")
     
     print("Including admin router...")
     app.include_router(admin.router, prefix="/api/v1", tags=["admin"])

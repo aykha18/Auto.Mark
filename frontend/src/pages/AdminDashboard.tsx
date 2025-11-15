@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, DollarSign, Calendar, TrendingUp, Mail, Phone, CheckCircle, Clock } from 'lucide-react';
+import PaymentTest from '../components/test/PaymentTest';
 
 interface DashboardStats {
   totalLeads: number;
@@ -331,6 +332,11 @@ const AdminDashboard: React.FC = () => {
               </table>
             </div>
           )}
+        </div>
+
+        {/* Payment Testing Section */}
+        <div className="mt-8">
+          <PaymentTest />
         </div>
 
         {/* Refresh Button */}

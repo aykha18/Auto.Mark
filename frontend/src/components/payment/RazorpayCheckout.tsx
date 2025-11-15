@@ -8,6 +8,7 @@ interface RazorpayCheckoutProps {
   onCancel: () => void;
   customerEmail?: string;
   customerName?: string;
+  amount?: number; // Optional amount override for testing
 }
 
 interface CurrencyInfo {
@@ -29,7 +30,8 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
   onError,
   onCancel,
   customerEmail = '',
-  customerName = ''
+  customerName = '',
+  amount
 }) => {
   const [selectedCurrency, setSelectedCurrency] = useState<string>('INR');
   const [selectedCountry, setSelectedCountry] = useState<string>('IN');
@@ -41,15 +43,16 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
 
   // Exchange rates and currency info
-  const baseAmountUSD = 497;
+  const defaultAmountUSD = 497;
+  const testAmountUSD = amount || defaultAmountUSD; // Use provided amount or default
   const exchangeRate = 83; // USD to INR
-  
+
   const currencyInfo: CurrencyInfo = {
     currency: selectedCurrency,
-    amount: selectedCurrency === 'INR' ? baseAmountUSD * exchangeRate : baseAmountUSD,
+    amount: selectedCurrency === 'INR' ? testAmountUSD * exchangeRate : testAmountUSD,
     symbol: selectedCurrency === 'INR' ? '₹' : '$',
     country: selectedCountry,
-    displayAmount: selectedCurrency === 'INR' ? `₹${(baseAmountUSD * exchangeRate).toLocaleString()}` : `$${baseAmountUSD}`
+    displayAmount: selectedCurrency === 'INR' ? `₹${(testAmountUSD * exchangeRate).toLocaleString()}` : `$${testAmountUSD}`
   };
 
   // Load Razorpay script
@@ -92,13 +95,36 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
 
   const createRazorpayOrder = async () => {
     try {
-      const response = await fetch('/api/v1/payments/razorpay/create-order', {
+      // Use the same API URL logic as AdminDashboard
+      const getApiUrl = () => {
+        // In production (not localhost), always use relative URLs
+        if (window.location.hostname !== 'localhost' &&
+            window.location.hostname !== '127.0.0.1') {
+          console.log('Production detected, using relative URLs');
+          return ''; // Relative URLs will use the same domain
+        }
+
+        // If REACT_APP_API_URL is set and it's not the placeholder, use it
+        if (process.env.REACT_APP_API_URL &&
+            !process.env.REACT_APP_API_URL.includes('your-backend-service.railway.app') &&
+            !process.env.REACT_APP_API_URL.includes('railway.app')) {
+          console.log('Using REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+          return process.env.REACT_APP_API_URL;
+        }
+
+        // Development default
+        console.log('Using localhost default');
+        return 'http://localhost:8000';
+      };
+
+      const apiUrl = getApiUrl();
+      const response = await fetch(`${apiUrl}/api/v1/payments/razorpay/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: baseAmountUSD,
+          amount: testAmountUSD,
           customer_email: customerDetails.email,
           customer_name: customerDetails.name,
           currency: selectedCurrency,
@@ -190,8 +216,31 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
 
   const handlePaymentSuccess = async (razorpayResponse: any, orderData: any) => {
     try {
+      // Use the same API URL logic as AdminDashboard
+      const getApiUrl = () => {
+        // In production (not localhost), always use relative URLs
+        if (window.location.hostname !== 'localhost' &&
+            window.location.hostname !== '127.0.0.1') {
+          console.log('Production detected, using relative URLs');
+          return ''; // Relative URLs will use the same domain
+        }
+
+        // If REACT_APP_API_URL is set and it's not the placeholder, use it
+        if (process.env.REACT_APP_API_URL &&
+            !process.env.REACT_APP_API_URL.includes('your-backend-service.railway.app') &&
+            !process.env.REACT_APP_API_URL.includes('railway.app')) {
+          console.log('Using REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+          return process.env.REACT_APP_API_URL;
+        }
+
+        // Development default
+        console.log('Using localhost default');
+        return 'http://localhost:8000';
+      };
+
+      const apiUrl = getApiUrl();
       // Verify payment on backend
-      const verifyResponse = await fetch('/api/v1/payments/razorpay/verify-payment', {
+      const verifyResponse = await fetch(`${apiUrl}/api/v1/payments/razorpay/verify-payment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -260,7 +309,7 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
                 <span className="text-2xl mr-2">🇮🇳</span>
                 <span className="font-semibold">Indian Rupees</span>
               </div>
-              <div className="text-2xl font-bold text-green-600">₹{(baseAmountUSD * exchangeRate).toLocaleString()}</div>
+              <div className="text-2xl font-bold text-green-600">₹{(testAmountUSD * exchangeRate).toLocaleString()}</div>
               <div className="text-sm text-gray-600 flex items-center mt-1">
                 <Smartphone className="w-4 h-4 mr-1" />
                 UPI, Cards, Net Banking
@@ -279,7 +328,7 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
                 <span className="text-2xl mr-2">🌍</span>
                 <span className="font-semibold">US Dollars</span>
               </div>
-              <div className="text-2xl font-bold text-green-600">${baseAmountUSD}</div>
+              <div className="text-2xl font-bold text-green-600">${testAmountUSD}</div>
               <div className="text-sm text-gray-600 flex items-center mt-1">
                 <CreditCard className="w-4 h-4 mr-1" />
                 International Cards
@@ -333,7 +382,7 @@ const RazorpayCheckout: React.FC<RazorpayCheckoutProps> = ({
           </div>
           {selectedCurrency === 'INR' && (
             <div className="text-xs text-gray-500 mt-1">
-              Equivalent to ${baseAmountUSD} USD
+              Equivalent to ${testAmountUSD} USD
             </div>
           )}
         </div>

@@ -101,55 +101,26 @@ async def get_leads(
     # Get leads using raw SQL to avoid ORM schema mismatch
     from sqlalchemy import text
     query = text("""
-        SELECT id, email, company, preferred_crm, 
-               COALESCE(consultation_booked, false) as consultation_booked, 
-               created_at,
-               COALESCE(
-                   CASE 
-                       WHEN first_name IS NOT NULL AND last_name IS NOT NULL 
-                       THEN first_name || ' ' || last_name
-                       WHEN first_name IS NOT NULL 
-                       THEN first_name
-                       ELSE email
-                   END,
-                   email
-               ) as name
+        SELECT id, name, email, company, preferred_crm,
+               COALESCE(consultation_booked, false) as consultation_booked,
+               created_at
         FROM leads
         ORDER BY created_at DESC
         LIMIT :limit OFFSET :offset
     """)
-    
-    try:
-        leads_result = await db.execute(query, {"limit": limit, "offset": offset})
-        leads = leads_result.all()
-    except Exception as e:
-        print(f"Error fetching leads: {e}")
-        # Fallback to simpler query if the complex one fails
-        simple_query = text("""
-            SELECT id, email, company, preferred_crm, created_at
-            FROM leads
-            ORDER BY created_at DESC
-            LIMIT :limit OFFSET :offset
-        """)
-        leads_result = await db.execute(simple_query, {"limit": limit, "offset": offset})
-        leads = leads_result.all()
+
+    leads_result = await db.execute(query, {"limit": limit, "offset": offset})
+    leads = leads_result.all()
     
     leads_data = []
     for row in leads:
         lead_id = row[0]
-        lead_email = row[1]
-        lead_company = row[2]
-        lead_crm = row[3]
-        
-        # Handle different query results
-        if len(row) >= 6:
-            lead_consultation_booked = row[4]
-            lead_created_at = row[5]
-            lead_name = row[6] if len(row) > 6 else lead_email
-        else:
-            lead_consultation_booked = False
-            lead_created_at = row[4]
-            lead_name = lead_email
+        lead_name = row[1]
+        lead_email = row[2]
+        lead_company = row[3]
+        lead_crm = row[4]
+        lead_consultation_booked = row[5]
+        lead_created_at = row[6]
         
         # Get assessment score if exists
         assessment_result = await db.execute(
