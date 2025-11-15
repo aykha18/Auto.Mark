@@ -3,6 +3,7 @@ SQLAlchemy models for AI Marketing Agents
 """
 
 from .base import Base
+from .social_account import SocialAccount
 from .user import User
 from .event import Event
 from .lead import Lead
@@ -16,6 +17,7 @@ from .chat_session import ChatSession, ChatMessage
 
 __all__ = [
     "Base",
+    "SocialAccount",
     "User",
     "Event",
     "Lead",
