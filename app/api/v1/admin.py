@@ -97,72 +97,62 @@ async def get_leads(
     _: bool = Depends(verify_admin)
 ):
     """Get all leads with details"""
-    
-    # Get leads using raw SQL to avoid ORM schema mismatch
-    from sqlalchemy import text
-    query = text("""
-        SELECT id, email, company, preferred_crm,
-               COALESCE(consultation_booked, false) as consultation_booked,
-               created_at
-        FROM leads
-        ORDER BY created_at DESC
-        LIMIT :limit OFFSET :offset
-    """)
 
-    leads_result = await db.execute(query, {"limit": limit, "offset": offset})
-    leads = leads_result.all()
+    try:
+        # Get leads using ORM to ensure compatibility
+        leads_query = select(Lead).order_by(Lead.created_at.desc()).limit(limit).offset(offset)
+        leads_result = await db.execute(leads_query)
+        leads = leads_result.scalars().all()
 
-    leads_data = []
-    for row in leads:
-        lead_id = row[0]
-        lead_email = row[1]
-        lead_company = row[2]
-        lead_crm = row[3]
-        lead_consultation_booked = row[4]
-        lead_created_at = row[5]
-
-        # Use email as name since name column may not exist
-        lead_name = lead_email
-        
-        # Get assessment score if exists
-        assessment_result = await db.execute(
-            select(Assessment).where(
-                Assessment.lead_id == lead_id,
-                Assessment.is_completed == True
+        leads_data = []
+        for lead in leads:
+            # Get assessment score if exists
+            assessment_result = await db.execute(
+                select(Assessment).where(
+                    Assessment.lead_id == lead.id,
+                    Assessment.is_completed == True
+                )
             )
-        )
-        assessment = assessment_result.scalar_one_or_none()
-        
-        # Check payment status
-        payment_result = await db.execute(
-            select(PaymentTransaction).where(
-                PaymentTransaction.customer_email == lead_email,
-                PaymentTransaction.status == 'completed'
+            assessment = assessment_result.scalar_one_or_none()
+
+            # Check payment status
+            payment_result = await db.execute(
+                select(PaymentTransaction).where(
+                    PaymentTransaction.customer_email == lead.email,
+                    PaymentTransaction.status == 'completed'
+                )
             )
-        )
-        payment = payment_result.scalar_one_or_none()
-        
-        leads_data.append({
-            "id": lead_id,
-            "name": lead_name,
-            "email": lead_email,
-            "company": lead_company,
-            "phone": None,  # Not in current schema
-            "crm_system": lead_crm,
-            "assessment_score": assessment.overall_score if assessment else None,
-            "consultation_booked": lead_consultation_booked or False,
-            "payment_completed": payment is not None,
-            "created_at": lead_created_at.isoformat() if lead_created_at else None
-        })
-    
-    # Get total count
-    total_result = await db.execute(select(func.count()).select_from(Lead))
-    total = total_result.scalar() or 0
-    
-    return {
-        "leads": leads_data,
-        "total": total
-    }
+            payment = payment_result.scalar_one_or_none()
+
+            leads_data.append({
+                "id": lead.id,
+                "name": getattr(lead, 'full_name', None) or lead.email,
+                "email": lead.email,
+                "company": lead.company,
+                "phone": getattr(lead, 'phone', None),
+                "crm_system": getattr(lead, 'preferred_crm', None),
+                "assessment_score": assessment.overall_score if assessment else None,
+                "consultation_booked": getattr(lead, 'consultation_booked', False),
+                "payment_completed": payment is not None,
+                "created_at": lead.created_at.isoformat() if lead.created_at else None
+            })
+
+        # Get total count
+        total_result = await db.execute(select(func.count()).select_from(Lead))
+        total = total_result.scalar() or 0
+
+        return {
+            "leads": leads_data,
+            "total": total
+        }
+    except Exception as e:
+        # Return empty data if there's any issue
+        print(f"Error fetching leads: {e}")
+        return {
+            "leads": [],
+            "total": 0,
+            "error": str(e)
+        }
 
 @router.get("/recent-activity")
 async def get_recent_activity(
