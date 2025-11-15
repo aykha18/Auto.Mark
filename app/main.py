@@ -348,8 +348,12 @@ try:
     # print("Wise payments router included successfully")
     
     print("Including razorpay payments router...")
-    app.include_router(razorpay_payments.router, prefix="/api/v1/payments/razorpay", tags=["payments"])
-    print("Razorpay payments router included successfully")
+    try:
+        app.include_router(razorpay_payments.router, prefix="/api/v1/payments/razorpay", tags=["payments"])
+        print("Razorpay payments router included successfully")
+    except Exception as e:
+        print(f"ERROR including razorpay payments router: {e}")
+        print("Skipping razorpay payments router")
     
     print("Including consultation router...")
     app.include_router(consultation.router, prefix="/api/v1/consultation", tags=["consultation"])
@@ -368,8 +372,12 @@ try:
         print("Skipping AI report module")
     
     print("Including admin router...")
-    app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
-    print("Admin router included successfully")
+    try:
+        app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
+        print("Admin router included successfully")
+    except Exception as e:
+        print(f"ERROR including admin router: {e}")
+        print("Skipping admin router")
 
     print("Including social router...")
     try:
