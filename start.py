@@ -24,20 +24,20 @@ warnings.filterwarnings("ignore", message=".*Exception terminating connection.*"
 # Verify Razorpay keys are loaded
 razorpay_key_id = os.getenv("RAZORPAY_KEY_ID", "")
 razorpay_key_secret = os.getenv("RAZORPAY_KEY_SECRET", "")
-print(f"🔑 Razorpay Key ID: {razorpay_key_id}")
-print(f"🔑 Razorpay Key Secret: {'*' * len(razorpay_key_secret) if razorpay_key_secret else 'NOT SET'}")
+print(f"Razorpay Key ID: {razorpay_key_id}")
+print(f"Razorpay Key Secret: {'*' * len(razorpay_key_secret) if razorpay_key_secret else 'NOT SET'}")
 
 if __name__ == "__main__":
-    print("🚀 Starting Unitasa backend with clean configuration...")
+    print("Starting Unitasa backend with clean configuration...")
     
     # Verify DATABASE_URL is loaded
     database_url = os.getenv("DATABASE_URL", "")
-    print(f"🗄️  Database URL: {database_url[:50]}..." if database_url else "❌ DATABASE_URL not set")
+    print(f"Database URL: {database_url[:50]}..." if database_url else "DATABASE_URL not set")
     
     # Ensure DATABASE_URL is set (fallback for development)
     if not database_url:
         os.environ["DATABASE_URL"] = "postgresql+asyncpg://postgres:aykha123@localhost:5432/unitas"
-        print("🔧 Set fallback DATABASE_URL for development")
+        print("Set fallback DATABASE_URL for development")
     
     # Import the app after setting environment variables
     from app.main import app

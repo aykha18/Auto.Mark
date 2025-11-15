@@ -75,7 +75,19 @@ try:
     print("Importing admin module...")
     from app.api.v1 import admin
     print("Admin module imported successfully")
-    
+
+    print("Importing social module...")
+    try:
+        from app.api.v1 import social
+        print("Social module imported successfully")
+        print(f"Social router object: {social.router}")
+        print(f"Social router type: {type(social.router)}")
+    except Exception as e:
+        print(f"ERROR importing social module: {e}")
+        import traceback
+        print(f"Social import traceback: {traceback.format_exc()}")
+        raise
+
     print("All API modules imported successfully")
 except Exception as e:
     print(f"Error importing API modules: {e}")
@@ -316,7 +328,18 @@ try:
     print("Including admin router...")
     app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
     print("Admin router included successfully")
-    
+
+    print("Including social router...")
+    try:
+        app.include_router(social.router, prefix="/api/v1/social", tags=["social"])
+        print("Social router included successfully")
+        print(f"Social router routes: {[route.path for route in social.router.routes]}")
+    except Exception as e:
+        print(f"ERROR including social router: {e}")
+        import traceback
+        print(f"Social router traceback: {traceback.format_exc()}")
+        raise
+
     print("All API routers included successfully")
 except Exception as e:
     print(f"Error including API routers: {e}")

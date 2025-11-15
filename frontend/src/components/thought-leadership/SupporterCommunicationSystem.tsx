@@ -31,13 +31,15 @@ interface SupporterCommunicationSystemProps {
   feedbackRequests: FeedbackRequest[];
   isCoCreator: boolean;
   className?: string;
+  onJoinProgram?: () => void;
 }
 
 const SupporterCommunicationSystem: React.FC<SupporterCommunicationSystemProps> = ({
   messages,
   feedbackRequests,
   isCoCreator,
-  className = ''
+  className = '',
+  onJoinProgram
 }) => {
   const [activeTab, setActiveTab] = useState<'messages' | 'feedback' | 'community'>('messages');
   const [selectedMessage, setSelectedMessage] = useState<SupporterMessage | null>(null);
@@ -91,7 +93,17 @@ const SupporterCommunicationSystem: React.FC<SupporterCommunicationSystemProps> 
           <p className="text-gray-600 mb-6">
             This communication system is exclusively available to our founding co-creators.
           </p>
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+          <button
+            onClick={() => {
+              if (onJoinProgram) {
+                onJoinProgram();
+              } else {
+                // Fallback: dispatch event
+                window.dispatchEvent(new CustomEvent('openAssessment'));
+              }
+            }}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
             Join Co-Creator Program
           </button>
         </div>

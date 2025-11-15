@@ -24,7 +24,7 @@ const FounderStorySection: React.FC = () => {
   const milestones: Milestone[] = [
     {
       id: '1',
-      date: 'January 2023',
+      date: 'April 2025',
       title: 'The Disconnected Tools Problem',
       description: 'Started with 5 different tools that didn\'t talk to each other. Lost leads, missed follow-ups, manual data entry consuming 15+ hours per week.',
       metrics: {
@@ -38,7 +38,7 @@ const FounderStorySection: React.FC = () => {
     },
     {
       id: '2',
-      date: 'March 2023',
+      date: 'May 2025',
       title: 'First CRM Integration Breakthrough',
       description: 'Built first automated workflow connecting Pipedrive to email campaigns. Saw immediate 300% increase in lead response rates.',
       metrics: {
@@ -53,7 +53,7 @@ const FounderStorySection: React.FC = () => {
     },
     {
       id: '3',
-      date: 'June 2023',
+      date: 'July 2025',
       title: 'Multi-CRM Support & AI Integration',
       description: 'Expanded to support HubSpot, Zoho, and Monday.com. Added AI-powered lead scoring and personalized messaging.',
       metrics: {
@@ -68,7 +68,7 @@ const FounderStorySection: React.FC = () => {
     },
     {
       id: '4',
-      date: 'October 2023',
+      date: 'October 2025',
       title: 'Full Marketing Automation Platform',
       description: 'Launched Unitasa with NeuraCRM built-in. 24/7 lead nurturing, predictive analytics, and seamless CRM connectivity.',
       metrics: {

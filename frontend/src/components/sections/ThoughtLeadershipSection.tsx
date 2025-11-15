@@ -59,7 +59,7 @@ const mockRoadmapItems = [
     title: 'Advanced CRM Integrations',
     description: 'Deep integration with Salesforce, HubSpot, and Pipedrive',
     status: 'completed' as const,
-    quarter: 'Q1 2024',
+    quarter: 'Q1 2025',
     features: ['OAuth2 authentication', 'Real-time sync', 'Custom field mapping', 'Webhook support'],
     impact: 'Seamless data flow',
     foundingUserInfluence: true
@@ -69,7 +69,7 @@ const mockRoadmapItems = [
     title: 'AI-Powered Lead Scoring',
     description: 'Machine learning algorithms for intelligent lead qualification',
     status: 'in_progress' as const,
-    quarter: 'Q2 2024',
+    quarter: 'Q2 2025',
     features: ['Predictive scoring', 'Behavioral analysis', 'Custom scoring models', 'A/B testing'],
     impact: '40% improvement in conversion rates',
     foundingUserInfluence: true
@@ -79,7 +79,7 @@ const mockRoadmapItems = [
     title: 'Multi-Channel Automation',
     description: 'Unified automation across email, SMS, social media, and phone',
     status: 'planned' as const,
-    quarter: 'Q3 2024',
+    quarter: 'Q3 2025',
     features: ['Email sequences', 'SMS campaigns', 'Social media posting', 'Voice calls'],
     impact: '3x increase in touchpoints',
     foundingUserInfluence: false
@@ -120,7 +120,7 @@ const mockCaseStudies = [
 const mockMilestones = [
   {
     id: '1',
-    date: new Date('2023-01-15'),
+    date: new Date('2025-04-15'),
     title: 'The Problem Discovery',
     description: 'Realized the pain of disconnected marketing tools while managing multiple client campaigns',
     metrics: {
@@ -135,7 +135,7 @@ const mockMilestones = [
   },
   {
     id: '2',
-    date: new Date('2023-06-01'),
+    date: new Date('2025-07-01'),
     title: 'First Integration Success',
     description: 'Built the first working CRM integration with Pipedrive using their REST API',
     metrics: {
@@ -150,7 +150,7 @@ const mockMilestones = [
   },
   {
     id: '3',
-    date: new Date('2023-12-01'),
+    date: new Date('2025-10-01'),
     title: 'Multi-CRM Platform',
     description: 'Successfully integrated with 5 major CRM systems and launched beta version',
     metrics: {
@@ -171,7 +171,7 @@ const mockDevelopmentMilestones = [
     title: 'Core CRM Integration Framework',
     description: 'Build the foundational integration system supporting major CRMs',
     status: 'completed' as const,
-    completedDate: new Date('2024-01-15'),
+    completedDate: new Date('2025-04-15'),
     progress: 100,
     category: 'backend' as const,
     dependencies: ['API research', 'Authentication system']
@@ -193,14 +193,14 @@ const mockDevelopmentMilestones = [
     status: 'in_progress' as const,
     progress: 60,
     category: 'frontend' as const,
-    estimatedDate: new Date('2024-03-01')
+    estimatedDate: new Date('2025-04-01')
   }
 ];
 
 const mockRecentUpdates = [
   {
     id: '1',
-    date: new Date('2024-01-20'),
+    date: new Date('2025-04-20'),
     title: 'Salesforce Integration Enhanced',
     description: 'Added support for custom objects and improved field mapping capabilities',
     type: 'feature' as const,
@@ -208,7 +208,7 @@ const mockRecentUpdates = [
   },
   {
     id: '2',
-    date: new Date('2024-01-18'),
+    date: new Date('2025-04-18'),
     title: 'Performance Optimization',
     description: 'Reduced API response times by 40% through caching improvements',
     type: 'improvement' as const,
@@ -221,7 +221,7 @@ const mockSupporterMessages = [
     id: '1',
     title: 'New Feature: Advanced Lead Scoring',
     content: 'We\'ve just released the advanced lead scoring feature that many of you requested. This uses machine learning to analyze lead behavior and assign more accurate scores.',
-    date: new Date('2024-01-15'),
+    date: new Date('2025-04-15'),
     type: 'update' as const,
     priority: 'high' as const,
     readStatus: false
@@ -234,7 +234,7 @@ const mockFeedbackRequests = [
     title: 'CRM Integration Priority Vote',
     description: 'Help us decide which CRM integration to prioritize next',
     type: 'feature_vote' as const,
-    deadline: new Date('2024-02-01'),
+    deadline: new Date('2025-05-01'),
     responses: 12,
     maxResponses: 25,
     status: 'open' as const
@@ -325,6 +325,7 @@ const ThoughtLeadershipSection: React.FC<ThoughtLeadershipSectionProps> = ({
               messages={mockSupporterMessages}
               feedbackRequests={mockFeedbackRequests}
               isCoCreator={isCoCreator}
+              onJoinProgram={() => window.dispatchEvent(new CustomEvent('openLeadCapture'))}
             />
           )}
 

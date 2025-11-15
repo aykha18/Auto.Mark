@@ -1,78 +1,109 @@
 import { useState, useEffect } from 'react';
 
 interface CurrencyDisplay {
-  currency: 'USD' | 'INR';
+  currency: 'USD' | 'INR' | 'EUR';
   symbol: string;
   amount: number;
   displayText: string;
   isIndian: boolean;
+  isEuropean: boolean;
+  isAmerican: boolean;
 }
 
-// TEMPORARY: Force INR for Razorpay KYC approval
-// Set to false to re-enable currency detection after approval
-const FORCE_INR_ONLY = true;
+// Exchange rates (approximate, update as needed)
+const EXCHANGE_RATES = {
+  USD: 1,
+  INR: 83,
+  EUR: 0.85
+};
+
+// EU country codes for EUR detection
+const EU_COUNTRIES = [
+  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+  'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+  'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE'
+];
 
 export const useCurrency = (baseAmountUSD: number = 497): CurrencyDisplay => {
   const [currencyDisplay, setCurrencyDisplay] = useState<CurrencyDisplay>({
     currency: 'INR',
     symbol: '₹',
-    amount: Math.round(baseAmountUSD * 83),
-    displayText: `₹${Math.round(baseAmountUSD * 83).toLocaleString('en-IN')}`,
-    isIndian: true
+    amount: Math.round(baseAmountUSD * EXCHANGE_RATES.INR),
+    displayText: `₹${Math.round(baseAmountUSD * EXCHANGE_RATES.INR).toLocaleString('en-IN')}`,
+    isIndian: true,
+    isEuropean: false,
+    isAmerican: false
   });
 
   useEffect(() => {
-    const detectCurrency = () => {
+    const detectCurrency = async () => {
       try {
-        // TEMPORARY: Force INR for all users for Razorpay KYC approval
-        if (FORCE_INR_ONLY) {
-          const inrAmount = Math.round(baseAmountUSD * 83); // 1 USD = 83 INR
-          setCurrencyDisplay({
-            currency: 'INR',
-            symbol: '₹',
-            amount: inrAmount,
-            displayText: `₹${inrAmount.toLocaleString('en-IN')}`,
-            isIndian: true
-          });
-          return;
+        // Fetch user's country via IP geolocation
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+
+        const countryCode = data.country_code || 'US';
+        let currency: 'USD' | 'INR' | 'EUR' = 'USD';
+        let symbol = '$';
+        let rate = 1;
+        let isIndian = false;
+        let isEuropean = false;
+        let isAmerican = false;
+
+        if (countryCode === 'IN') {
+          currency = 'INR';
+          symbol = '₹';
+          rate = EXCHANGE_RATES.INR;
+          isIndian = true;
+        } else if (EU_COUNTRIES.includes(countryCode)) {
+          currency = 'EUR';
+          symbol = '€';
+          rate = EXCHANGE_RATES.EUR;
+          isEuropean = true;
+        } else if (countryCode === 'US') {
+          currency = 'USD';
+          symbol = '$';
+          rate = EXCHANGE_RATES.USD;
+          isAmerican = true;
+        } else {
+          // Default to USD for other countries
+          currency = 'USD';
+          symbol = '$';
+          rate = EXCHANGE_RATES.USD;
+          isAmerican = true;
         }
 
-        // Normal currency detection (will be re-enabled after KYC approval)
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const isIndian = timezone.includes('Asia/Kolkata') || 
-                        timezone.includes('Asia/Calcutta') ||
-                        timezone.includes('Asia/Kolkata');
-        
-        if (isIndian) {
-          // Indian user - show INR
-          const inrAmount = Math.round(baseAmountUSD * 83); // 1 USD = 83 INR
-          setCurrencyDisplay({
-            currency: 'INR',
-            symbol: '₹',
-            amount: inrAmount,
-            displayText: `₹${inrAmount.toLocaleString('en-IN')}`,
-            isIndian: true
-          });
+        const amount = Math.round(baseAmountUSD * rate);
+        let displayText = '';
+
+        if (currency === 'INR') {
+          displayText = `₹${amount.toLocaleString('en-IN')}`;
+        } else if (currency === 'EUR') {
+          displayText = `€${amount}`;
         } else {
-          // International user - show USD
-          setCurrencyDisplay({
-            currency: 'USD',
-            symbol: '$',
-            amount: baseAmountUSD,
-            displayText: `$${baseAmountUSD}`,
-            isIndian: false
-          });
+          displayText = `$${amount}`;
         }
-      } catch (error) {
-        // Default to INR during KYC approval period
-        console.log('Currency detection failed, defaulting to INR for KYC approval');
-        const inrAmount = Math.round(baseAmountUSD * 83);
+
         setCurrencyDisplay({
-          currency: 'INR',
-          symbol: '₹',
-          amount: inrAmount,
-          displayText: `₹${inrAmount.toLocaleString('en-IN')}`,
-          isIndian: true
+          currency,
+          symbol,
+          amount,
+          displayText,
+          isIndian,
+          isEuropean,
+          isAmerican
+        });
+      } catch (error) {
+        console.log('Currency detection failed, defaulting to USD');
+        // Default to USD on error
+        setCurrencyDisplay({
+          currency: 'USD',
+          symbol: '$',
+          amount: baseAmountUSD,
+          displayText: `$${baseAmountUSD}`,
+          isIndian: false,
+          isEuropean: false,
+          isAmerican: true
         });
       }
     };

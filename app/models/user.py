@@ -52,6 +52,13 @@ class User(Base, TimestampMixin):
     campaigns = relationship("Campaign", back_populates="user", cascade="all, delete-orphan")
     chat_sessions = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
 
+    # Social media relationships
+    social_accounts = relationship("SocialAccount", back_populates="user", cascade="all, delete-orphan")
+    social_posts = relationship("SocialPost", back_populates="user", cascade="all, delete-orphan")
+    engagements = relationship("Engagement", back_populates="user", cascade="all, delete-orphan")
+    content_templates = relationship("ContentTemplate", back_populates="user", cascade="all, delete-orphan")
+    analytics_snapshots = relationship("AnalyticsSnapshot", back_populates="user", cascade="all, delete-orphan")
+
     def __repr__(self):
         return f"<User(id={self.id}, email='{self.email}', role='{self.role}')>"
 

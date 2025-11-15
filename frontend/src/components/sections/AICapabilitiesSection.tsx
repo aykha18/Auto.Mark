@@ -21,6 +21,22 @@ const AICapabilitiesSection: React.FC = () => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const currency = useCurrency(497);
 
+  // Helper functions for dynamic pricing
+  const getConvertedAmount = (usdAmount: number) => {
+    const rate = currency.currency === 'INR' ? 83 : currency.currency === 'EUR' ? 0.85 : 1;
+    return Math.round(usdAmount * rate);
+  };
+
+  const formatAmount = (amount: number) => {
+    if (currency.currency === 'INR') {
+      return amount.toLocaleString('en-IN');
+    } else if (currency.currency === 'EUR') {
+      return amount.toString();
+    } else {
+      return amount.toString();
+    }
+  };
+
   const capabilities: AICapability[] = [
     {
       id: 'autonomous-agent',
@@ -191,7 +207,7 @@ const AICapabilitiesSection: React.FC = () => {
             </div>
             <div className="text-3xl font-bold text-blue-600 mb-1">{currency.displayText}</div>
             <div className="text-sm text-gray-500 line-through mb-2 mt-1">
-              Regular: ₹1,67,000+
+              Regular: {currency.symbol}{formatAmount(getConvertedAmount(2000))}+
             </div>
             <div className="text-sm text-gray-700 font-medium">
               🚀 Founding Member Price • ⚡ Only 12 spots left

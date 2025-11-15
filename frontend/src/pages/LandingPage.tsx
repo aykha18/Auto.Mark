@@ -59,6 +59,22 @@ const LandingPage: React.FC = () => {
   // Currency detection for pricing display
   const currency = useCurrency(497);
 
+  // Calculate converted amounts for pricing display
+  const getConvertedAmount = (usdAmount: number) => {
+    const rate = currency.currency === 'INR' ? 83 : currency.currency === 'EUR' ? 0.85 : 1;
+    return Math.round(usdAmount * rate);
+  };
+
+  const formatAmount = (amount: number) => {
+    if (currency.currency === 'INR') {
+      return amount.toLocaleString('en-IN');
+    } else if (currency.currency === 'EUR') {
+      return amount.toString();
+    } else {
+      return amount.toString();
+    }
+  };
+
   useEffect(() => {
     trackPageView('/');
 
@@ -203,7 +219,7 @@ const LandingPage: React.FC = () => {
                   <div className="mb-6">
                     <div className="text-4xl font-bold mb-2 text-white">{currency.displayText}</div>
                     <div className="text-lg opacity-90 line-through mb-1 text-white mt-2">
-                      Regular price: ₹1,67,000+
+                      Regular price: {currency.symbol}{formatAmount(getConvertedAmount(2000))}+
                     </div>
                     <p className="text-xl opacity-90 text-white">
                       Assessment-Qualified • Lifetime Access • Shape AI Marketing's Future
@@ -212,23 +228,23 @@ const LandingPage: React.FC = () => {
                   
                   {/* Value Stack */}
                   <div className="bg-white/10 rounded-lg p-4 mb-6 text-left max-w-md mx-auto">
-                    <div className="text-sm font-semibold mb-2 text-center text-white">What You Get (₹1,16,000+ Value):</div>
+                    <div className="text-sm font-semibold mb-2 text-center text-white">What You Get ({currency.symbol}{formatAmount(getConvertedAmount(1397))}+ Value):</div>
                     <div className="space-y-1 text-sm text-white">
                       <div className="flex justify-between">
                         <span>• Lifetime AI Platform Access</span>
-                        <span>₹41,500+/month</span>
+                        <span>{currency.symbol}{formatAmount(getConvertedAmount(500))}+/month</span>
                       </div>
                       <div className="flex justify-between">
                         <span>• Personal AI Strategy Audit</span>
-                        <span>₹41,500</span>
+                        <span>{currency.symbol}{formatAmount(getConvertedAmount(500))}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>• Custom AI Agent Setup</span>
-                        <span>₹24,900</span>
+                        <span>{currency.symbol}{formatAmount(getConvertedAmount(300))}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>• 6-Month Priority Support</span>
-                        <span>₹49,800</span>
+                        <span>{currency.symbol}{formatAmount(getConvertedAmount(600))}</span>
                       </div>
                     </div>
                   </div>
@@ -277,7 +293,7 @@ const LandingPage: React.FC = () => {
                     </div>
                     <div className="flex items-start">
                       <span className="text-green-600 mr-2">✅</span>
-                      <span>After spot 25, price goes to ₹1,67,000+</span>
+                      <span>After spot 25, price goes to {currency.symbol}{formatAmount(getConvertedAmount(2000))}+</span>
                     </div>
                   </div>
                   <p className="text-xs text-gray-600 mt-4 italic">

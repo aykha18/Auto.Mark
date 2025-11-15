@@ -23,6 +23,23 @@ const PricingComparison: React.FC = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const currency = useCurrency(497);
+
+  // Helper functions for dynamic pricing
+  const getConvertedAmount = (usdAmount: number) => {
+    const rate = currency.currency === 'INR' ? 83 : currency.currency === 'EUR' ? 0.85 : 1;
+    return Math.round(usdAmount * rate);
+  };
+
+  const formatAmount = (amount: number) => {
+    if (currency.currency === 'INR') {
+      return amount.toLocaleString('en-IN');
+    } else if (currency.currency === 'EUR') {
+      return amount.toString();
+    } else {
+      return amount.toString();
+    }
+  };
+
   const pricingTiers: PricingTier[] = [
     {
       name: 'Standard Access',
@@ -59,9 +76,9 @@ const PricingComparison: React.FC = () => {
         'Direct founder communication channel',
         'Vote on product roadmap',
         'Beta access (3-6 months early)',
-        'Personal AI strategy audit (₹41,500 value)',
-        'Custom AI agent setup (₹24,900 value)',
-        '6-month priority support (₹49,800 value)',
+        `Personal AI strategy audit (${currency.symbol}${formatAmount(getConvertedAmount(500))} value)`,
+        `Custom AI agent setup (${currency.symbol}${formatAmount(getConvertedAmount(300))} value)`,
+        `6-month priority support (${currency.symbol}${formatAmount(getConvertedAmount(600))} value)`,
         'Exclusive founder mastermind community',
         'Co-creator badge and recognition',
         'Revenue sharing on referrals'
@@ -72,7 +89,7 @@ const PricingComparison: React.FC = () => {
     },
     {
       name: 'Enterprise',
-      price: '₹41,500+',
+      price: `${currency.symbol}${formatAmount(getConvertedAmount(500))}+`,
       period: '/month',
       description: 'Custom AI solutions for large organizations',
       features: [
@@ -241,7 +258,7 @@ const PricingComparison: React.FC = () => {
             
             <div className="bg-purple-50 rounded-lg p-6">
               <div className="text-3xl font-bold text-purple-600 mb-2">
-                ₹1,16,000+
+                {currency.symbol}{formatAmount(getConvertedAmount(1397))}+
               </div>
               <div className="text-sm text-gray-600">Bonus Value Included</div>
               <div className="text-xs text-gray-500 mt-1">Audit + Setup + Support</div>

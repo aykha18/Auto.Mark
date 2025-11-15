@@ -85,6 +85,8 @@ class Campaign(Base, TimestampMixin):
     user = relationship("User", back_populates="campaigns")
     leads = relationship("Lead", back_populates="campaign", cascade="all, delete-orphan")
     contents = relationship("Content", back_populates="campaign", cascade="all, delete-orphan")
+    posts = relationship("SocialPost", back_populates="campaign", cascade="all, delete-orphan")
+    engagements = relationship("Engagement", back_populates="campaign", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Campaign(id={self.id}, name='{self.name}', status='{self.status}', user_id={self.user_id})>"

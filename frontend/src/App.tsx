@@ -4,6 +4,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import RefundPolicy from './pages/RefundPolicy';
 import Contact from './pages/Contact';
+import SocialDashboard from './pages/SocialDashboard';
 import PerformanceDashboard from './components/dev/PerformanceDashboard';
 
 import { initializeSecurity } from './utils/security';
@@ -144,6 +145,8 @@ function App() {
         return <RefundPolicy />;
       case '/contact':
         return <Contact />;
+      case '/social':
+        return <SocialDashboard />;
       case '/admin':
         // Lazy load admin dashboard
         const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
