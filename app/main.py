@@ -353,6 +353,8 @@ try:
         print("Razorpay payments router included successfully")
     except Exception as e:
         print(f"ERROR including razorpay payments router: {e}")
+        import traceback
+        print(f"Razorpay router traceback: {traceback.format_exc()}")
         print("Skipping razorpay payments router")
     
     print("Including consultation router...")
@@ -377,6 +379,8 @@ try:
         print("Admin router included successfully")
     except Exception as e:
         print(f"ERROR including admin router: {e}")
+        import traceback
+        print(f"Admin router traceback: {traceback.format_exc()}")
         print("Skipping admin router")
 
     print("Including social router...")
