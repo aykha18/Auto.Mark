@@ -13,8 +13,6 @@ from pydantic import BaseModel, Field
 
 from app.core.database import get_db
 from app.core.config import get_settings
-from app.core.assessment_engine import assessment_engine
-from app.core.lead_scoring import lead_scoring_engine
 from app.models.assessment import Assessment
 from app.models.lead import Lead
 from app.models.campaign import Campaign

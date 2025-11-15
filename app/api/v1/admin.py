@@ -101,7 +101,7 @@ async def get_leads(
     # Get leads using raw SQL to avoid ORM schema mismatch
     from sqlalchemy import text
     query = text("""
-        SELECT id, name, email, company, preferred_crm,
+        SELECT id, email, company, preferred_crm,
                COALESCE(consultation_booked, false) as consultation_booked,
                created_at
         FROM leads
@@ -111,16 +111,18 @@ async def get_leads(
 
     leads_result = await db.execute(query, {"limit": limit, "offset": offset})
     leads = leads_result.all()
-    
+
     leads_data = []
     for row in leads:
         lead_id = row[0]
-        lead_name = row[1]
-        lead_email = row[2]
-        lead_company = row[3]
-        lead_crm = row[4]
-        lead_consultation_booked = row[5]
-        lead_created_at = row[6]
+        lead_email = row[1]
+        lead_company = row[2]
+        lead_crm = row[3]
+        lead_consultation_booked = row[4]
+        lead_created_at = row[5]
+
+        # Use email as name since name column may not exist
+        lead_name = lead_email
         
         # Get assessment score if exists
         assessment_result = await db.execute(
@@ -249,11 +251,11 @@ async def get_lead_details(
     return {
         "lead": {
             "id": lead.id,
-            "name": lead.name,
+            "name": getattr(lead, 'name', None) or getattr(lead, 'full_name', None) or lead.email,
             "email": lead.email,
             "company": lead.company,
-            "phone": lead.phone,
-            "crm_system": lead.crm_system,
+            "phone": getattr(lead, 'phone', None),
+            "crm_system": getattr(lead, 'crm_system', None) or getattr(lead, 'preferred_crm', None),
             "consultation_booked": getattr(lead, 'consultation_booked', False),
             "created_at": lead.created_at.isoformat() if lead.created_at else None
         },
